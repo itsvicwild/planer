@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Wild Workspace — личный планер v2.9.0</title>
+<title>Wild Workspace — личный планер v2.10.0</title>
 <meta name="description" content="Wild Workspace — личное пространство для задач, привычек, событий и маленьких побед.">
 <meta name="theme-color" content="#0b5240">
 <meta name="mobile-web-app-capable" content="yes">
@@ -178,7 +178,7 @@ main{padding:16px 14px 110px}.c4{grid-column:span 12}.board{grid-template-column
 @keyframes miniConfetti{0%{opacity:0;transform:translate(-50%,-50%) scale(.4) rotate(var(--r))}15%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.8) rotate(calc(var(--r) + 140deg))}}
 
 @media(max-width:1100px){.overdue-wrap{grid-column:span 12}.wcard{height:min(64vh,680px)}}
-@media(max-width:720px){.overdue-heading{align-items:flex-start}.overdue-heading h2{font-size:16px}.overdue-heading p{font-size:12px}.overdue-item{flex-basis:min(260px,82vw)}.attachment-row{align-items:flex-start}.attachment-actions{align-self:center}.wcard{height:62vh;min-height:300px;max-height:calc(100dvh - 215px);padding:0 8px 8px}.wk-h,.ad,.wg{grid-template-columns:42px repeat(7,minmax(68px,1fr));min-width:518px}.week-title{font-size:20px}}
+@media(max-width:720px){.overdue-heading{align-items:flex-start}.overdue-heading h2{font-size:16px}.overdue-heading p{font-size:12px}.overdue-item{flex-basis:min(260px,82vw)}.attachment-row{align-items:flex-start}.attachment-actions{align-self:center}.wcard{height:62vh;min-height:300px;max-height:calc(100dvh - 215px);padding:0 8px 8px}.wk-h,.ad,.wg{grid-template-columns:26px repeat(7,minmax(0,1fr));min-width:0}.week-title{font-size:20px}}
 @media(max-height:520px){.wcard{height:calc(100dvh - 155px);min-height:170px;max-height:calc(100dvh - 155px)}.wh{padding:1px}.wh b{width:31px;height:31px;line-height:31px;font-size:18px}.wk-h{padding-bottom:2px}.ad{min-height:26px;padding-bottom:3px}.ad>.al{font-size:9px;padding:3px 3px 0 0}.ad>div{gap:1px;padding:0 1px}.ad .ci{font-size:10px;line-height:1.15;padding:1px 3px}.sth .wk-h .wh{font-size:10px}.cn{margin-bottom:7px}.top{margin-bottom:12px}main{padding-top:14px}}
 @media(prefers-reduced-motion:reduce){.overdue-item{animation:none!important}.mini-confetti-burst{display:none!important}.page.on,.page-enter,.celebrate.on,.celebrate-content{animation:none!important}html{scroll-behavior:auto}}
 
@@ -341,7 +341,7 @@ button,.btn,.bt,.bt2,.ib,.ni,.row,.ring-clickable,.tk{transition:background-colo
 @media(prefers-reduced-motion:reduce){.cyber-cat-sweep .cat-paw,.cyber-cat-sweep .cat-arm,.cyber-cat-sweep .cat-body{animation:none!important;transform:none!important}.cyber-cat-sweep .cat-paw{left:0}}
 
 
-/* Wild Workspace v2.9 — interaction polish + PWA layout */
+/* Wild Workspace v2.10 — interaction polish + PWA layout */
 .cloud-account-actions{display:flex;align-items:center;justify-content:flex-start;width:100%;margin:14px 0 10px}
 .cloud-account-actions .btn{width:min(100%,340px);min-height:46px;height:auto;justify-content:center;padding:12px 18px;line-height:1.25;text-align:center;white-space:normal;border-radius:16px}
 @media(max-width:540px){.cloud-account-actions .btn{width:100%}}
@@ -382,6 +382,84 @@ button,.btn,.bt,.bt2,.ib,.ni,.row,.ring-clickable,.tk{transition:background-colo
 @keyframes catSparkV29{0%,47%,78%,100%{opacity:0;transform:scale(.4) rotate(-20deg)}56%,66%{opacity:1;transform:scale(1.1) rotate(12deg)}}
 @keyframes taskSweepAwayV29{0%{opacity:1;transform:translateX(0) scale(1)}18%{opacity:1;transform:translateX(2vw) scale(.99)}65%{opacity:.88;transform:translateX(72vw) scale(.94)}100%{opacity:0;transform:translateX(108vw) scale(.9)}}
 @media(prefers-reduced-motion:reduce){.cyber-cat-sweep .cat-paw,.cyber-cat-sweep .cat-arm,.cyber-cat-sweep .cat-body,.cyber-cat-sweep:after,.cyber-cat-sweep .cat-spark{animation:none!important;transform:none!important}.task-sweeping{animation:none!important;opacity:0!important}}
+
+
+/* v2.10 — calm calendar, responsive layout and cozy details */
+html,body{max-width:100%;overflow-x:hidden}
+main,.grid,.card,.page{min-width:0}
+.card{overflow-wrap:anywhere}
+.wcard{border:1px solid color-mix(in srgb,var(--ol) 48%,transparent);border-radius:24px;box-shadow:0 8px 28px rgba(0,0,0,.055)}
+.wk-h .wh{padding:7px 2px 8px;border-radius:14px 14px 8px 8px}
+.wh b{transition:background-color .2s ease,transform .2s ease}
+.wh:active b{transform:scale(.94)}
+.ad>div:not(.al){border-radius:12px;margin:3px 1px 0;padding:3px}
+.ad .ci{max-width:100%;border-radius:8px}
+.ad .ci.mr{display:block;width:100%;padding:4px 3px;background:transparent;border:0;color:var(--p);text-align:left;cursor:pointer;font:500 10px/1.25 "Roboto Flex",sans-serif}
+.ad .ci.mr:hover{background:var(--s3)}
+.we{border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.08);padding:4px 6px}
+.we:focus-visible{outline:2px solid var(--tx);outline-offset:1px}
+.page,.card,.md{overflow-wrap:anywhere}
+.fr,.fr3,.sr,.archive-head,.cn{min-width:0}
+.fl input,.fl select,.fl textarea{max-width:100%;min-width:0}
+.cozy-cat-piano{width:100%;display:grid;grid-template-columns:38px 62px minmax(0,1fr) 18px;align-items:center;gap:9px;margin-top:15px;padding:10px 11px;border:1px solid color-mix(in srgb,#e7b59a 34%,var(--ol));border-radius:18px;background:linear-gradient(115deg,color-mix(in srgb,#efc7a7 14%,var(--s2)),color-mix(in srgb,#a9c9bb 12%,var(--s2)));color:var(--tx);text-align:left;cursor:pointer;overflow:hidden}
+.cozy-cat-piano:hover{border-color:color-mix(in srgb,#e7b59a 72%,var(--ol));background:linear-gradient(115deg,color-mix(in srgb,#efc7a7 20%,var(--s2)),color-mix(in srgb,#a9c9bb 16%,var(--s2)))}
+.cozy-cat-pianist{position:relative;display:grid;place-items:center;font-size:31px;line-height:1;transform-origin:50% 90%;animation:cozyCatSway 3.2s ease-in-out infinite}
+.cozy-cat-paw{position:absolute;right:-2px;bottom:-2px;font-size:13px;transform-origin:15% 80%;animation:cozyPawTap .72s ease-in-out infinite alternate}
+.cozy-piano{position:relative;display:flex;flex-direction:column;justify-content:flex-end;height:31px;padding-top:3px}
+.cozy-piano-top{display:block;height:5px;border-radius:4px 4px 1px 1px;background:linear-gradient(90deg,#bb8068,#8f5d4c);box-shadow:inset 0 1px rgba(255,255,255,.22)}
+.cozy-piano-keys{display:flex;height:18px;border:1px solid #8a7367;border-top:0;border-radius:0 0 3px 3px;background:#f8eee2;overflow:hidden}
+.cozy-piano-keys i{position:relative;display:block;flex:1;min-width:0;border-right:1px solid #b9a89b;background:#fffaf2;animation:cozyKeyTap 1.4s ease-in-out infinite}
+.cozy-piano-keys i:nth-child(2n){animation-delay:.22s}.cozy-piano-keys i:nth-child(3n){animation-delay:.48s}
+.cozy-piano-keys b{position:absolute;top:3px;left:22%;width:8%;height:8px;background:#62564f;border-radius:0 0 2px 2px;box-shadow:9px 0 #62564f,18px 0 #62564f;pointer-events:none}
+.cozy-cat-copy{display:block;min-width:0}
+.cozy-cat-copy b{display:block;font-size:12px;font-weight:650}
+.cozy-cat-copy small{display:block;margin-top:3px;font-size:10px;line-height:1.3;color:var(--tx2);overflow-wrap:anywhere}
+.cozy-cat-piano>.i{font-size:17px;color:color-mix(in srgb,#c48e76 70%,var(--p))}
+@keyframes cozyCatSway{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-2px) rotate(2deg)}}
+@keyframes cozyPawTap{from{transform:rotate(-12deg) translateY(0)}to{transform:rotate(24deg) translateY(2px)}}
+@keyframes cozyKeyTap{0%,100%{filter:brightness(1)}48%{filter:brightness(.88)}}
+.ov.quick-add-overlay{align-items:flex-end;justify-content:center;padding:0 16px}
+.ov.quick-add-overlay .md{width:min(580px,100%);max-height:min(88dvh,720px);overflow:auto;border-radius:26px 26px 0 0;padding:24px 22px calc(22px + env(safe-area-inset-bottom,0px));transform-origin:bottom center;box-shadow:0 -18px 60px rgba(0,0,0,.22)}
+.ov.quick-add-overlay.on .md{animation:quickAddSheetIn .38s cubic-bezier(.18,.78,.24,1) both}
+@keyframes quickAddSheetIn{from{opacity:.8;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:720px){
+  .app{min-width:0}
+  main{padding-left:12px;padding-right:12px}
+  .grid{gap:12px}
+  .card{padding:16px}
+  .wcard{width:100%;min-width:0;overflow-x:hidden;scrollbar-width:none;padding:0 4px 8px}
+  .wcard::-webkit-scrollbar{display:none}
+  .wk-h,.ad,.wg{grid-template-columns:26px repeat(7,minmax(0,1fr));min-width:0;width:100%;gap:0}
+  .wk-h .wh{font-size:10px;padding:5px 0}
+  .wk-h .wh b{width:29px;height:29px;line-height:29px;font-size:15px}
+  .ad{padding-bottom:5px}
+  .ad>.al{font-size:0;padding:4px 0 0;text-align:center}
+  .ad>.al::before{content:"☀";font-size:12px}
+  .ad>div:not(.al){padding:2px 1px;gap:2px;margin:2px 0 0}
+  .ad .ci{font-size:8.5px;line-height:1.15;padding:2px;white-space:normal;overflow-wrap:anywhere;border-left-width:2px;border-radius:6px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+  .ad .ci.mr{display:block;-webkit-line-clamp:unset;font-size:8px;padding:3px 1px;white-space:normal}
+  .tcol .hr{font-size:8px;padding-right:3px;transform:translateY(-6px)}
+  .wc{min-width:0}
+  .we{font-size:9px;line-height:1.15;padding:2px 2px;border-radius:7px;overflow-wrap:anywhere}
+  .we small{font-size:8px;line-height:1.1;white-space:normal;overflow-wrap:anywhere}
+  .cn{gap:5px}
+  .cozy-cat-piano{grid-template-columns:34px 54px minmax(0,1fr) 16px;gap:7px;padding:9px}
+  .cozy-cat-pianist{font-size:28px}
+  .cozy-piano{height:28px}
+  .cozy-piano-keys{height:16px}
+  .ov.quick-add-overlay{padding:0}
+  .ov.quick-add-overlay .md{border-radius:24px 24px 0 0;padding:22px 18px calc(18px + env(safe-area-inset-bottom,0px))}
+}
+@media(max-width:390px){
+  .cozy-cat-piano{grid-template-columns:30px 47px minmax(0,1fr) 14px;gap:6px;padding:8px}
+  .cozy-cat-copy b{font-size:11px}
+  .cozy-cat-copy small{font-size:9px}
+  .we small{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .cozy-cat-pianist,.cozy-cat-paw,.cozy-piano-keys i{animation:none!important}
+  .ov.quick-add-overlay.on .md{animation:none!important;transform:none!important}
+}
 
 </style>
 </head>
@@ -520,7 +598,7 @@ T.forEach(x=>{const start=pd(x.s0||x.planDate||x.d),end=pd(x.d||x.s0||x.planDate
 function dayLoad(d){let v=evHrs(d);T.forEach(x=>{const a=pd(x.s0||x.planDate||x.d),z=pd(x.d||x.s0||x.planDate);if(d>=a&&d<=z)v+=Math.max(0,Number(x.h)||0)/(Math.round((+z-+a)/864e5)+1)});return v}
 function chip(d){const n=days(d);const l=n<0?"просрочено "+(-n)+" дн.":n===0?"сегодня":n===1?"завтра":"через "+n+" дн.";return `<span class="chip ${n<=1?"hot":n<=4?"soon":""}">${l}</span>`}
 function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.k);toast.k=setTimeout(()=>t.classList.remove("on"),2200)}
-const openM=h=>{$("md").innerHTML=h;const welcome=$("md").querySelector(".welcome");$("ov").classList.toggle("welcome-overlay",!!welcome);document.body.classList.toggle("welcome-lock",!!welcome);$("ov").classList.add("on")},closeM=()=>{$("ov").classList.remove("on");$("ov").classList.remove("welcome-overlay");document.body.classList.remove("welcome-lock")};
+const openM=h=>{$("md").innerHTML=h;const welcome=$("md").querySelector(".welcome"),quickAdd=!!$("md").querySelector(".quick-add-actions");$("ov").classList.toggle("welcome-overlay",!!welcome);$("ov").classList.toggle("quick-add-overlay",quickAdd);document.body.classList.toggle("welcome-lock",!!welcome);$("ov").classList.add("on")},closeM=()=>{$("ov").classList.remove("on");$("ov").classList.remove("welcome-overlay","quick-add-overlay");document.body.classList.remove("welcome-lock")};
 const recTxt=e=>({none:"Не повторяется",day:"Каждый день",week:"Каждую неделю: "+(e.wd||[]).map(i=>DN[i-1]).join(", "),biweek:"Раз в 2 недели: "+(e.wd||[]).map(i=>DN[i-1]).join(", "),month:"Каждый месяц",year:"Каждый год"}[e.rec])+(e.until?" до "+fmt(pd(e.until),{day:"numeric",month:"short",year:"numeric"}):"");
 const kv=(l,v)=>v?`<div class="dr"><span>${l}</span><div>${v}</div></div>`:"";
 const linkH=a=>(a||[]).map(l=>/^https?:\/\//i.test(l)?`<a href="${esc(l)}" target="_blank" rel="noopener" style="color:var(--p)">${esc(l)}</a>`:`<code>${esc(l)}</code>`).join("<br>");
@@ -629,11 +707,20 @@ function launchCatSweep(anchor,done){if(!anchor||window.matchMedia("(prefers-red
 function completeTaskWithCat(x,anchor,opts={}){if(!x||x.s==="done")return;const before=completionSnapshot();spawnMiniConfetti(anchor);launchCatSweep(anchor,()=>{x.s="done";x.completedAt=new Date().toISOString();x.updatedAt=x.completedAt;save();if(opts.closeModal)closeM();all();if(opts.celebration){showCelebration("Ты справился! 🎉","Эта задача больше не висит над тобой. Спасибо, что вернулся к ней — это тоже победа.")}else{toast("Киберкот убрал задачу в архив 🐾");maybeCelebrate(before)}})}
 
 function spawnMiniConfetti(anchor){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;let r;if(anchor&&anchor.getBoundingClientRect)r=anchor.getBoundingClientRect();else return;const burst=document.createElement("span");burst.className="mini-confetti-burst";burst.style.left=(r.left+r.width/2)+"px";burst.style.top=(r.top+r.height/2)+"px";burst.innerHTML=Array.from({length:7},(_,i)=>`<i style="--h:${[25,48,145,178,205,285,340][i]} ;--dx:${Math.round(Math.cos(i*Math.PI*2/7)*28)}px;--dy:${Math.round(Math.sin(i*Math.PI*2/7)*25)}px;--r:${i*51}deg"></i>`).join("");document.body.appendChild(burst);setTimeout(()=>burst.remove(),850)}
+function addCozyCatWidget(){
+const target=$("focus");
+if(!target||target.querySelector("[data-cat-piano]"))return;
+target.insertAdjacentHTML("beforeend",`<button type="button" class="cozy-cat-piano" data-cat-piano aria-label="Поговорить с котиком за пианино" title="Нажми, чтобы услышать доброе слово">
+<span class="cozy-cat-pianist" aria-hidden="true">🐈‍⬛<span class="cozy-cat-paw">🐾</span></span>
+<span class="cozy-piano" aria-hidden="true"><span class="cozy-piano-top"></span><span class="cozy-piano-keys"><i></i><i></i><i></i><i></i><i></i><i></i><b></b></span></span>
+<span class="cozy-cat-copy"><b>Мяу-пауза</b><small>Котик играет, ты выдыхаешь</small></span><span class="i">music_note</span></button>`);
+}
 function renderFocus(){const hp=H.reduce((a,h)=>a+Math.min(h.cnt,h.goal),0),hg=H.reduce((a,h)=>a+h.goal,0);
-const wt=T.filter(x=>isoWeek(pd(x.planDate||x.d))===WK),wd2=wt.filter(x=>x.s==="done").length,tot=hg+wt.length,dn=hp+wd2,pc=tot?Math.round(dn/tot*100):0;
+const wt=T.filter(x=>isoWeekKey(pd(x.planDate||x.d))===isoWeekKey(today)),wd2=wt.filter(x=>x.s==="done").length,tot=hg+wt.length,dn=hp+wd2,pc=tot?Math.round(dn/tot*100):0;
 const em=["😖","😕","😐","🙂","😄","🥳"][pc>=100?5:Math.floor(pc/20)],L=loadOf(WK),l=lvl(L.v);$("wkc").className="card c4 l"+l;
 const hs=H.map((h,i)=>`<div class="habit-item"><div class="row habit-check-row ${h.cnt>=h.goal?"done":""}" data-h="${i}" role="button" tabindex="0" title="Нажми, чтобы отметить прогресс"><span class="chk"><span class="i">check</span></span><span class="dot" style="background:var(--p)"></span><span class="nm">${esc(h.t)}<small>${Math.min(h.cnt,h.goal)} из ${h.goal} на этой неделе · нажми, чтобы отметить</small></span><span class="pips">${Array.from({length:h.goal},(_,k)=>`<b class="${k<h.cnt?"on":""}"></b>`).join("")}</span></div><button type="button" class="habit-edit" data-edit-habit="${esc(h.id)}" title="Настроить привычку" aria-label="Настроить привычку ${esc(h.t)}"><span class="i">more_horiz</span></button></div>`).join("");
-$("focus").innerHTML=`<div class="wtop"><span class="emo">${em}</span><div><div class="big">${pc}%</div><span class="chip lc">${["Лёгкая","Средняя","Высокая"][l]} нагрузка</span></div></div><div class="bar"><i style="width:${pc}%"></i></div><div class="kv"><span>Нагрузка</span><b>${Math.round(L.v)} ч</b></div><div class="kv"><span>Сделано</span><b>${dn} из ${tot}</b></div><div class="habit-section-head"><div class="sub2">Привычки <span class="habit-caption">· маленькие повторения тоже считаются</span></div><button type="button" class="habit-add" data-addhabit><span class="i">add</span> Добавить</button></div>${hs||`<div class="habit-empty">🌱 Здесь будут твои привычки — например, читать 10 минут или планировать завтрашний день.</div>`}`}
+$("focus").innerHTML=`<div class="wtop"><span class="emo">${em}</span><div><div class="big">${pc}%</div><span class="chip lc">${["Лёгкая","Средняя","Высокая"][l]} нагрузка</span></div></div><div class="bar"><i style="width:${pc}%"></i></div><div class="kv"><span>Нагрузка</span><b>${Math.round(L.v)} ч</b></div><div class="kv"><span>Сделано</span><b>${dn} из ${tot}</b></div><div class="habit-section-head"><div class="sub2">Привычки <span class="habit-caption">· маленькие повторения тоже считаются</span></div><button type="button" class="habit-add" data-addhabit><span class="i">add</span> Добавить</button></div>${hs||`<div class="habit-empty">🌱 Здесь будут твои привычки — например, читать 10 минут или планировать завтрашний день.</div>`}`;
+addCozyCatWidget()}
 function formHabit(id){const h=H.find(x=>String(x.id)===String(id));const o=h||{t:"",goal:3,cnt:0};openM(`<div class="modal-eyebrow"><span class="i">spa</span> ПРИВЫЧКИ</div><h3>${h?"Настроить привычку":"Добавить привычку"}</h3><p class="modal-hint">Выбери небольшое действие и комфортную частоту. Не нужно делать всё каждый день 💚</p><label class="fl">Название<input id="habitTitle" maxlength="70" value="${esc(o.t)}" placeholder="Например, читать 10 минут" autocomplete="off"></label><label class="fl">Цель в неделю<input id="habitGoal" type="number" min="1" max="7" step="1" value="${Math.max(1,Math.min(7,+o.goal||3))}"></label><div class="act"><button type="button" class="btn n o" data-close>Отмена</button>${h?`<button type="button" class="btn n d" data-deletehabit="${esc(h.id)}">Удалить</button>`:""}<button type="button" class="btn n" data-savehabit="${h?esc(h.id):""}">Сохранить</button></div>`);setTimeout(()=>$('habitTitle')?.focus(),40)}
 function renderHomeList(){
 const ms=ds(mon),su=ds(addD(mon,6)),q=$("q").value.trim().toLowerCase();
@@ -679,6 +766,13 @@ let PG="home",BK="all",VW="list",HOME_VW="board",CM=new Date(today.getFullYear()
 let CV="month",CW=mon,DS0=7;const HH=48,pad2=n=>String(n).padStart(2,"0");
 function calTop(em,title){const wk=CV==="week";return `<div class="cn"><h3>${em} ${title}</h3><div class="seg" style="margin:0 8px 0 0"><button data-cv="month" class="${wk?"":"on"}">Месяц</button><button data-cv="week" class="${wk?"on":""}">Неделя</button></div><button class="ib" data-mv="-1" title="Раньше"><span class="i">chevron_left</span></button><button class="ib" data-mv="0" title="Сегодня"><span class="i">today</span></button><button class="ib" data-mv="1" title="Позже"><span class="i">chevron_right</span></button></div>`}
 const tkChip=(x,k)=>`<div class="ci tk2 ${x.s==="done"?"dn":""}" data-ot="${x.id}" style="--c:${BL[x.b]?.c||"var(--p)"}" title="${esc(x.t)} · дедлайн ${x.d}">${x.d===k&&(x.planDate||x.d)!==k?"⌛":"⚑"} ${esc(x.t)}</div>`;
+function allDayColumn(d){
+const k=ds(d);
+const items=holOn(d).map(x=>`<div class="ci hl" data-oh="${x.id}">🎉 ${esc(x.t)}</div>`)
+.concat(evOn(d).filter(e=>e.allDay).map(e=>`<div class="ci" data-oe="${e.id}" data-od="${k}" style="--c:${ET[e.k]?.c||ET.work.c}" title="${esc(e.t)}">${esc(e.t)}</div>`))
+.concat(T.filter(x=>(x.planDate||x.d)===k||x.d===k).map(x=>tkChip(x,k)));
+return items.slice(0,3).join("")+(items.length>3?`<button type="button" class="ci mr" data-day="${k}" aria-label="Показать ещё ${items.length-3} элементов">ещё ${items.length-3}</button>`:"")
+}
 const calNote=`<div class="note"><span class="i" style="font-size:18px">info</span>Тёплым фоном отмечены дни без учёбы и работы. ⚑ — задачи со сроком, 🎉 — праздники.</div>`;
 function renderCal(){if(CV==="week")renderWeek();else renderMonth()}
 function renderMonth(){const y=CM.getFullYear(),m=CM.getMonth(),off=(new Date(y,m,1).getDay()+6)%7,cells=Math.ceil((off+new Date(y,m+1,0).getDate())/7)*7;
@@ -690,7 +784,7 @@ $("pg-cal").innerHTML=h+`</div>`+calNote}
 function renderWeek(){const dd=Array.from({length:7},(_,i)=>addD(CW,i)),ev=dd.map(evOn);const a=0,z=24;DS0=a;
 const nw=new Date(),nh=nw.getHours()+nw.getMinutes()/60,tt=d=>d.getTime()===today.getTime(),off=i=>!ev[i].some(e=>e.k==="study"||e.k==="work");
 let h=calTop(season(addD(CW,3)),fmt(CW,{day:"numeric",month:"short"})+" – "+fmt(addD(CW,6),{day:"numeric",month:"short",year:"numeric"}))+`<div class="wcard" id="wcard"><div class="sth"><div class="wk-h"><div></div>${dd.map((d,i)=>`<div class="wh ${tt(d)?"t":""}" data-day="${ds(d)}">${DN[i]}<b>${d.getDate()}</b></div>`).join("")}</div>`;
-h+=`<div class="ad"><div class="al">весь день</div>${dd.map((d,i)=>`<div class="${off(i)?"off":""}">${holOn(d).map(x=>`<div class="ci hl" data-oh="${x.id}">🎉 ${esc(x.t)}</div>`).join("")}${ev[i].filter(e=>e.allDay).map(e=>`<div class="ci" data-oe="${e.id}" data-od="${ds(d)}" style="--c:${ET[e.k].c}" title="${esc(e.t)}">${esc(e.t)}</div>`).join("")}${T.filter(x=>(x.planDate||x.d)===ds(d)||x.d===ds(d)).map(x=>tkChip(x,ds(d))).join("")}</div>`).join("")}</div>`;
+h+=`<div class="ad"><div class="al">весь день</div>${dd.map((d,i)=>`<div class="${off(i)?"off":""}">${allDayColumn(d)}</div>`).join("")}</div>`;
 h+=`</div><div class="wg"><div class="tcol">${Array.from({length:z-a},(_,i)=>`<div class="hr">${pad2(a+i)}:00</div>`).join("")}</div>${dd.map((d,i)=>{const ln=[],pl=ev[i].filter(e=>!e.allDay).map(e=>{const s=hm(e.a);let q=ln.findIndex(x=>x<=s);if(q<0){q=ln.length;ln.push(0)}ln[q]=hm(e.z);return{e,q}}),L=Math.max(1,ln.length);
 return `<div class="wc ${off(i)?"off":""}" data-col="${ds(d)}" style="height:${(z-a)*HH}px">${pl.map(({e,q})=>`<div class="we" data-oe="${e.id}" data-od="${ds(d)}" style="--c:${ET[e.k].c};top:${(hm(e.a)-a)*HH}px;height:${Math.max(22,dur(e)*HH-2)}px;left:calc(${q*100/L}% + 1px);width:calc(${100/L}% - 3px)">${e.k==="holiday"?"🎉 ":""}${esc(e.t)}<small>${e.allDay?"Весь день":e.a+"–"+e.z}</small></div>`).join("")}${tt(d)&&nh>=a&&nh<z?`<i class="nl" style="top:${(nh-a)*HH}px"></i>`:""}</div>`}).join("")}</div></div>`;
 const oc=$("wcard"),st=oc?oc.scrollTop:null;$("pg-cal").innerHTML=h+calNote;const fresh=$("wcard");requestAnimationFrame(()=>{if(fresh)fresh.scrollTop=st!=null?st:Math.max(0,(window.innerHeight<520?5:7)*HH)})}
@@ -707,7 +801,7 @@ function renderStats(){
 const op=T.filter(x=>x.s!=="done"),done=T.filter(x=>x.s==="done"),dn=done.length,hrs=op.reduce((sum,x)=>sum+(+x.h||0),0),od=op.filter(x=>days(x.d)<0).length;
 const weekStart=ds(mon),weekEnd=ds(addD(mon,6)),doneWeek=done.filter(x=>x.completedAt&&ds(new Date(x.completedAt))>=weekStart&&ds(new Date(x.completedAt))<=weekEnd).length;
 const plannedToday=op.filter(x=>(x.planDate||x.d)===ds(today)).length,activePercent=T.length?Math.round(dn/T.length*100):0;
-const wl=Array.from({length:12},(_,i)=>({w:WK+i,v:loadOf(WK+i).v})),pk=wl.slice().sort((a,b)=>b.v-a.v).slice(0,3),C=["var(--ok)","var(--warn)","var(--hi)"],LD=[LV[0]/7,LV[1]/7];
+const wl=Array.from({length:12},(_,i)=>({w:isoWeek(addD(mon,i*7)),v:loadOf(WK+i).v})),pk=wl.slice().sort((a,b)=>b.v-a.v).slice(0,3),C=["var(--ok)","var(--warn)","var(--hi)"],LD=[LV[0]/7,LV[1]/7];
 const kp=[["Выполнено",activePercent+"%",dn+" из "+T.length+" задач"],["В архиве",dn,"завершённых задач"],["Активные задачи",op.length,"ещё предстоит сделать"],["Просрочено",od,"незавершённых задач"],["Выполнено на неделе",doneWeek,"с известной датой выполнения"],["Запланировано на сегодня",plannedToday,"активных задач"]];
 let m2=`<span></span>`+wl.map(x=>`<span>${x.w}</span>`).join("");
 DN.forEach((n,r)=>{m2+=`<span>${n}</span>`;wl.forEach((x,i)=>{const d=addD(mon,i*7+r),v=dayLoad(d),l=v<LD[0]?0:v<LD[1]?1:2;m2+=`<i title="${fmt(d,{day:"numeric",month:"short"})}: ${v.toFixed(1)} ч" style="${v?`background:${C[l]};opacity:${.35+Math.min(1,v/LD[1])*.65}`:""}"></i>`})});
@@ -746,7 +840,7 @@ $("pg-set").innerHTML=`<section class="card set"><h2><span class="i f">person</s
 <section class="card set"><h2><span class="i f">speed</span>Нагрузка</h2><div class="sr"><div class="nm">Жёлтая неделя от<small>часов в неделю</small></div><input class="nu" type="number" min="5" max="120" data-lv="0" value="${LV[0]}"></div><div class="sr"><div class="nm">Красная неделя от<small>часов в неделю</small></div><input class="nu" type="number" min="5" max="140" data-lv="1" value="${LV[1]}"></div></section>
 <section class="card set"><h2><span class="i f">cloud_sync</span>Аккаунт и синхронизация</h2><p class="settings-copy">Создай аккаунт или войди, чтобы сохранить задачи и продолжить на другом устройстве. Подключение уже настроено — адрес и ключ проекта вводить не нужно.</p><p class="settings-copy">Перед первым использованием облака один раз выполни <code>supabase-setup.sql</code> в SQL Editor проекта: этот файл настраивает таблицу, права доступа и приватное хранилище вложений.</p><div class="cloud-status">${cloudStatus}</div>
 ${signed?`<div class="cloud-auth-form"><p>Ты вошёл как <b>${esc(AUTH.user.email||"")}</b>.</p><div class="act"><button type="button" class="btn n o" data-cloud="sync"><span class="i">sync</span> Синхронизировать сейчас</button><button type="button" class="btn n d" data-cloud="logout">Выйти</button></div></div>`:`<div class="cloud-account-actions"><button type="button" class="btn n t" data-cloud="auth"><span class="i">account_circle</span> Создать аккаунт или войти</button></div><p class="settings-copy">При включённом подтверждении почты Supabase пришлёт письмо для активации.</p>`}
-</section><section class="card set"><h2><span class="i f">database</span>Данные</h2><div class="sr"><div class="nm">Резервная копия<small>JSON — задачи, мероприятия, блоки и настройки; .ics — календарь для импорта</small></div><button class="bt2" id="ex1">Скачать JSON</button><button class="bt2" id="ex2">Скачать .ics для календаря</button></div><div class="sr"><div class="nm">Импорт<small>восстановить ранее выгруженный JSON</small></div><label class="bt2">Выбрать файл<input type="file" id="imp" accept=".json,application/json" hidden></label></div><div class="sr"><div class="nm">Сброс<small>удалит задачи, мероприятия, привычки, пользовательские настройки и локальные файлы; запустит чистое знакомство</small></div><button class="bt2 danger-text" id="rs">Сбросить данные</button></div></section><section class="card set"><h2><span class="i f">info</span>О приложении</h2><p class="app-about-copy"><strong>Wild Workspace</strong> — личное пространство для планов, задач и маленьких побед.</p><div class="sr"><div class="nm">Версия приложения<small>Текущая сборка интерфейса</small></div><span class="app-version">v2.9.0</span></div></section><footer class="settings-footer">by <strong>Victor Wild</strong> · <a href="mailto:itsvictorwild@gmail.com">itsvictorwild@gmail.com</a></footer>`}
+</section><section class="card set"><h2><span class="i f">database</span>Данные</h2><div class="sr"><div class="nm">Резервная копия<small>JSON — задачи, мероприятия, блоки и настройки; .ics — календарь для импорта</small></div><button class="bt2" id="ex1">Скачать JSON</button><button class="bt2" id="ex2">Скачать .ics для календаря</button></div><div class="sr"><div class="nm">Импорт<small>восстановить ранее выгруженный JSON</small></div><label class="bt2">Выбрать файл<input type="file" id="imp" accept=".json,application/json" hidden></label></div><div class="sr"><div class="nm">Сброс<small>удалит задачи, мероприятия, привычки, пользовательские настройки и локальные файлы; запустит чистое знакомство</small></div><button class="bt2 danger-text" id="rs">Сбросить данные</button></div></section><section class="card set"><h2><span class="i f">info</span>О приложении</h2><p class="app-about-copy"><strong>Wild Workspace</strong> — личное пространство для планов, задач и маленьких побед.</p><div class="sr"><div class="nm">Версия приложения<small>Текущая сборка интерфейса</small></div><span class="app-version">v2.10.0</span></div></section><footer class="settings-footer">by <strong>Victor Wild</strong> · <a href="mailto:itsvictorwild@gmail.com">itsvictorwild@gmail.com</a></footer>`}
 function closestBlockColor(hex){const rgb=v=>[1,3,5].map(i=>parseInt((v||"#86ecc9").slice(i,i+2),16)||0);const a=rgb(hex);return BLOCK_PALETTE.slice().sort((x,y)=>{const d=c=>rgb(c).reduce((n,v,i)=>n+(v-a[i])**2,0);return d(x)-d(y)})[0]}
 function formBlock(key){const b=key?BL[key]:null;SELECTED_BLOCK_COLOR=BLOCK_PALETTE.includes(b?.c)?b.c:closestBlockColor(b?.c);const palette=BLOCK_PALETTE.map(c=>`<button type="button" class="block-color-option ${c===SELECTED_BLOCK_COLOR?"on":""}" data-blockcolor="${c}" style="--c:${c}" title="${c}" aria-label="Выбрать цвет ${c}" aria-pressed="${c===SELECTED_BLOCK_COLOR}"></button>`).join("");openM(`<div class="modal-eyebrow"><span class="i">widgets</span> ПЕРСОНАЛИЗАЦИЯ</div><h3>${b?"Изменить блок":"Новый блок"}</h3><label class="fl">Название<input id="bf_name" maxlength="36" value="${esc(b?.n||"")}" placeholder="Например, Проекты"></label><div class="fl">Цвет блока · выбери один из 16 оттенков<div class="block-palette">${palette}</div></div><div class="act"><button type="button" class="btn n o" data-close>Отмена</button><button type="button" class="btn n" data-saveblock="${key||""}">Сохранить блок</button></div>`)}
 function confirmDeleteBlock(key){const b=BL[key];if(!b)return;const other=Object.entries(BL).filter(([k])=>k!==key);if(!other.length)return toast("Нельзя удалить последний блок");const count=T.filter(x=>x.b===key).length;openM(`<div class="modal-eyebrow"><span class="i">delete</span> УПРАВЛЕНИЕ БЛОКАМИ</div><h3>Удалить «${esc(b.n)}»?</h3><p class="modal-hint">${count?`В этом блоке ${count} задач. Выбери, куда их перенести, чтобы сохранить все данные.`:"Блок будет удалён. Сами задачи не потеряются."}</p>${count?`<label class="fl">Перенести задачи в<select id="deleteBlockTarget">${opt(other.map(([k,v])=>[k,v.n]),other[0][0])}</select></label>`:""}<div class="act"><button type="button" class="btn n o" data-close>Оставить</button><button type="button" class="btn n d" data-confirm-delblock="${key}">Удалить блок</button></div>`)}
@@ -783,7 +877,7 @@ throw new Error("Данные одновременно изменились на
 function applyWorkspacePayload(p){if(!p||!Array.isArray(p.T))throw new Error("В облаке не найден корректный набор данных.");CLOUD.applying=true;SYNC_TOMBSTONES=mergeTombstoneMaps(SYNC_TOMBSTONES,p._deleted);T=p.T;E=Array.isArray(p.E)?p.E:[];HD=Array.isArray(p.HD)?p.HD:HD;if(p.BL&&typeof p.BL==="object"&&Object.keys(p.BL).length)BL=p.BL;if(Array.isArray(p.H))H=p.H;else if(p.H&&typeof p.H==="object"){if(!H.length)H=LEGACY_HABITS.filter(h=>Object.prototype.hasOwnProperty.call(p.H,h.id)).map(h=>({...h,cnt:Math.max(0,Math.min(h.goal,+p.H[h.id]||0))}));else H.forEach(h=>{if(p.H[h.id]!=null)h.cnt=p.H[h.id]})}const settings=p.SET||p.set;if(settings)Object.assign(SET,settings);SET.cloudUrl=SUPABASE_URL;SET.cloudKey=SUPABASE_PUBLISHABLE_KEY;SET.lv=SET.lv||[LV[0],LV[1]];LV[0]=+SET.lv[0]||40;LV[1]=+SET.lv[1]||55;T.forEach(x=>{if(!Array.isArray(x.subtasks))x.subtasks=[];if(!Array.isArray(x.links))x.links=[];if(!Array.isArray(x.attachments))x.attachments=[];if(!BL[x.b])x.b=Object.keys(BL)[0]});E.forEach(normalizeEventType);T.forEach(x=>{if(!x.planDate)x.planDate=(x.s0&&x.s0<=ds(today)&&x.d>=ds(today)&&x.s!=="done")?ds(today):(x.s0||x.d)});applyAcc();applyTheme();saveSet();save();all();CLOUD.applying=false}
 async function startCloudSession(session){AUTH=session;try{localStorage.setItem(CLOUD_SESSION_KEY,JSON.stringify(AUTH))}catch(e){}CLOUD.enabled=false;let rows;try{rows=await cloudApi("/rest/v1/workspace_data?select=payload,updated_at&user_id=eq."+encodeURIComponent(AUTH.user.id)+"&limit=1",{method:"GET"})}catch(err){AUTH=null;try{localStorage.removeItem(CLOUD_SESSION_KEY)}catch(e){}throw err}
 if(rows&&rows.length&&rows[0].payload){PENDING_CLOUD_DATA=rows[0].payload;const stamp=rows[0].updated_at?new Date(rows[0].updated_at).toLocaleString("ru-RU"):"";openM(`<div class="modal-eyebrow"><span class="i">cloud_sync</span> ДАННЫЕ АККАУНТА</div><h3>С чего продолжим?</h3><p class="modal-hint">В облаке уже есть сохранённая версия${stamp?` от ${esc(stamp)}`:""}. Выбери, какие данные оставить. Это поможет избежать случайной потери изменений.</p><div class="cloud-choice-grid"><button type="button" class="cloud-choice" data-cloud-choice="download"><span class="i">cloud_download</span><b>Загрузить облачную копию</b><small>Заменит данные этого устройства данными аккаунта.</small></button><button type="button" class="cloud-choice" data-cloud-choice="upload"><span class="i">cloud_upload</span><b>Оставить этот вариант</b><small>Загрузит текущие данные устройства в облако.</small></button></div>`)}else{await cloudSave();CLOUD.enabled=true;renderSet();toast("Аккаунт подключён · синхронизация включена")}}
-async function handleCloudChoice(choice){try{if(choice==="download"){applyWorkspacePayload(PENDING_CLOUD_DATA);await cloudSave()}else if(choice==="upload"){await cloudSave()}PENDING_CLOUD_DATA=null;CLOUD.enabled=true;closeM();all();renderSet();toast("Данные синхронизированы")}catch(e){toast("Синхронизация не выполнена: "+e.message)}}
+async function handleCloudChoice(choice){closeM();try{if(choice==="download"){applyWorkspacePayload(PENDING_CLOUD_DATA);await cloudSave()}else if(choice==="upload"){await cloudSave()}else{return}PENDING_CLOUD_DATA=null;CLOUD.enabled=true;all();renderSet();toast("Данные синхронизированы")}catch(e){toast("Синхронизация не выполнена: "+e.message)}}
 async function handleCloud(action){try{if(action==="auth"){showCloudAuth();return}if(action==="guide"){showCloudGuide();return}if(action==="connect"){cloudConfigFromUI();renderSet();toast("Настройки облака сохранены");return}if(action==="signup"||action==="login"){cloudConfigFromUI();const email=$("cloudEmail")?.value.trim(),password=$("cloudPassword")?.value||"";if(!email||!password)throw new Error("Укажи электронную почту и пароль.");if(password.length<6)throw new Error("Пароль должен содержать не менее 6 символов.");const path=action==="signup"?"/auth/v1/signup":"/auth/v1/token?grant_type=password",result=await cloudApi(path,{method:"POST",body:JSON.stringify({email,password})},true,false);if(result?.access_token&&result?.user){await startCloudSession(result);renderSet();toast(action==="signup"?"Аккаунт создан и подключён":"Вход выполнен")}else{renderSet();toast("Аккаунт создан. Подтверди email, затем войди.")}return}if(action==="sync"){cloudConfigFromUI();await cloudSave();toast("Облачная копия обновлена");return}if(action==="logout"){try{await cloudApi("/auth/v1/logout",{method:"POST"})}catch(e){}AUTH=null;CLOUD.enabled=false;clearTimeout(CLOUD.timer);try{localStorage.removeItem(CLOUD_SESSION_KEY)}catch(e){}renderSet();toast("Вы вышли из аккаунта · локальные данные сохранены");return}}catch(e){console.warn("Wild Workspace account:",e);toast(e.message||"Не удалось выполнить действие")}}
 
 const NAMES={home:"",cal:"Календарь",tasks:"Задачи",archive:"Архив",stats:"Статистика",settings:"Настройки"};
@@ -865,6 +959,7 @@ if(a=g("[data-cloud]")){handleCloud(a.dataset.cloud);return}
 if(a=g("[data-cloud-choice]")){const choice=a.dataset.cloudChoice;handleCloudChoice(choice);return}
 if(a=g("[data-restore-task]")){const x=T.find(y=>String(y.id)===String(a.dataset.restoreTask));if(!x)return;x.s="todo";delete x.completedAt;x.updatedAt=new Date().toISOString();save();all();toast("Задача возвращена в план 🌱");return}
 if(a=g("[data-cat-talk]")){catTalk();return}
+if(g("[data-cat-piano]")){catTalk();return}
 if(a=g("[data-addhabit]")){formHabit();return}
 if(a=g("[data-edit-habit]")){formHabit(a.dataset.editHabit);return}
 if(a=g("[data-savehabit]")){const id=a.dataset.savehabit,title=$("habitTitle").value.trim(),goal=Math.max(1,Math.min(7,parseInt($("habitGoal").value,10)||1));if(!title)return toast("Напиши название привычки");if(id){const h=H.find(x=>String(x.id)===String(id));if(h){Object.assign(h,{t:title,goal,cnt:Math.min(+h.cnt||0,goal),weekKey:isoWeekKey(today),updatedAt:new Date().toISOString()});delete h.b}}else H.push({id:"habit-"+Date.now().toString(36),t:title,goal,cnt:0,weekKey:isoWeekKey(today),updatedAt:new Date().toISOString()});save();closeM();all();toast(id?"Привычка обновлена 🌱":"Привычка добавлена — пусть растёт понемногу 🌱");return}
@@ -948,6 +1043,22 @@ async function restoreCloudSession(){if(!AUTH?.user)return;try{const rows=await 
 
 
 applyAcc();applyTheme();head();all();if(!SET.onboarded)showWelcome();if(AUTH?.user)setTimeout(restoreCloudSession,0);setInterval(()=>{if(AUTH?.user&&CLOUD.enabled&&!CLOUD.applying)restoreCloudSession()},45000)
+</script>
+<script>
+// Native bridge: keep this shared HTML platform-neutral and request Android-only code only in Capacitor.
+if (window.Capacitor?.isNativePlatform?.()) {
+  window.__WW_NATIVE__ = {
+    getPage: () => PG,
+    go: p => go(p),
+    isModalOpen: () => $("ov").classList.contains("on"),
+    isWelcomeOpen: () => $("ov").classList.contains("welcome-overlay"),
+    closeModal: () => closeM()
+  };
+  const nativeBridgeScript = document.createElement("script");
+  nativeBridgeScript.src = "./native-bridge.js";
+  nativeBridgeScript.async = false;
+  document.head.appendChild(nativeBridgeScript);
+}
 </script>
 <script>
 // PWA support. The regular web app continues to work if Service Workers are unavailable.
