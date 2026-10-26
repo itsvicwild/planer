@@ -9,7 +9,7 @@ Wild Workspace is a static HTML/CSS/JavaScript planner. This package includes th
 - Fixed the mobile week view so all seven days fit the screen without horizontal scrolling.
 - The cloud-copy choice dialog now closes immediately after a selection, including when the sync request fails.
 - Added a bottom-sheet entrance animation for quick add, plus a small animated piano cat for a warmer, calmer feel.
-- Fixed weekly progress counting across ISO week-years and made the main HTML source compatible with PWA and Capacitor Android.
+- Fixed weekly progress counting across ISO week-years, corrected week labels near New Year, and made the main HTML source compatible with PWA and Capacitor Android.
 - Added responsive layout safeguards for narrow viewports and reduced-motion preferences.
 
 ## Changes in v2.9.0
