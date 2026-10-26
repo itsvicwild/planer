@@ -37,3 +37,13 @@
 ## Примечание по безопасности
 
 Клиентский HTML содержит только предоставленный publishable key. `service_role` key в HTML не добавлялся. Защита данных зависит от работающих RLS- и Storage-политик; не отключай их и не делай `ww-attachments` публичным.
+
+## v2.9.0 UI + PWA pass (26 Oct 2026)
+
+- [x] Refined the cybercat sweep so the paw reaches the task, performs a brief grab, retracts, and the task is carried away on a matching delay.
+- [x] Made the home-board “Выполнено” drop zone open the archive on click while preserving drag-and-drop completion.
+- [x] Settings account creation/login button now uses a responsive, consistently aligned wrapper.
+- [x] The task-page archive preview is capped at the three most recently completed tasks; “Ещё” opens a dedicated archive screen.
+- [x] Added PWA manifest, 192/512 install icons, scoped Service Worker, app-shell caching, and `.nojekyll` for GitHub Pages.
+- [x] Static QA: both inline scripts and Service Worker pass `node --check`; manifest parses as JSON; all local PWA assets resolve; no duplicate HTML IDs; CSS parses without top-level syntax errors.
+- [ ] Browser-based install/offline end-to-end test after deployment to HTTPS. It should be completed against the published GitHub Pages URL.

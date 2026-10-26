@@ -1,64 +1,40 @@
-# Wild Workspace v2.8.0
+# Wild Workspace v2.9.0 — PWA build
 
-Wild Workspace — персональный планер для задач, мероприятий, проектов и привычек. Приложение работает как статический HTML и публикуется на GitHub Pages без сборки.
+Wild Workspace is a static HTML/CSS/JavaScript planner. This package includes the installable Progressive Web App (PWA) shell for GitHub Pages, plus the current interface fixes.
 
-## Что изменилось в v2.8.0
+## Changes in v2.9.0
 
-- Анимированная длинная лапа киберкота тянется от правого края к карточке задачи и забирает её при завершении.
-- В настройках достаточно нажать «Создать аккаунт или войти»: URL Supabase и публичный ключ уже встроены в HTML, вводить их не нужно.
-- Нагрузка по неделям включает оценочные часы всех задач, в том числе уже выполненных. Поэтому отметка задачи выполненной сама по себе не уменьшает расчётную загрузку.
-- В часы мероприятий входят только события категории «Работа / учёба». Личные события и праздники не увеличивают рабочую нагрузку.
-- Оценка задачи распределяется по всему периоду от даты начала до дедлайна, а не только по периоду от текущей недели.
-- В диаграмме Ганта экранируются имена блоков; значения приоритета нормализуются до допустимого диапазона.
-- Счётчики привычек привязаны к ISO-неделе и автоматически обнуляются при переходе в новую неделю.
-- Синхронизация объединяет задачи, мероприятия, праздники, привычки и пользовательские блоки по `updatedAt`, хранит метки удалений и перед записью сравнивает старое значение `updated_at` облачной записи. Если запись меняется одновременно на другом устройстве, приложение повторяет попытку объединения и не выполняет слепую перезапись.
-- Загрузка вложений в приватное облачное хранилище сообщает об ошибке вместо того, чтобы молча считать загрузку успешной.
+- Reworked the cybercat completion animation into a clearer sequence: reach from the right edge, grab the task, retract while the task is carried away.
+- Clicking the **Выполнено** drop zone on the home weekly board opens the archive. The drop zone still accepts dragged tasks.
+- The **Создать аккаунт или войти** control in Settings has a dedicated responsive wrapper for consistent positioning.
+- The task page shows only the three most recently completed tasks in the archive preview. **Ещё** opens a dedicated archive page with all completed tasks; filters and the restore action remain available.
+- Added a PWA manifest, install icons, a scoped Service Worker, offline app-shell caching and runtime cache support for Google Fonts.
+- Added `.nojekyll` for GitHub Pages.
 
-## Первый запуск и демонстрационные данные
+## Publish on GitHub Pages
 
-На первом запуске приложение показывает примеры, чтобы можно было изучить интерфейс. Чтобы начать с чистого рабочего пространства, открой **Настройки → Сбросить данные**. Сброс очищает локальные задачи, мероприятия, праздники, привычки, пользовательские блоки и локальные файлы. При входе в аккаунт приложение также пытается записать пустое рабочее пространство в облако.
+1. Upload the **contents of this folder** to the root of your GitHub repository (do not upload only the ZIP file).
+2. Make sure `index.html`, `manifest.webmanifest`, `service-worker.js`, `.nojekyll`, and the `icons/` folder are in the publishing root.
+3. Open **Settings → Pages** in GitHub and publish from branch `main`, folder `/(root)`.
+4. Open the HTTPS GitHub Pages address. Service Workers and PWA installation require HTTPS (localhost also works for development).
+5. In Chrome/Edge use the browser's install option; on Android Chrome choose **Install app** or **Add to Home screen**, depending on the browser version.
 
-## Облачный аккаунт и синхронизация
+## Offline behavior and storage
 
-Адрес Supabase и публичный publishable key уже прописаны в приложении. На публичном клиентском HTML допустимо использовать только такой ключ; не добавляй `service_role` или другие секретные ключи.
+The Service Worker caches the app shell so the application can open offline after it has been loaded successfully at least once. The app's current local persistence mechanisms are preserved; this update does not replace the existing data model with IndexedDB. Google Fonts are cached opportunistically when online, and system font fallbacks are used otherwise.
 
-Перед первым использованием облака нужно один раз подготовить базу данных и хранилище:
+Supabase remains an optional online service. Account creation/login, cloud access, and remote attachment operations require an internet connection. The existing account/cloud behavior is preserved in this build.
 
-1. Открой Supabase Dashboard проекта, адрес которого уже задан в приложении.
-2. Перейди в **SQL Editor**.
-3. Открой `supabase-setup.sql`, выполни весь скрипт.
-4. Вернись в Wild Workspace, открой **Настройки → Аккаунт и синхронизация** и выбери **Создать аккаунт или войти**.
-5. Если в проекте включено подтверждение email, подтверди адрес из письма перед входом.
-6. Для синхронизации на другом устройстве используй тот же аккаунт.
+## Local development
 
-SQL настраивает таблицу `public.workspace_data`, включает Row Level Security и создаёт закрытый Storage bucket `ww-attachments` с правилами, ограничивающими доступ файлами текущего пользователя. Не отключай RLS и не делай bucket публичным.
+Serve this directory over HTTP, for example with Python:
 
-Синхронизация сливает отдельные записи, а не просто заменяет весь список целиком. Для каждой записи используется `updatedAt`; удаление помечается tombstone, чтобы запись не появилась снова с другого устройства. При одновременном изменении всей записи приложение сравнивает `updated_at` в запросе обновления и повторяет слияние при конфликте. Это защищает от слепого перезаписывания, но при частых одновременных изменениях нужно повторно запустить синхронизацию и проверить результат.
+```bash
+python -m http.server 8080
+```
 
-Если Storage ещё не настроен, приложение помечает вложения «только на этом устройстве» и показывает предупреждение. Бинарные данные вложений не включаются в JSON-резервную копию; она содержит только записи и метаданные.
+Then open `http://localhost:8080/`. Opening `index.html` directly with `file://` does not enable PWA installation or Service Worker caching.
 
-## Нагрузка
+## Supabase
 
-В недельную нагрузку входят оценки часов всех задач независимо от статуса, распределённые на весь период задачи. Из повторяющихся или разовых мероприятий учитываются только события категории «Работа / учёба». «Личное» и «Праздник» в рабочую нагрузку не входят.
-
-## Резервная копия и календарь
-
-- **JSON** — локальные записи задач, мероприятий, блоков, привычек, настроек и метаданные вложений.
-- **ICS** — файл календаря для ручного импорта в совместимые приложения. Онлайн-интеграции Google Calendar в приложении нет.
-
-## Публикация на GitHub Pages
-
-1. Распакуй архив.
-2. Загрузи файлы из папки в корень GitHub-репозитория: `index.html`, `.nojekyll`, `README.md`, `BUG-TRACKING.md` и `supabase-setup.sql`.
-3. В GitHub открой **Settings → Pages**.
-4. Выбери публикацию из ветки `main` и папку `/ (root)`.
-5. Открой адрес, который выдаст GitHub Pages.
-
-Само создание коммита и публикация в GitHub выполняются владельцем репозитория.
-
-## О приложении
-
-- Название: **Wild Workspace**
-- Версия: **v2.8.0**
-- Автор: **Victor Wild**
-- Контакт: `itsvictorwild@gmail.com`
+The existing Supabase configuration and `supabase-setup.sql` are included. Run that SQL script in the project's SQL Editor once if the cloud tables and private attachment bucket are not configured yet. Never put a `service_role` key into client-side code.
