@@ -178,7 +178,7 @@ main{padding:16px 14px 110px}.c4{grid-column:span 12}.board{grid-template-column
 @keyframes miniConfetti{0%{opacity:0;transform:translate(-50%,-50%) scale(.4) rotate(var(--r))}15%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.8) rotate(calc(var(--r) + 140deg))}}
 
 @media(max-width:1100px){.overdue-wrap{grid-column:span 12}.wcard{height:min(64vh,680px)}}
-@media(max-width:720px){.overdue-heading{align-items:flex-start}.overdue-heading h2{font-size:16px}.overdue-heading p{font-size:12px}.overdue-item{flex-basis:min(260px,82vw)}.attachment-row{align-items:flex-start}.attachment-actions{align-self:center}.wcard{height:62vh;min-height:300px;max-height:calc(100dvh - 215px);padding:0 8px 8px}.wk-h,.ad,.wg{grid-template-columns:42px repeat(7,minmax(68px,1fr));min-width:518px}.week-title{font-size:20px}}
+@media(max-width:720px){.overdue-heading{align-items:flex-start}.overdue-heading h2{font-size:16px}.overdue-heading p{font-size:12px}.overdue-item{flex-basis:min(260px,82vw)}.attachment-row{align-items:flex-start}.attachment-actions{align-self:center}.wcard{height:62vh;min-height:300px;max-height:calc(100dvh - 215px);padding:0 8px 8px}.wk-h,.ad,.wg{grid-template-columns:26px repeat(7,minmax(0,1fr));min-width:0}.week-title{font-size:20px}}
 @media(max-height:520px){.wcard{height:calc(100dvh - 155px);min-height:170px;max-height:calc(100dvh - 155px)}.wh{padding:1px}.wh b{width:31px;height:31px;line-height:31px;font-size:18px}.wk-h{padding-bottom:2px}.ad{min-height:26px;padding-bottom:3px}.ad>.al{font-size:9px;padding:3px 3px 0 0}.ad>div{gap:1px;padding:0 1px}.ad .ci{font-size:10px;line-height:1.15;padding:1px 3px}.sth .wk-h .wh{font-size:10px}.cn{margin-bottom:7px}.top{margin-bottom:12px}main{padding-top:14px}}
 @media(prefers-reduced-motion:reduce){.overdue-item{animation:none!important}.mini-confetti-burst{display:none!important}.page.on,.page-enter,.celebrate.on,.celebrate-content{animation:none!important}html{scroll-behavior:auto}}
 
@@ -801,7 +801,7 @@ function renderStats(){
 const op=T.filter(x=>x.s!=="done"),done=T.filter(x=>x.s==="done"),dn=done.length,hrs=op.reduce((sum,x)=>sum+(+x.h||0),0),od=op.filter(x=>days(x.d)<0).length;
 const weekStart=ds(mon),weekEnd=ds(addD(mon,6)),doneWeek=done.filter(x=>x.completedAt&&ds(new Date(x.completedAt))>=weekStart&&ds(new Date(x.completedAt))<=weekEnd).length;
 const plannedToday=op.filter(x=>(x.planDate||x.d)===ds(today)).length,activePercent=T.length?Math.round(dn/T.length*100):0;
-const wl=Array.from({length:12},(_,i)=>({w:WK+i,v:loadOf(WK+i).v})),pk=wl.slice().sort((a,b)=>b.v-a.v).slice(0,3),C=["var(--ok)","var(--warn)","var(--hi)"],LD=[LV[0]/7,LV[1]/7];
+const wl=Array.from({length:12},(_,i)=>({w:isoWeek(addD(mon,i*7)),v:loadOf(WK+i).v})),pk=wl.slice().sort((a,b)=>b.v-a.v).slice(0,3),C=["var(--ok)","var(--warn)","var(--hi)"],LD=[LV[0]/7,LV[1]/7];
 const kp=[["Выполнено",activePercent+"%",dn+" из "+T.length+" задач"],["В архиве",dn,"завершённых задач"],["Активные задачи",op.length,"ещё предстоит сделать"],["Просрочено",od,"незавершённых задач"],["Выполнено на неделе",doneWeek,"с известной датой выполнения"],["Запланировано на сегодня",plannedToday,"активных задач"]];
 let m2=`<span></span>`+wl.map(x=>`<span>${x.w}</span>`).join("");
 DN.forEach((n,r)=>{m2+=`<span>${n}</span>`;wl.forEach((x,i)=>{const d=addD(mon,i*7+r),v=dayLoad(d),l=v<LD[0]?0:v<LD[1]?1:2;m2+=`<i title="${fmt(d,{day:"numeric",month:"short"})}: ${v.toFixed(1)} ч" style="${v?`background:${C[l]};opacity:${.35+Math.min(1,v/LD[1])*.65}`:""}"></i>`})});
