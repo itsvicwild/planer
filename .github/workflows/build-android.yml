@@ -1,0 +1,99 @@
+name: Build Android APK from shared source
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout shared PWA source
+        uses: actions/checkout@v4
+        with:
+          path: source
+
+      - name: Checkout Android project
+        uses: actions/checkout@v4
+        with:
+          repository: itsvicwild/planer_android
+          ref: main
+          path: android-project
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: android-project/package-lock.json
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Prepare shared web app for Android
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f source/index.html
+          mkdir -p android-project/www
+          cp source/index.html android-project/www/index.html
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file = 'android-project/www/index.html';
+          let html = fs.readFileSync(file, 'utf8');
+          const tag = '<script src="./native-bridge.js"></script>';
+          if (!html.includes(tag)) {
+            const match = html.match(/<\/body\s*>/i);
+            if (!match) throw new Error('Cannot inject Android bridge: </body> not found in index.html');
+            html = html.replace(match[0], tag + '\n' + match[0]);
+          }
+          fs.writeFileSync(file, html);
+          NODE
+
+      - name: Install dependencies
+        working-directory: android-project
+        run: npm install
+
+      - name: Build native bridge
+        working-directory: android-project
+        run: npm run build:native
+
+      - name: Add Android platform if missing
+        working-directory: android-project
+        shell: bash
+        run: |
+          if [ ! -f android/settings.gradle ] && [ ! -f android/settings.gradle.kts ]; then
+            npx cap add android
+          fi
+
+      - name: Sync Capacitor
+        working-directory: android-project
+        run: npx cap sync android
+
+      - name: Apply Android branding
+        working-directory: android-project
+        run: node scripts/apply-android-branding.mjs
+
+      - name: Build debug APK
+        working-directory: android-project
+        run: |
+          chmod +x android/gradlew
+          cd android
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: wild-workspace-android-debug-apk
+          path: android-project/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
