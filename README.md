@@ -1,6 +1,16 @@
-# Wild Workspace v2.9.0 — PWA build
+# Wild Workspace v2.10.0 — PWA build
 
 Wild Workspace is a static HTML/CSS/JavaScript planner. This package includes the installable Progressive Web App (PWA) shell for GitHub Pages, plus the current interface fixes.
+
+## Changes in v2.10.0
+
+- Reworked the week calendar with rounded event chips and a Google Calendar-inspired visual treatment.
+- The all-day lane shows up to three items per day and opens the complete day view for the remaining items.
+- Fixed the mobile week view so all seven days fit the screen without horizontal scrolling.
+- The cloud-copy choice dialog now closes immediately after a selection, including when the sync request fails.
+- Added a bottom-sheet entrance animation for quick add, plus a small animated piano cat for a warmer, calmer feel.
+- Fixed weekly progress counting across ISO week-years, corrected week labels near New Year, and made the main HTML source compatible with PWA and Capacitor Android.
+- Added responsive layout safeguards for narrow viewports and reduced-motion preferences.
 
 ## Changes in v2.9.0
 
