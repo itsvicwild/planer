@@ -1357,6 +1357,27 @@ span.hours-label{display:none!important}
 
 /* Keep Android edge-to-edge system areas on the same background as the app canvas. */
 html{background-color:var(--bg)!important}
+
+/* v4.0.17 — compact task header: search followed by a single add button */
+body:not(.calendar-view-fixed) .top.compact-add-controls>#addT{
+  display:grid!important;place-items:center!important;flex:0 0 42px!important;
+  width:42px!important;height:42px!important;min-width:42px!important;
+  padding:0!important;margin:0!important;border-radius:50%!important;
+  font-size:0!important;order:1!important
+}
+body:not(.calendar-view-fixed) .top.compact-add-controls>#addT .i{
+  display:block!important;font-size:22px!important;line-height:1!important;margin:0!important
+}
+body:not(.calendar-view-fixed) .top.compact-add-controls>#addE{display:none!important}
+@media(max-width:720px){
+  body:not(.calendar-view-fixed) .top.compact-add-controls #srch{
+    order:0!important;flex:1 1 0!important;flex-basis:0!important;
+    width:auto!important;min-width:0!important;margin:0!important
+  }
+  body:not(.calendar-view-fixed) .top.compact-add-controls>#addT{
+    order:1!important;flex:0 0 42px!important;width:42px!important;min-width:42px!important
+  }
+}
 </style>
 </head>
 <body>
