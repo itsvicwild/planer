@@ -84,3 +84,13 @@
 - [x] CSS parses without reported syntax errors; HTML contains no duplicate IDs.
 - [ ] Verify the published update and live Supabase sign-in from the user's physical Android phone.
 
+## Wild Workspace v3.5.4 — calendar, Gantt, swipe and mobile task UI (27 Oct 2026)
+
+- [x] Gantt now has week/day headers, daily separators, a current-day marker, and visually distinct block summary bars.
+- [x] Calendar and task-block swipes use directional exit/entry animations; the reduced-motion preference skips the animation.
+- [x] Calendar opens in Week view by default, including after local reset.
+- [x] Removed the add-task button from the selected-block summary; sub-block add controls remain.
+- [x] Archive preview surface is more muted; mobile block summary stacks its two KPI values side-by-side to reduce height.
+- [x] Inline application JavaScript passed `node --check`; CSS parsed without syntax errors; CSP hashes were refreshed and verified.
+- [ ] Visual validation on a physical mobile device remains pending.
+
