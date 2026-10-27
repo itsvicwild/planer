@@ -32,9 +32,9 @@ jobs:
           const { execFileSync } = require("node:child_process");
 
           const html = fs.readFileSync("index.html", "utf8");
-          const scripts = [...html.matchAll(/<script(?![^>]*\\bsrc=)(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/gi)].map(match => match[1]);
+          const scripts = [...html.matchAll(/<script(?![^>]*\bsrc=)(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(match => match[1]);
           if (scripts.length !== 2) {
-            throw new Error(`Expected 2 inline scripts, found ${scripts.length}`);
+            throw new Error("Expected 2 inline scripts, found " + scripts.length);
           }
 
           const csp = html.match(/<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-([^']+)' 'sha256-([^']+)'/);
@@ -48,7 +48,7 @@ jobs:
           }
 
           scripts.forEach((script, index) => {
-            const path = `/tmp/wild-workspace-inline-${index}.js`;
+            const path = "/tmp/wild-workspace-inline-" + index + ".js";
             fs.writeFileSync(path, script, "utf8");
             execFileSync(process.execPath, ["--check", path], { stdio: "inherit" });
           });
