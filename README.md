@@ -4,17 +4,19 @@ Wild Workspace is a static HTML/CSS/JavaScript planner. This package includes th
 
 ## Changes in v4.0.0
 
+- Expanded the English dictionary for sync history, data safety confirmations, recurring events, habits, overdue tasks, calendar details and dynamic counts/dates.
+
 - Follow-up polish: Settings cards are equal-width on desktop; task priority cycles directly between high/medium/low with color feedback; hour estimates can be adjusted in 0.5-hour increments from the task quick row.
 - Made the Christmas theme icy blue with denser snow particles and cooler ambient glows; removed the obsolete animation explanation from Settings.
 - Expanded English text coverage across calendar, statistics, forms, reminders and sync states; calendar weekday labels now follow the selected locale.
-- Refreshed the Service Worker cache to v4.0.2 after these final v4.0 UI changes.
+- Refreshed the Service Worker cache to v4.0.3 after these final v4.0 UI changes.
 
 - Added Russian/English interface language selection in Settings; the chosen language is stored locally and restored on next launch.
 - Added Halloween and Christmas themes with distinct accent palettes, falling seasonal particles, a themed logo badge, cat costumes, and seasonal cat messages. Light/dark mode remains available under either seasonal theme.
 - Removed the old “Тише: без тряски” setting; overdue tasks retain their visible motion.
 - Reworked habit history on Home into separated weekly chips so week labels and counts are readable.
 - Fixed the desktop navigation rail while the page scrolls.
-- Recalculated and verified the primary script CSP hash; refreshed the Service Worker cache to v4.0.2 so installed PWAs fetch the final v4.0.0 release files.
+- Recalculated and verified the primary script CSP hash; refreshed the Service Worker cache to v4.0.3 so installed PWAs fetch the final v4.0.0 release files.
 
 ## Changes in v3.5.7
 
