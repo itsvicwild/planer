@@ -94,3 +94,14 @@
 - [x] Inline application JavaScript passed `node --check`; CSS parsed without syntax errors; CSP hashes were refreshed and verified.
 - [ ] Visual validation on a physical mobile device remains pending.
 
+## Wild Workspace v3.5.5 — task list, checklist completion and creation form (27 Oct 2026)
+
+- [x] Removed the Tasks-section board/list switch and forced Tasks rendering to list view only; Home board behavior is unchanged.
+- [x] Ticking the final checklist item completes a task with one or more steps, runs the existing completion animation, and archives the task. Existing manually completed tasks remain completed.
+- [x] Saving a task with a non-empty checklist whose steps are all complete marks it done; tasks without checklists are not auto-completed.
+- [x] Removed the task form's Photo shortcut. Image files remain addable through the generic File picker.
+- [x] Importance and person-hour estimate are available as compact top controls; Block and Project fields are always visible.
+- [x] Removed the task archive preview subtitle and softened the archive card and its rows.
+- [x] Inline JavaScript parsed successfully via V8 compilation; CSP hash was recalculated against the complete primary inline script and matched the policy.
+- [ ] Browser/physical-device visual QA remains pending.
+

@@ -1,6 +1,14 @@
-# Wild Workspace v3.5.4 — PWA build
+# Wild Workspace v3.5.5 — PWA build
 
 Wild Workspace is a static HTML/CSS/JavaScript planner. This package includes the installable Progressive Web App (PWA) shell for GitHub Pages.
+
+## Changes in v3.5.5
+
+- Removed the board/list switch from the Tasks section; Tasks now stays in list view while Home's board remains available.
+- Tasks with a checklist are automatically completed when their final step is checked, including when all steps are marked complete while editing and saving the task. This only applies when the checklist contains at least one step.
+- Muted the Tasks archive preview and removed its explanatory subtitle.
+- Simplified task creation/editing: removed the separate Photo shortcut, placed importance (!) and person-hours (ЧЧ) in compact top controls, and made Block and Project fields visible without an accordion.
+- Refreshed the script CSP hash and bumped the Service Worker cache to v3.5.5.
 
 ## Changes in v3.5.4
 
