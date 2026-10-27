@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-UuM7vnrIBqEMFtwu3Be+jplGkBMPQ5lsr+Ox8FkWHn0=' 'sha256-xPte2S2vYiV9C96KgSJyPo4aHIVX9Cn02KQFRD/T/kA='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
-<title>Wild Workspace — личный планер v3.5.3</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-WVa7pJiPvVW7WftxyfvdOhSJBRQ13+Y0csMrP7BIr6A=' 'sha256-xPte2S2vYiV9C96KgSJyPo4aHIVX9Cn02KQFRD/T/kA='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>Wild Workspace — личный планер v3.5.4</title>
 <meta name="description" content="Wild Workspace — личное пространство для задач, привычек, событий и маленьких побед.">
 <meta name="theme-color" content="#0b5240">
 <meta name="mobile-web-app-capable" content="yes">
@@ -716,6 +716,62 @@ html,body{max-width:100%;overflow-x:hidden}main,.grid,.card,.page{min-width:0}.c
 }
 .cloud-auth-error{margin:12px 0 0;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--err) 13%,var(--s1));border:1px solid color-mix(in srgb,var(--err) 50%,var(--ol));color:var(--err);font-size:13px;line-height:1.4;overflow-wrap:anywhere}
 .cloud-auth-error[hidden]{display:none!important}
+
+/* v3.5.4 — aligned Gantt timeline, compact mobile task summary, softer archive, swipe motion */
+.gt{display:block;width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:var(--ol) transparent}
+.gt .gr{width:max(100%,calc(230px + var(--timeline-min)));min-width:max(100%,calc(230px + var(--timeline-min)));grid-template-columns:230px minmax(var(--timeline-min),1fr);height:36px;border-bottom:1px solid color-mix(in srgb,var(--ol) 45%,transparent)}
+.gt .gr.gh{height:44px;border-bottom-color:color-mix(in srgb,var(--ol) 70%,transparent)}
+.gt .gr.gd{height:42px;background:var(--s2)}
+.gt .gl{padding:0 12px;background:var(--s2);font-size:12.5px;line-height:1.25;border-right:1px solid color-mix(in srgb,var(--ol) 50%,transparent)}
+.gt .gl.bk{font-weight:600;color:var(--tx)}
+.gt .ggroup{background:color-mix(in srgb,var(--s3) 42%,transparent)}
+.gt .ggroup .gl{background:var(--s3);font-weight:650}
+.gt .gk{background-image:linear-gradient(90deg,color-mix(in srgb,var(--ol) 48%,transparent) 1px,transparent 1px);background-size:calc(100% / var(--days)) 100%;background-repeat:repeat}
+.gt .gk.wk{grid-template-columns:repeat(var(--n),minmax(0,1fr));background:none}
+.gt .gk.wk>span{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;border-left:1px solid color-mix(in srgb,var(--ol) 55%,transparent);font-weight:650}
+.gt .gk.wk small{margin-top:4px;font-size:10.5px;font-weight:400;color:var(--tx2)}
+.gt .gk.days{display:grid;grid-template-columns:repeat(var(--days),minmax(0,1fr));background:none;text-align:center;min-width:0}
+.gt .gk.days>span{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;border-left:1px solid color-mix(in srgb,var(--ol) 48%,transparent);font-size:11px;color:var(--tx2);min-width:0}
+.gt .gk.days>span small{font-size:10px;line-height:1;color:var(--tx2)}
+.gt .gk.days>span b{font-weight:600;color:var(--tx)}
+.gt .gk.days>span.today{background:color-mix(in srgb,var(--p) 13%,transparent)}
+.gt .gk.days>span.today b{color:var(--p)}
+.gt .gb{top:8px;height:20px;border-radius:7px;min-width:3px;z-index:2;transition:filter .16s ease,opacity .16s ease}
+.gt .gb:not(.gblock):hover{filter:brightness(1.08);z-index:4}
+.gt .gb.gblock{top:14px;height:8px;border-radius:999px;min-width:3px;opacity:.38;pointer-events:none}
+.gt .gn{z-index:3;pointer-events:none;box-shadow:0 0 0 1px color-mix(in srgb,var(--p) 12%,transparent)}
+.archive-card{background:color-mix(in srgb,var(--s2) 58%,var(--bg));border:1px solid color-mix(in srgb,var(--ol) 48%,transparent);box-shadow:none}
+.archive-card .archive-row{background:color-mix(in srgb,var(--s1) 62%,var(--bg))}
+.archive-card .archive-count{background:color-mix(in srgb,var(--s3) 72%,var(--bg))}
+.swipe-exit-left{animation:wwSwipeExitLeft 125ms cubic-bezier(.4,0,.8,.35) both;pointer-events:none}
+.swipe-exit-right{animation:wwSwipeExitRight 125ms cubic-bezier(.4,0,.8,.35) both;pointer-events:none}
+.swipe-enter-right{animation:wwSwipeEnterRight 260ms cubic-bezier(.18,.78,.22,1) both}
+.swipe-enter-left{animation:wwSwipeEnterLeft 260ms cubic-bezier(.18,.78,.22,1) both}
+@keyframes wwSwipeExitLeft{to{opacity:.25;transform:translate3d(-26px,0,0)}}
+@keyframes wwSwipeExitRight{to{opacity:.25;transform:translate3d(26px,0,0)}}
+@keyframes wwSwipeEnterRight{from{opacity:.3;transform:translate3d(32px,0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes wwSwipeEnterLeft{from{opacity:.3;transform:translate3d(-32px,0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@media(max-width:720px){
+ .bh{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 12px;padding:13px 14px;margin-bottom:12px;border-left-width:4px;border-radius:18px}
+ .bh>div:first-child{grid-column:1/-1;min-width:0}
+ .bh h3{font-size:20px;line-height:1.2}
+ .bh .bar{margin:8px 0 0}
+ .kv2{font-size:11.5px;line-height:1.25}
+ .kv2 b{font-size:25px;line-height:1.05;margin-bottom:3px}
+ .gt .gr{width:max(100%,calc(135px + var(--timeline-mobile)));min-width:max(100%,calc(135px + var(--timeline-mobile)));grid-template-columns:135px minmax(var(--timeline-mobile),1fr);height:36px}
+ .gt .gr.gh{height:42px}
+ .gt .gr.gd{height:40px}
+ .gt .gl{font-size:11px;padding:0 7px}
+ .gt .gk.wk{font-size:10px}
+ .gt .gk.wk small{font-size:9px}
+ .gt .gk.days>span{font-size:10px}
+ .gt .gk.days>span small{font-size:9px}
+ .gt .gb{top:9px;height:18px}
+ .gt .gb.gblock{top:14px;height:7px}
+ .archive-card{margin-top:14px}
+}
+@media(prefers-reduced-motion:reduce){.swipe-exit-left,.swipe-exit-right,.swipe-enter-right,.swipe-enter-left{animation:none!important}}
+
 </style>
 </head>
 <body>
@@ -1116,7 +1172,7 @@ function renderTasks(){
 if(BK!=="all"&&!BL[BK])BK="all";const q=$("q")?.value.trim().toLocaleLowerCase("ru-RU")||"",allBlocks=BK==="all",B=allBlocks?{n:"Все блоки",c:"var(--p)"}:BL[BK],allMatches=T.filter(x=>(allBlocks||x.b===BK)&&matchesTaskQuery(x,q)),archived=allMatches.filter(x=>x.s==="done").sort((a,b)=>(b.completedAt||b.updatedAt||"").localeCompare(a.completedAt||a.updatedAt||"")),l=allMatches.filter(x=>x.s!=="done"),dn=archived.length,pct=allMatches.length?Math.round(dn/allMatches.length*100):0;
 const op=l.slice().sort((a,b)=>pd(a.d)-pd(b.d)),hrs=op.reduce((sum,x)=>sum+x.h,0);
 let h=`<div class="bts"><button class="bt ${allBlocks?"on":""}" data-bk="all" style="--c:var(--p)">Все</button>${Object.entries(BL).map(([k,b])=>`<button class="bt ${k===BK?"on":""}" data-bk="${k}" style="--c:${b.c}">${esc(b.n)}</button>`).join("")}</div>`;
-h+=`<div class="bh" style="--c:${B.c}"><div><h3>${esc(B.n)}</h3><div style="color:var(--tx2)">${l.length} активных задач · ${dn} в архиве</div><div class="bar"><i style="width:${pct}%"></i></div>${!allBlocks?`<button type="button" class="bt2 task-context-add" data-addt-block="${BK}"><span class="i">add</span> Добавить задачу</button>`:""}</div><div class="kv2"><b>${hrs} ч</b>осталось по активным задачам</div><div class="kv2"><b>${op[0]?fmt(pd(op[0].d),{day:"numeric",month:"short"}):"—"}</b>ближайший дедлайн</div></div>`;
+h+=`<div class="bh" style="--c:${B.c}"><div><h3>${esc(B.n)}</h3><div style="color:var(--tx2)">${l.length} активных задач · ${dn} в архиве</div><div class="bar"><i style="width:${pct}%"></i></div></div><div class="kv2"><b>${hrs} ч</b>осталось по активным задачам</div><div class="kv2"><b>${op[0]?fmt(pd(op[0].d),{day:"numeric",month:"short"}):"—"}</b>ближайший дедлайн</div></div>`;
 h+=`<div class="seg"><button data-vw="list" class="${VW==="list"?"on":""}">Список</button><button data-vw="board" class="${VW==="board"?"on":""}">Доска</button></div>`;
 if(VW==="board")h+=`<div class="board" id="bboard"></div>`;
 else{const g={};l.forEach(x=>{const k=(allBlocks?(BL[x.b]?.n||"Блок")+" · ":"")+(x.sub||"Без проекта");(g[k]=g[k]||[]).push(x)});
@@ -1140,7 +1196,7 @@ return `<div class="ring ring-clickable" data-openblock="${k}" role="button" tab
 function renderBars(){const a=[];for(let i=0;i<10;i++){const offset=WK+i;a.push({w:isoWeek(addD(mon,i*7)),...loadOf(offset)});}const mx=Math.max(60,...a.map(x=>x.v)),C=["var(--ok)","var(--warn)","var(--hi)"];
 $("bars").innerHTML=a.map((x,i)=>`<div class="bc ${i===0?"now":""}"><em>${Math.round(x.v)}</em><div class="st" style="--c:${C[lvl(x.v)]};height:${x.v/mx*125}px"><i style="height:${x.v?x.b/x.v*100:0}%"></i></div>${x.w}</div>`).join("")}
 let PG="home",BK="all",VW="list",HOME_VW="board",CM=new Date(today.getFullYear(),today.getMonth(),1),HABIT_ANIMATING_ID=null;
-let CV="month",CW=mon,DS0=7;const HH=48,pad2=n=>String(n).padStart(2,"0");
+let CV="week",CW=mon,DS0=7;const HH=48,pad2=n=>String(n).padStart(2,"0");
 function calTop(em,title){const wk=CV==="week";return `<div class="cn"><h3>${em} ${title}</h3><div class="seg" style="margin:0 8px 0 0"><button data-cv="month" class="${wk?"":"on"}">Месяц</button><button data-cv="week" class="${wk?"on":""}">Неделя</button></div><button class="ib" data-mv="-1" title="Раньше"><span class="i">chevron_left</span></button><button class="ib" data-mv="0" title="Сегодня"><span class="i">today</span></button><button class="ib" data-mv="1" title="Позже"><span class="i">chevron_right</span></button></div>`}
 const tkChip=(x,k)=>`<div class="ci tk2 ${x.s==="done"?"dn":""}" data-ot="${x.id}" style="--c:${BL[x.b]?.c||"var(--p)"}" title="${esc(x.t)} · дедлайн ${x.d}">${x.d===k&&(x.planDate||x.d)!==k?"⌛":"⚑"} ${esc(x.t)}</div>`;
 function allDayColumn(d){const k=ds(d);const items=holOn(d).map(x=>`<div class="ci hl" data-oh="${x.id}">🎉 ${esc(x.t)}</div>`).concat(evOn(d).filter(e=>e.allDay).map(e=>`<div class="ci" data-oe="${e.id}" data-od="${k}" style="--c:${ET[e.k]?.c||ET.work.c}" title="${esc(e.t)}">${esc(e.t)}</div>`)).concat(T.filter(x=>(x.planDate||x.d)===k||x.d===k).map(x=>tkChip(x,k)));return items.slice(0,3).join("")+(items.length>3?`<button type="button" class="ci mr" data-day="${k}" aria-label="Показать ещё ${items.length-3} элементов">ещё ${items.length-3}</button>`:"")}
@@ -1164,10 +1220,12 @@ function ganttH(){const ganttTasks=T.filter(x=>x.s!=="done");if(!ganttTasks.leng
 const gs=addD(mn,-((mn.getDay()+6)%7)),n=Math.ceil(((mx-gs)/864e5+1)/7),tot=n*7;
 const pos=(a,b)=>`left:${(pd(a)-gs)/864e5/tot*100}%;width:${((pd(b)-pd(a))/864e5+1)/tot*100}%`,nl=`<i class="gn" style="left:${(today-gs)/864e5/tot*100}%"></i>`;
 const wks=Array.from({length:n},(_,i)=>{const d=addD(gs,i*7);return `<span>${isoWeek(d)}<small>${fmt(d,{day:"numeric",month:"short"})}</small></span>`}).join("");
-let h=`<div class="gt" style="--n:${n}"><div class="gr gh"><div class="gl bk">Неделя</div><div class="gk wk">${wks}</div></div>`;
+const dayLabels=Array.from({length:tot},(_,i)=>{const d=addD(gs,i),isToday=ds(d)===ds(today);return `<span class="${isToday?"today":""}" title="${fmt(d,{day:"numeric",month:"long",year:"numeric"})}"><small>${DN[i%7]}</small><b>${d.getDate()}</b></span>`}).join("");
+let h=`<div class="gt" style="--n:${n};--days:${tot};--timeline-min:${tot*56}px;--timeline-mobile:${tot*42}px"><div class="gr gh"><div class="gl bk">Неделя</div><div class="gk wk">${wks}</div></div><div class="gr gd"><div class="gl bk">День</div><div class="gk days">${dayLabels}</div></div>`;
 Object.entries(BL).forEach(([k,b])=>{const l=ganttTasks.filter(x=>x.b===k).sort((p,q)=>pd(p.planDate||p.s0||p.d)-pd(q.planDate||q.s0||q.d));if(!l.length)return;
-h+=`<div class="gr"><div class="gl bk">${esc(b.n)}</div><div class="gk">${nl}<div class="gb" style="--c:${b.c};opacity:.28;cursor:default;${pos(l.map(x=>x.planDate||x.s0||x.d).sort()[0],l.map(x=>x.d).sort().pop())}"></div></div></div>`;
-l.forEach(x=>{h+=`<div class="gr"><div class="gl" data-ot="${x.id}" title="${esc(x.t)}">${esc(x.t)}</div><div class="gk">${nl}<div class="gb ${x.s==="done"?"dn":""}" data-ot="${x.id}" style="--c:${b.c};${pos(x.planDate||x.s0||x.d,x.d)}" title="${esc(x.t)}"></div></div></div>`})});
+const groupStart=l.map(x=>x.planDate||x.s0||x.d).sort()[0],groupEnd=l.map(x=>x.d).sort().pop();
+h+=`<div class="gr ggroup"><div class="gl bk">${esc(b.n)}</div><div class="gk">${nl}<div class="gb gblock" style="--c:${b.c};${pos(groupStart,groupEnd)}"></div></div></div>`;
+l.forEach(x=>{h+=`<div class="gr gtask"><div class="gl" data-ot="${x.id}" title="${esc(x.t)}">${esc(x.t)}</div><div class="gk">${nl}<div class="gb ${x.s==="done"?"dn":""}" data-ot="${x.id}" style="--c:${b.c};${pos(x.planDate||x.s0||x.d,x.d)}" title="${esc(x.t)}"></div></div></div>`})});
 return h+"</div>"}
 function renderStats(target="profile-statistics-content"){
 const op=T.filter(x=>x.s!=="done"),done=T.filter(x=>x.s==="done"),dn=done.length,hrs=op.reduce((sum,x)=>sum+(+x.h||0),0),od=op.filter(x=>days(x.d)<0).length;
@@ -1222,7 +1280,7 @@ $("pg-set").innerHTML=`<div class="profile-layout">
 <section class="card set profile-motion"><h2><span class="i f">motion_photos_off</span>Анимация</h2><div class="sr"><div class="nm">Тише: без тряски<small>Просроченные задачи останутся заметными по цвету, но карточки не будут двигаться.</small></div><label class="switch"><input type="checkbox" data-quiet-overdue ${SET.quietOverdue?"checked":""} aria-label="Отключить тряску карточек просрочки"><span class="slider"></span></label></div></section>
 <section class="card set profile-data"><h2><span class="i f">database</span>Данные и резервные копии</h2><div class="sr"><div class="nm">Резервная копия<small>JSON — задачи, мероприятия, блоки и настройки; .ics — календарь для импорта.</small></div><div class="profile-action-stack"><button type="button" class="bt2" id="ex1">Скачать JSON</button><button type="button" class="bt2" id="ex2">Скачать .ics для календаря</button></div></div><div class="sr"><div class="nm">Импорт<small>Восстановить ранее выгруженный JSON.</small></div><label class="bt2 profile-file-button">Выбрать файл<input type="file" id="imp" accept=".json,application/json" hidden></label></div><div class="sr"><div class="nm">Очистить это устройство<small>Удалит данные и локальный вход только в этом браузере. Облачная копия и другие устройства останутся без изменений.</small></div><button type="button" class="bt2 danger-text" id="rs">Очистить устройство</button></div><div class="sr"><div class="nm">Удалить все данные аккаунта<small>Перед удалением приложение скачает резервную копию, затем попросит ввести слово-подтверждение. Будут удалены данные планера из облака и с этого устройства; сам аккаунт Supabase не удаляется.</small></div><button type="button" class="bt2 danger-text" data-start-account-delete>Удалить все данные аккаунта</button></div></section>
 ${activitySectionMarkup()}
-<section class="card set profile-about"><h2><span class="i f">info</span>О приложении</h2><p class="app-about-copy"><strong>Wild Workspace</strong> — личное пространство для планов, задач и маленьких побед.</p><div class="sr"><div class="nm">Версия приложения<small>Текущая сборка интерфейса.</small></div><span class="app-version">v3.5.3</span></div></section>
+<section class="card set profile-about"><h2><span class="i f">info</span>О приложении</h2><p class="app-about-copy"><strong>Wild Workspace</strong> — личное пространство для планов, задач и маленьких побед.</p><div class="sr"><div class="nm">Версия приложения<small>Текущая сборка интерфейса.</small></div><span class="app-version">v3.5.4</span></div></section>
 <footer class="settings-footer">by <strong>Victor Wild</strong> · <a href="mailto:itsvictorwild@gmail.com">itsvictorwild@gmail.com</a></footer></div>`}
 
 function closestBlockColor(hex){const rgb=v=>[1,3,5].map(i=>parseInt((v||"#86ecc9").slice(i,i+2),16)||0);const a=rgb(hex);return BLOCK_PALETTE.slice().sort((x,y)=>{const d=c=>rgb(c).reduce((n,v,i)=>n+(v-a[i])**2,0);return d(x)-d(y)})[0]}
@@ -1311,7 +1369,7 @@ async function resetThisDevice(options={}){
   TAB_BASELINE=snapshotWorkspaceState();saveSet();save();
   try{if(TAB_CHANNEL)TAB_CHANNEL.postMessage({type:"device-reset",source:DEVICE_TAB_ID,stamp:resetStamp})}catch(e){}
   RESETTING_DEVICE=false;
-  applyAcc();applyTheme();closeM(true);PG="home";BK="all";VW="list";HOME_VW="board";CV="month";CW=mon;CM=new Date(today.getFullYear(),today.getMonth(),1);if($("q"))$("q").value="";go("home");all();showWelcome();toast(options.message||"Это устройство очищено. Облачная копия не изменена.");renderProfileIfVisible();
+  applyAcc();applyTheme();closeM(true);PG="home";BK="all";VW="list";HOME_VW="board";CV="week";CW=mon;CM=new Date(today.getFullYear(),today.getMonth(),1);if($("q"))$("q").value="";go("home");all();showWelcome();toast(options.message||"Это устройство очищено. Облачная копия не изменена.");renderProfileIfVisible();
 }
 function requestLocalReset(){openM(`<div class="modal-eyebrow"><span class="i">cleaning_services</span> ЛОКАЛЬНАЯ ОЧИСТКА</div><h3>Очистить только это устройство?</h3><p class="modal-hint">Задачи, мероприятия, привычки, пользовательские настройки, локальные вложения и сохранённый вход будут удалены из этого браузера. <b>Облачная копия не изменится</b>; данные на другом устройстве сохранятся. Чтобы удалить данные аккаунта в облаке, используй отдельное действие ниже.</p><div class="act"><button type="button" class="btn n o" data-close>Отмена</button><button type="button" class="btn n d" data-confirm-local-reset>Очистить устройство</button></div>`)}
 async function beginDeleteAllAccountData(){if(ACCOUNT_DELETE_BUSY)return;if(!AUTH?.user)return toast("Сначала войди в аккаунт, чтобы удалить его облачные данные.");ACCOUNT_DELETE_BUSY=true;try{const uid=AUTH.user.id,rows=await cloudApi("/rest/v1/workspace_data?select=payload,updated_at&user_id=eq."+encodeURIComponent(uid)+"&limit=1",{method:"GET"}),row=rows&&rows.length?rows[0]:null,remotePayload=row?.payload||{version:3,T:[],E:[],HD:[],H:[],BL:deepCloneData(DEFAULT_WORKSPACE.BL),_deleted:{T:{},E:{},HD:{},H:{},BL:{}},_syncMeta:{devices:{},accountResetAt:""}},merged=mergeWorkspacePayload(syncWorkspacePayload(),remotePayload),backup={...merged,SET:{...deepCloneData(workspacePayload().SET),...deepCloneData(merged.SET||{}),touched:deepCloneData(merged.SET?.touched||workspacePayload().SET.touched||{})},_accountDeletionBackup:{createdAt:new Date().toISOString(),accountEmail:AUTH.user.email||null,cloudUpdatedAt:row?.updated_at||null,notice:"Резервная копия данных планера перед удалением. Сам аккаунт авторизации Supabase не удаляется."},_cloudSnapshot:deepCloneData(remotePayload)};ACCOUNT_DELETE_PENDING={userId:uid,remoteStamp:row?.updated_at||null,remotePayload:deepCloneData(remotePayload),backup};ACCOUNT_DELETE_BACKUP_READY=false;openM(`<div data-account-delete-confirm><div class="modal-eyebrow"><span class="i">delete_forever</span> УДАЛЕНИЕ ДАННЫХ АККАУНТА</div><h3>Сначала сохрани резервную копию</h3><p class="modal-hint">Подготовлена JSON-копия объединённых данных этого устройства и актуальной облачной версии. Сначала скачай файл. Затем введи слово <b>УДАЛИТЬ</b>, чтобы продолжить. Если облачная запись изменится после резервного копирования, операция будет остановлена и потребуется новая копия.</p><p class="modal-hint">Удаляются данные планера и вложения аккаунта, а не сам пользователь Supabase.</p><div class="act"><button type="button" class="btn n o" data-close>Отмена</button><button type="button" class="btn n" data-download-account-backup>Скачать резервную копию</button></div><label class="fl">Для подтверждения введи УДАЛИТЬ<input id="deleteAllDataWord" autocomplete="off" placeholder="УДАЛИТЬ" aria-label="Введи УДАЛИТЬ для подтверждения"></label><label class="fl"><input type="checkbox" id="deleteAllDataBackupAck"> Я сохранил резервную копию в надёжном месте.</label><div class="act"><button type="button" class="btn n o" data-close>Не удалять</button><button type="button" class="btn n d" data-confirm-delete-account disabled>Удалить все данные аккаунта</button></div><p class="modal-hint" id="deleteAllDataStatus" role="status">Сначала скачай резервную копию.</p></div>`)}catch(e){console.warn("Prepare account deletion backup:",e);toast("Не удалось получить актуальную облачную копию. Ничего не удалено: "+(e.message||"ошибка"))}finally{ACCOUNT_DELETE_BUSY=false}}
@@ -1446,11 +1504,20 @@ function initSwipeNavigation(){
   if(!calRoot||!tasksRoot)return;
   let calTouch=null,tasksTouch=null;
   const isEditable=t=>!!t.closest('input,textarea,select,[contenteditable="true"],a');
-  calRoot.addEventListener("touchstart",e=>{if(PG!=="cal"||e.touches.length!==1||isEditable(e.target))return;const t=e.touches[0];calTouch={x:t.clientX,y:t.clientY}}, {passive:true});
-  calRoot.addEventListener("touchend",e=>{if(PG!=="cal"||!calTouch||e.changedTouches.length!==1){calTouch=null;return}const t=e.changedTouches[0],dx=t.clientX-calTouch.x,dy=t.clientY-calTouch.y;calTouch=null;if(Math.abs(dx)<58||Math.abs(dx)<Math.abs(dy)*1.25)return;SUP=performance.now();const step=dx<0?1:-1;if(CV==="week")CW=addD(CW,7*step);else CM=new Date(CM.getFullYear(),CM.getMonth()+step,1);renderCal()},{passive:true});
+  const swipeMotion=(root,direction,update)=>{
+    if(!root||root.classList.contains("swipe-busy"))return;
+    if(matchMedia("(prefers-reduced-motion: reduce)").matches){update();return}
+    const classes=["swipe-exit-left","swipe-exit-right","swipe-enter-left","swipe-enter-right"];
+    root.classList.remove(...classes);root.classList.add("swipe-busy");
+    const exit=direction>0?"swipe-exit-left":"swipe-exit-right",enter=direction>0?"swipe-enter-right":"swipe-enter-left";
+    root.classList.add(exit);
+    setTimeout(()=>{root.classList.remove(exit);update();root.classList.add(enter);setTimeout(()=>{root.classList.remove(enter,"swipe-busy")},270)},125);
+  };
+  calRoot.addEventListener("touchstart",e=>{if(PG!=="cal"||calRoot.classList.contains("swipe-busy")||e.touches.length!==1||isEditable(e.target))return;const t=e.touches[0];calTouch={x:t.clientX,y:t.clientY}}, {passive:true});
+  calRoot.addEventListener("touchend",e=>{if(PG!=="cal"||!calTouch||e.changedTouches.length!==1){calTouch=null;return}const t=e.changedTouches[0],dx=t.clientX-calTouch.x,dy=t.clientY-calTouch.y;calTouch=null;if(Math.abs(dx)<58||Math.abs(dx)<Math.abs(dy)*1.25)return;SUP=performance.now();const step=dx<0?1:-1;swipeMotion(calRoot,step,()=>{if(CV==="week")CW=addD(CW,7*step);else CM=new Date(CM.getFullYear(),CM.getMonth()+step,1);renderCal()})},{passive:true});
   calRoot.addEventListener("touchcancel",()=>{calTouch=null},{passive:true});
-  tasksRoot.addEventListener("touchstart",e=>{if(PG!=="tasks"||e.touches.length!==1||isEditable(e.target))return;const t=e.touches[0];tasksTouch={x:t.clientX,y:t.clientY}}, {passive:true});
-  tasksRoot.addEventListener("touchend",e=>{if(PG!=="tasks"||!tasksTouch||e.changedTouches.length!==1){tasksTouch=null;return}const t=e.changedTouches[0],dx=t.clientX-tasksTouch.x,dy=t.clientY-tasksTouch.y;tasksTouch=null;if(Math.abs(dx)<58||Math.abs(dx)<Math.abs(dy)*1.25)return;const keys=["all",...Object.keys(BL)];const current=keys.indexOf(BK);if(current<0)return;const next=current+(dx<0?1:-1);if(next<0||next>=keys.length)return;SUP=performance.now();BK=keys[next];renderTasks()},{passive:true});
+  tasksRoot.addEventListener("touchstart",e=>{if(PG!=="tasks"||tasksRoot.classList.contains("swipe-busy")||e.touches.length!==1||isEditable(e.target))return;const t=e.touches[0];tasksTouch={x:t.clientX,y:t.clientY}}, {passive:true});
+  tasksRoot.addEventListener("touchend",e=>{if(PG!=="tasks"||!tasksTouch||e.changedTouches.length!==1){tasksTouch=null;return}const t=e.changedTouches[0],dx=t.clientX-tasksTouch.x,dy=t.clientY-tasksTouch.y;tasksTouch=null;if(Math.abs(dx)<58||Math.abs(dx)<Math.abs(dy)*1.25)return;const keys=["all",...Object.keys(BL)];const current=keys.indexOf(BK);if(current<0)return;const next=current+(dx<0?1:-1);if(next<0||next>=keys.length)return;SUP=performance.now();swipeMotion(tasksRoot,dx<0?1:-1,()=>{BK=keys[next];renderTasks()})},{passive:true});
   tasksRoot.addEventListener("touchcancel",()=>{tasksTouch=null},{passive:true});
 }
 let CLOUD_POLL_TIMER=null;function restartCloudPolling(){if(CLOUD_POLL_TIMER)clearInterval(CLOUD_POLL_TIMER);CLOUD_POLL_TIMER=setInterval(()=>{if(AUTH?.user&&CLOUD.enabled&&!CLOUD.applying&&!CLOUD.choicePending&&!CLOUD.authRequired)restoreCloudSession()},document.hidden?180000:45000)}
