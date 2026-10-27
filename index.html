@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-fzPMyq/wUrKxvhpwclFReOSFkCfFqi71SxKofDiU/j0=' 'sha256-xPte2S2vYiV9C96KgSJyPo4aHIVX9Cn02KQFRD/T/kA='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-brDLatsKFxDflsCzpTx6aOmcSXsuBAW2mFirl+LBiv8=' 'sha256-xPte2S2vYiV9C96KgSJyPo4aHIVX9Cn02KQFRD/T/kA='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Wild Workspace — личный планер v4.0.2</title>
 <meta name="description" content="Wild Workspace — личное пространство для задач, привычек, событий и маленьких побед.">
-<meta name="theme-color" content="#0b5240">
+<meta name="theme-color" content="#0e1411">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Wild Workspace">
@@ -1354,6 +1354,9 @@ body.calendar-view-fixed .page#pg-cal .wcard{height:auto!important;min-height:0!
   }
 }
 span.hours-label{display:none!important}
+
+/* Keep Android edge-to-edge system areas on the same background as the app canvas. */
+html{background-color:var(--bg)!important}
 </style>
 </head>
 <body>
@@ -1627,7 +1630,7 @@ function applyLocale(root=document.body){if(!root)return;const doc=root.ownerDoc
 let LOCALE_OBSERVER=null;function initLocaleObserver(){if(LOCALE_OBSERVER||!("MutationObserver" in window)||!document.body)return;LOCALE_OBSERVER=new MutationObserver(records=>{for(const record of records){for(const node of record.addedNodes||[]){if(node.nodeType===Node.ELEMENT_NODE||node.nodeType===Node.TEXT_NODE)applyLocale(node)}}});LOCALE_OBSERVER.observe(document.body,{childList:true,subtree:true})}
 function renderFestivalAtmosphere(){const old=document.getElementById("festival-atmosphere");if(old)old.remove();const festival=["halloween","christmas"].includes(SET.festival)?SET.festival:"none";if(festival==="none"||!document.body)return;const halloween=["🍂","🍁","🍂","🍃","🍁","·"],christmas=["·","❄","·","✧","❅","·"],glyphs=festival==="halloween"?halloween:christmas,count=festival==="halloween"?14:20;const host=document.createElement("div");host.id="festival-atmosphere";host.className="festival-atmosphere";host.setAttribute("aria-hidden","true");host.innerHTML=Array.from({length:count},(_,i)=>'<span class="festival-particle" style="--x:'+((i*37+7)%100)+'%;--delay:-'+((i*2.31)%28)+'s;--dur:'+(28+(i%6)*5)+'s;--size:'+((festival==='halloween'?9:5)+(i%3)*(festival==='halloween'?2:3))+'px;--sway:'+((i%2?1:-1)*(3+(i%4)*2))+'px">' + glyphs[i%glyphs.length]+'</span>').join("");document.body.appendChild(host)}
 function applyAcc(){const root=document.documentElement,s=root.style,fest=SET.festival||"none";let vals;if(fest==="halloween")vals=SET.theme==="light"?["#b85e16","#ffe3cc","#fff8f0","#65300f"]:["#ffb86b","#54250e","#2c1006","#ffe2bd"];else if(fest==="christmas")vals=SET.theme==="light"?["#246da9","#dceeff","#ffffff","#133f68"]:["#b9ddff","#173b62","#06172b","#e0f0ff"];else{const a=ACC[SET.acc]||ACC.mint;vals=SET.theme==="light"?[a[1],tintHex(a[0],.82),"#ffffff",a[2]]:[a[0],a[1],a[2],a[3]]}["--p","--pc","--onp","--onpc"].forEach((k,i)=>s.setProperty(k,vals[i]))}
-function applyTheme(){const root=document.documentElement,festival=["halloween","christmas"].includes(SET.festival)?SET.festival:"none";root.dataset.theme=SET.theme==="light"?"light":"dark";root.dataset.festival=festival;root.style.colorScheme=SET.theme==="light"?"light":"dark";renderFestivalAtmosphere();applyLocale(document.body)}
+function applyTheme(){const root=document.documentElement,festival=["halloween","christmas"].includes(SET.festival)?SET.festival:"none";root.dataset.theme=SET.theme==="light"?"light":"dark";root.dataset.festival=festival;root.style.colorScheme=SET.theme==="light"?"light":"dark";renderFestivalAtmosphere();const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.content=getComputedStyle(root).getPropertyValue("--bg").trim()||"#0e1411";applyLocale(document.body)}
 
 const sameId=(a,b)=>String(a)===String(b);
 function nid(){
