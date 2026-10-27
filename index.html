@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-8UAXnXZ7TplB/qOtpJBfOs+dqZPskXvOrvZMoNRTi04=' 'sha256-xPte2S2vYiV9C96KgSJyPo4aHIVX9Cn02KQFRD/T/kA='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-fzPMyq/wUrKxvhpwclFReOSFkCfFqi71SxKofDiU/j0=' 'sha256-xPte2S2vYiV9C96KgSJyPo4aHIVX9Cn02KQFRD/T/kA='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Wild Workspace — личный планер v4.0.2</title>
 <meta name="description" content="Wild Workspace — личное пространство для задач, привычек, событий и маленьких побед.">
 <meta name="theme-color" content="#0b5240">
@@ -1258,6 +1258,101 @@ html[data-festival="christmas"] #pg-home>.card.c7{border-color:rgba(196,225,250,
     min-height:44px!important;white-space:normal!important;padding-inline:8px!important
   }
 }
+
+/* v4.0.16 — compact section headers, fixed calendar viewport and clearer mobile task editing */
+.top.quiet-page-head>div:first-child{display:none!important}
+.top.stats-page-head{display:none!important}
+.tasks-add-plus,.cal-add-plus{display:none!important}
+@media(min-width:721px){
+  .top.compact-add-controls>#addT,.top.compact-add-controls>#addE{display:none!important}
+  .tasks-add-plus{display:grid!important;place-items:center;flex:0 0 42px;width:42px;height:42px;min-width:42px;padding:0;margin-left:auto}
+  .cal-add-plus{display:grid!important;place-items:center;flex:0 0 42px;width:42px;height:42px;min-width:42px;padding:0;margin-left:4px}
+}
+@media(max-width:720px){.tasks-add-plus,.cal-add-plus{display:none!important}}
+/* Calendar uses the viewport; only the week timeline itself can scroll. */
+body.calendar-view-fixed{position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;overflow:hidden!important;overscroll-behavior:none!important}
+body.calendar-view-fixed .app{height:100dvh!important;min-height:0!important;overflow:hidden!important}
+body.calendar-view-fixed main{height:100dvh!important;min-height:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;padding:8px 28px 12px 8px!important;margin:0!important}
+body.calendar-view-fixed .top{display:none!important}
+body.calendar-view-fixed .page#pg-cal.on{display:flex!important;flex:1 1 auto!important;flex-direction:column!important;min-height:0!important;overflow:hidden!important}
+body.calendar-view-fixed .page#pg-cal .cn{flex:0 0 auto!important;min-width:0!important;margin-bottom:8px!important}
+body.calendar-view-fixed .page#pg-cal .note{display:none!important}
+body.calendar-view-fixed .page#pg-cal .cal{flex:1 1 auto!important;min-height:0!important;width:100%;grid-template-rows:24px repeat(var(--cal-weeks,6),minmax(0,1fr))!important;gap:4px!important}
+body.calendar-view-fixed .page#pg-cal .cw{padding:2px!important;min-height:0!important}
+body.calendar-view-fixed .page#pg-cal .cd{min-height:0!important;height:auto!important;min-width:0!important;padding:4px!important;gap:2px!important;overflow:hidden!important;border-radius:9px!important}
+body.calendar-view-fixed .page#pg-cal .cd b{font-size:12px!important}
+body.calendar-view-fixed .page#pg-cal .ci{font-size:clamp(8px,1.15vh,11px)!important;line-height:1.1!important;padding:1px 2px!important}
+body.calendar-view-fixed .page#pg-cal .wcard{height:auto!important;min-height:0!important;max-height:none!important;flex:1 1 auto!important;overflow-y:auto!important;overscroll-behavior:contain!important}
+@media(max-width:720px){
+  body.calendar-view-fixed main{padding:12px 12px calc(96px + env(safe-area-inset-bottom,0px))!important}
+  body.calendar-view-fixed .page#pg-cal .cn{gap:5px!important;flex-wrap:wrap!important}
+  body.calendar-view-fixed .page#pg-cal .cn h3{flex:1 1 100%!important;font-size:15px!important;line-height:1.2!important;margin:0!important}
+  body.calendar-view-fixed .page#pg-cal .cn .seg{margin:0!important}
+  body.calendar-view-fixed .page#pg-cal .cd{padding:3px 2px!important;border-radius:7px!important}
+  body.calendar-view-fixed .page#pg-cal .cd b{font-size:11px!important}
+  body.calendar-view-fixed .page#pg-cal .ci{font-size:clamp(7px,1vh,9px)!important;padding:1px!important;border-left-width:2px!important}
+}
+/* Mobile edit layout: every control is visible, labelled and placed in a predictable grid. */
+@media(max-width:720px){
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact)>.md{
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-auto-flow:row!important;
+    align-content:start!important;align-items:stretch!important;gap:8px!important
+  }
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact)>.md>.modal-eyebrow,
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact)>.md>h3,
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact)>.md>.task-title-field,
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact)>.md>.extra-panel,
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact)>.md>.task-block-project-row,
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact)>.md>.act{grid-column:1/-1!important;min-width:0!important}
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-date-row,
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-action-row{display:contents!important}
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-date-row>.plan-date-chip{grid-column:1!important}
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-date-row>.quick-date:not(.plan-date-chip){grid-column:2!important}
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-date-row>.hours-stepper{grid-column:1!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:3px!important;padding:5px 6px!important;min-width:0!important;min-height:44px!important}
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-action-row>.priority-cycle{grid-column:2!important}
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-date-row>.quick-chip{
+    display:flex!important;align-items:center!important;gap:4px!important;width:100%!important;min-width:0!important;
+    max-width:100%!important;min-height:44px!important;margin:0!important;padding:5px 6px!important;box-sizing:border-box!important
+  }
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-date-row .quick-label{
+    display:inline-flex!important;flex:none!important;font-size:10px!important;line-height:1.1!important;white-space:nowrap!important
+  }
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-date-row .plan-time-trigger .quick-label{display:none!important}
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-date-row .i{font-size:17px!important;flex:none!important}
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-date-row input[type=date]{
+    flex:1 1 auto!important;width:0!important;min-width:0!important;max-width:100%!important;font-size:10px!important;padding:0!important
+  }
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-date-row .plan-time-trigger{
+    flex:0 0 25px!important;width:25px!important;min-width:25px!important;height:28px!important;margin:0!important;padding:0!important
+  }
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-date-row .hours-label{
+    display:inline-flex!important;flex:1 1 auto!important;min-width:0!important;font-size:10px!important;white-space:nowrap!important
+  }
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-date-row .hours-step{flex:0 0 23px!important;width:23px!important;min-width:23px!important;height:28px!important;padding:0!important}
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-date-row .hours-value{font-size:11px!important;white-space:nowrap!important}
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-action-row>.quick-chip{
+    display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:7px!important;
+    width:100%!important;min-width:0!important;max-width:100%!important;min-height:44px!important;
+    padding:7px 9px!important;font-size:12px!important;line-height:1.2!important;white-space:normal!important;
+    overflow:visible!important;box-sizing:border-box!important
+  }
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-action-row .quick-chip>.i,
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-action-row .quick-chip>.quick-symbol{
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:none!important;
+    font-size:19px!important;line-height:1!important
+  }
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-action-row .quick-label,
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-action-row .priority-label{
+    display:inline!important;min-width:0!important;font-size:12px!important;line-height:1.2!important
+  }
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-action-row .priority-cycle .quick-symbol{font-size:0!important}
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-action-row .priority-cycle .quick-symbol::before{
+    content:"priority_high";font-family:"Material Symbols Rounded";font-size:19px;font-weight:normal;line-height:1
+  }
+  .ov.entry-sheet.task-form-overlay:not(.task-create-compact) .task-block-project-row{
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;width:100%!important;margin-top:8px!important
+  }
+}
 </style>
 </head>
 <body>
@@ -1665,7 +1760,7 @@ openM(`${compactTaskCreate?'<div class="task-form-root task-form-create">':""}<d
 <div class="task-date-row" id="taskDateRow">
 <div class="quick-chip quick-date plan-date-chip"><span class="i" aria-hidden="true">calendar_today</span><span class="quick-label">План</span><input type="date" id="f_planDate" value="${o.planDate||ds(today)}" aria-label="Запланировано на"><button type="button" class="plan-time-trigger" data-toggle-extra="time" aria-expanded="false" aria-controls="taskExtraTime" title="Добавить время" aria-label="Время задачи"><span class="i" aria-hidden="true">schedule</span><span class="quick-label">${o.time?esc(o.time):"Время"}</span></button></div>
 <label class="quick-chip quick-date"><span class="i" aria-hidden="true">event</span><span class="quick-label">Дедлайн</span><input type="date" id="f_d" value="${o.d||ds(today)}" aria-label="Дедлайн задачи"></label>
-<div class="quick-chip quick-setting-chip hours-stepper" role="group" aria-label="Оценка времени"><span class="i quick-hours-icon" aria-hidden="true">hourglass_empty</span><button type="button" class="hours-step" data-hours-step="-1" aria-label="Уменьшить часы" title="Уменьшить на 0,5 часа"><span class="i">remove</span></button><output id="f_h_display" class="hours-value">${o.h} ${SET.locale==="en"?"h":"ч"}</output><button type="button" class="hours-step" data-hours-step="1" aria-label="Увеличить часы" title="Увеличить на 0,5 часа"><span class="i">add</span></button></div>
+<div class="quick-chip quick-setting-chip hours-stepper" role="group" aria-label="Оценка времени"><span class="i quick-hours-icon" aria-hidden="true">hourglass_empty</span><span class="quick-label hours-label">${SET.locale==="en"?"Hours":"Чел.-часы"}</span><button type="button" class="hours-step" data-hours-step="-1" aria-label="Уменьшить часы" title="Уменьшить на 0,5 часа"><span class="i">remove</span></button><output id="f_h_display" class="hours-value">${o.h} ${SET.locale==="en"?"h":"ч"}</output><button type="button" class="hours-step" data-hours-step="1" aria-label="Увеличить часы" title="Увеличить на 0,5 часа"><span class="i">add</span></button></div>
 
 </div>
 <div class="quick-row task-action-row"><button type="button" class="quick-chip quick-setting-chip priority-cycle priority-p${o.p}" data-priority-cycle data-priority="${o.p}" aria-label="Важность" title="Нажимай, чтобы менять важность"><span class="quick-symbol">!</span><span class="priority-label">${["","Высокая","Средняя","Низкая"][o.p]||"Средняя"}</span></button><button type="button" class="quick-chip" data-toggle-extra="desc" aria-label="Описание задачи" title="Открыть описание" aria-expanded="false" aria-controls="taskExtraDesc"><span class="i" aria-hidden="true">notes</span><span class="quick-label">Описание</span></button><button type="button" class="quick-chip" data-toggle-extra="checklist" aria-label="Чек-лист задачи" title="Открыть чек-лист" aria-expanded="false" aria-controls="taskExtraChecklist"><span class="i" aria-hidden="true">checklist</span><span class="quick-label">Чек-лист${o.subtasks.length?` · ${o.subtasks.filter(st=>st.done).length}/${o.subtasks.length}`:""}</span></button><button type="button" class="quick-chip" data-attach-picker="file" aria-label="Прикрепить файл" title="Прикрепить файл"><span class="i" aria-hidden="true">attach_file</span><span class="quick-label">Файл</span></button><button type="button" class="quick-chip" data-toggle-extra="attachment-link" aria-label="Прикрепить ссылку" title="Прикрепить ссылку" aria-expanded="false" aria-controls="taskExtraLink"><span class="i" aria-hidden="true">link</span><span class="quick-label">Ссылка</span></button></div><input type="file" id="f_fileUpload" multiple hidden>
@@ -1766,7 +1861,7 @@ function renderTasks(){
 VW="list";if(BK!=="all"&&!BL[BK])BK="all";const q=$("q")?.value.trim().toLocaleLowerCase("ru-RU")||"",allBlocks=BK==="all",B=allBlocks?{n:"Все блоки",c:"var(--p)"}:BL[BK],allMatches=T.filter(x=>(allBlocks||x.b===BK)&&matchesTaskQuery(x,q)),archived=allMatches.filter(x=>x.s==="done").sort((a,b)=>(b.completedAt||b.updatedAt||"").localeCompare(a.completedAt||a.updatedAt||"")),l=allMatches.filter(x=>x.s!=="done"),dn=archived.length,pct=allMatches.length?Math.round(dn/allMatches.length*100):0;
 const op=l.slice().sort((a,b)=>pd(a.d)-pd(b.d)),hrs=op.reduce((sum,x)=>sum+x.h,0);
 let h=`<div class="bts"><button class="bt ${allBlocks?"on":""}" data-bk="all" style="--c:var(--p)">Все</button>${Object.entries(BL).map(([k,b])=>`<button class="bt ${k===BK?"on":""}" data-bk="${k}" style="--c:${b.c}">${esc(b.n)}</button>`).join("")}</div>`;
-h+=`<div class="bh" style="--c:${B.c}"><div><h3>${esc(B.n)}</h3><div style="color:var(--tx2)">${l.length} активных задач · ${dn} в архиве</div><div class="bar"><i style="width:${pct}%"></i></div></div><div class="kv2"><b>${hrs} ч</b>осталось по активным задачам</div><div class="kv2"><b>${op[0]?fmt(pd(op[0].d),{day:"numeric",month:"short"}):"—"}</b>ближайший дедлайн</div></div>`;
+h=h.replace(/<\/div>$/g,'<button type="button" class="ib tasks-add-plus" data-add-current-task title="Добавить задачу" aria-label="Добавить задачу"><span class="i">add</span></button></div>');h+=`<div class="bh" style="--c:${B.c}"><div><h3>${esc(B.n)}</h3><div style="color:var(--tx2)">${l.length} активных задач · ${dn} в архиве</div><div class="bar"><i style="width:${pct}%"></i></div></div><div class="kv2"><b>${hrs} ч</b>осталось по активным задачам</div><div class="kv2"><b>${op[0]?fmt(pd(op[0].d),{day:"numeric",month:"short"}):"—"}</b>ближайший дедлайн</div></div>`;
 
 if(VW==="board")h+=`<div class="board" id="bboard"></div>`;
 else{const g={};l.forEach(x=>{const k=(allBlocks?(BL[x.b]?.n||"Блок")+" · ":"")+(x.sub||"Без проекта");(g[k]=g[k]||[]).push(x)});
@@ -1789,16 +1884,16 @@ function renderRings(){$("rings").innerHTML=Object.entries(BL).map(([k,b])=>{con
 return `<div class="ring ring-clickable" data-openblock="${k}" role="button" tabindex="0" title="Открыть задачи блока «${esc(b.n)}»"><div class="rg" style="--c:${b.c};--v:${p}"><span>${p}%</span></div>${esc(b.n)}<br>${d} из ${l.length}</div>`}).join("")}
 function renderBars(){const a=[];for(let i=0;i<10;i++){const offset=WK+i;a.push({w:isoWeek(addD(mon,i*7)),...loadOf(offset)});}const mx=Math.max(60,...a.map(x=>x.v)),C=["var(--ok)","var(--warn)","var(--hi)"];
 $("bars").innerHTML=a.map((x,i)=>`<div class="bc ${i===0?"now":""}"><em>${Math.round(x.v)}</em><div class="st" style="--c:${C[lvl(x.v)]};height:${x.v/mx*125}px"><i style="height:${x.v?x.b/x.v*100:0}%"></i></div>${x.w}</div>`).join("")}
-let PG="home",BK="all",VW="list",HOME_VW="board",CM=new Date(today.getFullYear(),today.getMonth(),1),HABIT_ANIMATING_ID=null;
+let PG="home",BK="all",VW="list",HOME_VW=window.matchMedia("(max-width:720px)").matches?"list":"board",CM=new Date(today.getFullYear(),today.getMonth(),1),HABIT_ANIMATING_ID=null;
 let CV="week",CW=mon,DS0=7;const HH=48,pad2=n=>String(n).padStart(2,"0");
-function calTop(em,title){const wk=CV==="week";return `<div class="cn"><h3>${em} ${title}</h3><div class="seg" style="margin:0 8px 0 0"><button data-cv="month" class="${wk?"":"on"}">Месяц</button><button data-cv="week" class="${wk?"on":""}">Неделя</button></div><button class="ib" data-mv="-1" title="Раньше"><span class="i">chevron_left</span></button><button class="ib" data-mv="0" title="Сегодня"><span class="i">today</span></button><button class="ib" data-mv="1" title="Позже"><span class="i">chevron_right</span></button></div>`}
+function calTop(em,title){const wk=CV==="week";return `<div class="cn"><h3>${em} ${title}</h3><div class="seg" style="margin:0 8px 0 0"><button data-cv="month" class="${wk?"":"on"}">Месяц</button><button data-cv="week" class="${wk?"on":""}">Неделя</button></div><button class="ib" data-mv="-1" title="Раньше"><span class="i">chevron_left</span></button><button class="ib" data-mv="0" title="Сегодня"><span class="i">today</span></button><button class="ib" data-mv="1" title="Позже"><span class="i">chevron_right</span></button><button type="button" class="ib cal-add-plus" data-cal-add title="Добавить мероприятие" aria-label="Добавить мероприятие"><span class="i">add</span></button></div>`}
 const tkChip=(x,k)=>`<div class="ci tk2 ${x.s==="done"?"dn":""}" data-ot="${x.id}" style="--c:${BL[x.b]?.c||"var(--p)"}" title="${esc(x.t)} · дедлайн ${x.d}">${x.d===k&&(x.planDate||x.d)!==k?"⌛":"⚑"} ${esc(x.t)}</div>`;
 function allDayColumn(d){const k=ds(d);const items=holOn(d).map(x=>`<div class="ci hl" data-oh="${x.id}">🎉 ${esc(x.t)}</div>`).concat(evOn(d).filter(e=>e.allDay).map(e=>`<div class="ci" data-oe="${e.id}" data-od="${e._occDate||k}" style="--c:${eventColor(e)}" title="${esc(e.t)}">${esc(e.t)}</div>`)).concat(T.filter(x=>(x.planDate||x.d)===k||x.d===k).map(x=>tkChip(x,k)));return items.slice(0,3).join("")+(items.length>3?`<button type="button" class="ci mr" data-day="${k}" aria-label="Показать ещё ${items.length-3} элементов">ещё ${items.length-3}</button>`:"")}
 
 const calNote=`<div class="note"><span class="i" style="font-size:18px">info</span>Тёплым фоном отмечены дни без учёбы и работы. ⚑ — задачи со сроком, 🎉 — праздники.</div>`;
 function renderCal(){if(CV==="week")renderWeek();else renderMonth()}
 function renderMonth(){const y=CM.getFullYear(),m=CM.getMonth(),off=(new Date(y,m,1).getDay()+6)%7,cells=Math.ceil((off+new Date(y,m+1,0).getDate())/7)*7;
-let h=calTop(season(CM),fmt(CM,{month:"long",year:"numeric"}))+`<div class="cal">`+DN.map(d=>`<div class="cw">${d}</div>`).join("");
+let h=calTop(season(CM),fmt(CM,{month:"long",year:"numeric"}))+`<div class="cal" style="--cal-weeks:${cells/7}">`+DN.map(d=>`<div class="cw">${d}</div>`).join("");
 for(let i=0;i<cells;i++){const d=new Date(y,m,1-off+i),k=ds(d);
 const al=evOn(d).map(e=>`<div class="ci" data-oe="${e.id}" data-od="${e._occDate||k}" style="--c:${eventColor(e)}" title="${esc(e.t)}">${e.k==="holiday"?"🎉 ":e.allDay?"☀ ":e.a+" "}${esc(e.t)}</div>`).concat(T.filter(x=>(x.planDate||x.d)===k||x.d===k).map(x=>tkChip(x,k)));
 h+=`<div class="cd ${d.getMonth()!==m?"o":""} ${d.getTime()===today.getTime()?"t":""} ${isOff(d)?"off":""}" data-day="${k}"><b>${d.getDate()}</b>${holOn(d).map(x=>`<div class="ci hl" data-oh="${x.id}">🎉 ${esc(x.t)}</div>`).join("")}${al.slice(0,3).join("")}${al.length>3?`<div class="ci mr">ещё ${al.length-3}</div>`:""}</div>`}
@@ -1947,7 +2042,7 @@ function syncEventRepeatUI(){const repeat=$("f_rec")?.value||"none",show=repeat!
 function go(p){closeMobileQuickMenu();PG=p;document.querySelectorAll(".ni").forEach(n=>n.classList.toggle("on",n.dataset.p===(p==="archive"?"tasks":p)));
 const id=p==="profile"?"set":p;document.querySelectorAll(".page").forEach(e=>{const on=e.id==="pg-"+id;e.classList.toggle("on",on);if(on){e.classList.remove("page-enter");void e.offsetWidth;e.classList.add("page-enter")}});
 if(p==="home")head();else $("hello").textContent=NAMES[p];
-const ed=p==="home"||p==="cal"||p==="tasks";["addT","addE"].forEach(i=>$(i).classList.toggle("hide",!ed));if($("mobileFab"))$("mobileFab").classList.toggle("hide",!ed);$("srch").classList.toggle("hide",!(p==="home"||p==="tasks"||p==="archive"));renderPage()}
+const top=$(".top");top?.classList.toggle("quiet-page-head",["cal","tasks","stats"].includes(p));top?.classList.toggle("compact-add-controls",["cal","tasks"].includes(p));top?.classList.toggle("stats-page-head",p==="stats");document.body.classList.toggle("calendar-view-fixed",p==="cal");const ed=p==="home"||p==="cal"||p==="tasks";["addT","addE"].forEach(i=>$(i).classList.toggle("hide",!ed));if($("mobileFab"))$("mobileFab").classList.toggle("hide",!ed);$("srch").classList.toggle("hide",!(p==="home"||p==="tasks"||p==="archive"));renderPage()}
 function all(){renderToday();renderDL();renderFocus();renderBoard();renderRings();renderBars();renderPage()}
 // ---------- действия ----------
 async function saveT(id){if(TASK_SAVE_BUSY)return;TASK_SAVE_BUSY=true;const saveButton=$("md")?.querySelector("[data-savet]"),originalButtonMarkup=saveButton?.innerHTML;if(saveButton){saveButton.disabled=true;saveButton.setAttribute("aria-busy","true");saveButton.textContent=$("ov")?.classList.contains("task-create-compact")?"…":"Сохраняем…"}const updateTaskSaveProgress=label=>{if(saveButton?.isConnected)saveButton.textContent=label};let committed=false;try{const t=$("f_t").value.trim();if(!t){toast("Введите название");return}const planValue=$("f_planDate")?.value||"",deadlineValue=$("f_d")?.value||"",hoursRaw=$("f_h")?.value??"";if(!validISODate(planValue))throw new Error("Укажите корректную плановую дату.");if(!validISODate(deadlineValue))throw new Error("Укажите корректный дедлайн.");if(planValue>deadlineValue)throw new Error("Плановая дата не может быть позже дедлайна.");if(hoursRaw.trim()===""||!Number.isFinite(Number(hoursRaw))||Number(hoursRaw)<0||Number(hoursRaw)>1000)throw new Error("Оценка времени должна быть числом от 0 до 1000 часов.");const rows=[...document.querySelectorAll("#f_subtasks .check-edit-row")],subtasks=rows.map(r=>({id:r.dataset.formsubrow,t:r.querySelector("[data-st-text]").value.trim(),done:r.querySelector("[data-st-done]").checked})).filter(st=>st.t);const attachments=FORM_ATTACHMENTS.map(a=>({...a}));const existing=id?T.find(y=>sameId(y.id,id)):null;if(id&&!existing)throw new Error("Задача уже изменилась на другом устройстве. Открой её заново и повтори сохранение.");const originalTask=existing?deepCloneData(existing):null;const originalUpdatedAt=String(existing?.updatedAt||"");let autoCompleted=false;const o={t,b:$("f_b").value,sub:$("f_sub").value.trim(),planDate:planValue,s0:planValue,d:deadlineValue,h:Number(hoursRaw),p:+$("f_p").value||2,s:existing?.s||"todo",ev:existing?.ev||null,completedAt:existing?.completedAt||null,desc:$("f_desc").value,links:existing?.links||[],attachments,subtasks,time:$("f_time").value||"",updatedAt:new Date().toISOString()};if(subtasks.length&&subtasks.every(st=>st.done)&&o.s!=="done"){o.s="done";o.completedAt=o.updatedAt;autoCompleted=true}if(!o.d)throw new Error("Укажите срок");o.s0=o.planDate;const taskId=existing?existing.id:(id?String(id):nid());o.id=taskId;Object.assign(o,sanitizeTask(o));let localFileIndex=0;const localFileTotal=FORM_PENDING_FILES.size;for(const [fileId,file] of FORM_PENDING_FILES.entries()){localFileIndex++;updateTaskSaveProgress(`Сохраняем вложения ${localFileIndex}/${localFileTotal}…`);await putLocalAttachment(fileId,file)}if(AUTH?.user&&CLOUD.enabled){const cloudFiles=attachments.filter(a=>FORM_PENDING_FILES.has(a.id));let cloudFileIndex=0;for(const a of attachments){const f=FORM_PENDING_FILES.get(a.id);if(f){cloudFileIndex++;updateTaskSaveProgress(`Загружаем в облако ${cloudFileIndex}/${cloudFiles.length}…`);try{a.storagePath=await uploadCloudAttachment(taskId,a,f);a.localOnly=!a.storagePath}catch(err){a.localOnly=true;console.warn("Upload attachment:",err);toast(`Файл «${a.name}» сохранён локально; облако не приняло его`)}}}}updateTaskSaveProgress("Записываем задачу…");const removed=FORM_ORIGINAL_ATTACHMENTS.filter(a=>!new Set(attachments.map(x=>String(x.id))).has(String(a.id)));let target=null;if(id){target=T.find(y=>sameId(y.id,id));if(!target)throw new Error("Задача была удалена или обновлена во время сохранения. Ничего не перезаписано; открой её заново.");if(String(target.updatedAt||"")!==originalUpdatedAt)throw new Error("Задача изменилась на другом устройстве во время сохранения. Открой её заново, чтобы не потерять изменения.");Object.assign(target,o)}else{if(T.some(y=>sameId(y.id,taskId)))throw new Error("Задача с таким идентификатором уже существует. Повтори сохранение.");T.push(o)}if(!save()){if(target&&originalTask)Object.assign(target,originalTask);else T=T.filter(y=>!sameId(y.id,taskId));throw new Error("Не удалось сохранить задачу на устройстве. Проверь свободное место браузера и попробуй снова.")}committed=true;FORM_PENDING_FILES.clear();closeM();all();let cloudRemovedSynced=false;if(removed.length&&AUTH?.user&&CLOUD.enabled){try{await cloudSave();cloudRemovedSynced=true}catch(err){console.warn("Removed attachments await sync:",err)}}for(const a of removed){try{await cleanupAttachment(a,{cloud:cloudRemovedSynced||!a.storagePath||!AUTH?.user||!CLOUD.enabled})}catch(err){console.warn("Removed attachment cleanup:",err)}}toast(autoCompleted?"Все шаги выполнены — задача в архиве 🐾":id?"Задача сохранена":"Задача добавлена ✨");scheduleAttachmentGarbageCollection(!!AUTH?.user&&CLOUD.syncState==="synced")}catch(err){console.warn("Wild Workspace task save:",err);toast(err?.message||"Не удалось сохранить задачу")}finally{TASK_SAVE_BUSY=false;if(saveButton?.isConnected){saveButton.disabled=false;saveButton.removeAttribute("aria-busy");if(originalButtonMarkup!==undefined)saveButton.innerHTML=originalButtonMarkup}scheduleAttachmentGarbageCollection(!!AUTH?.user&&CLOUD.syncState==="synced");flushClockRefresh()}}
@@ -1971,7 +2066,7 @@ async function resetThisDevice(options={}){
   TAB_BASELINE=snapshotWorkspaceState();saveSet();save();
   try{if(TAB_CHANNEL)TAB_CHANNEL.postMessage({type:"device-reset",source:DEVICE_TAB_ID,stamp:resetStamp})}catch(e){}
   RESETTING_DEVICE=false;
-  applyAcc();applyTheme();closeM(true);PG="home";BK="all";VW="list";HOME_VW="board";CV="week";CW=mon;CM=new Date(today.getFullYear(),today.getMonth(),1);if($("q"))$("q").value="";go("home");all();showWelcome();toast(options.message||"Это устройство очищено. Облачная копия не изменена.");renderProfileIfVisible();
+  applyAcc();applyTheme();closeM(true);PG="home";BK="all";VW="list";HOME_VW=window.matchMedia("(max-width:720px)").matches?"list":"board";CV="week";CW=mon;CM=new Date(today.getFullYear(),today.getMonth(),1);if($("q"))$("q").value="";go("home");all();showWelcome();toast(options.message||"Это устройство очищено. Облачная копия не изменена.");renderProfileIfVisible();
 }
 function requestLocalReset(){openM(`<div class="modal-eyebrow"><span class="i">cleaning_services</span> ЛОКАЛЬНАЯ ОЧИСТКА</div><h3>Очистить только это устройство?</h3><p class="modal-hint">Задачи, мероприятия, привычки, пользовательские настройки, локальные вложения и сохранённый вход будут удалены из этого браузера. <b>Облачная копия не изменится</b>; данные на другом устройстве сохранятся. Чтобы удалить данные аккаунта в облаке, используй отдельное действие ниже.</p><div class="act"><button type="button" class="btn n o" data-close>Отмена</button><button type="button" class="btn n d" data-confirm-local-reset>Очистить устройство</button></div>`)}
 async function beginDeleteAllAccountData(){if(ACCOUNT_DELETE_BUSY)return;if(!AUTH?.user)return toast("Сначала войди в аккаунт, чтобы удалить его облачные данные.");ACCOUNT_DELETE_BUSY=true;try{const uid=AUTH.user.id,rows=await cloudApi("/rest/v1/workspace_data?select=payload,updated_at&user_id=eq."+encodeURIComponent(uid)+"&limit=1",{method:"GET"}),row=rows&&rows.length?rows[0]:null,remotePayload=row?.payload||{version:3,T:[],E:[],HD:[],H:[],BL:deepCloneData(DEFAULT_WORKSPACE.BL),_deleted:{T:{},E:{},HD:{},H:{},BL:{}},_syncMeta:{devices:{},accountResetAt:""}},merged=mergeWorkspacePayload(syncWorkspacePayload(),remotePayload),backup={...merged,SET:{...deepCloneData(workspacePayload().SET),...deepCloneData(merged.SET||{}),touched:deepCloneData(merged.SET?.touched||workspacePayload().SET.touched||{})},_accountDeletionBackup:{createdAt:new Date().toISOString(),accountEmail:AUTH.user.email||null,cloudUpdatedAt:row?.updated_at||null,notice:"Резервная копия данных планера перед удалением. Сам аккаунт авторизации Supabase не удаляется."},_cloudSnapshot:deepCloneData(remotePayload)};ACCOUNT_DELETE_PENDING={userId:uid,remoteStamp:row?.updated_at||null,remotePayload:deepCloneData(remotePayload),backup};ACCOUNT_DELETE_BACKUP_READY=false;openM(`<div data-account-delete-confirm><div class="modal-eyebrow"><span class="i">delete_forever</span> УДАЛЕНИЕ ДАННЫХ АККАУНТА</div><h3>Сначала сохрани резервную копию</h3><p class="modal-hint">Подготовлена JSON-копия объединённых данных этого устройства и актуальной облачной версии. Сначала скачай файл. Затем введи слово <b>УДАЛИТЬ</b>, чтобы продолжить. Если облачная запись изменится после резервного копирования, операция будет остановлена и потребуется новая копия.</p><p class="modal-hint">Удаляются данные планера и вложения аккаунта, а не сам пользователь Supabase.</p><div class="act"><button type="button" class="btn n o" data-close>Отмена</button><button type="button" class="btn n" data-download-account-backup>Скачать резервную копию</button></div><label class="fl">Для подтверждения введи УДАЛИТЬ<input id="deleteAllDataWord" autocomplete="off" placeholder="УДАЛИТЬ" aria-label="Введи УДАЛИТЬ для подтверждения"></label><label class="fl"><input type="checkbox" id="deleteAllDataBackupAck"> Я сохранил резервную копию в надёжном месте.</label><div class="act"><button type="button" class="btn n o" data-close>Не удалять</button><button type="button" class="btn n d" data-confirm-delete-account disabled>Удалить все данные аккаунта</button></div><p class="modal-hint" id="deleteAllDataStatus" role="status">Сначала скачай резервную копию.</p></div>`)}catch(e){console.warn("Prepare account deletion backup:",e);toast("Не удалось получить актуальную облачную копию. Ничего не удалено: "+(e.message||"ошибка"))}finally{ACCOUNT_DELETE_BUSY=false}}
@@ -2047,7 +2142,7 @@ if(a=g("[data-bk]")){BK=a.dataset.bk;if(PG==="archive")renderArchive();else rend
 
 if(a=g("[data-home-vw]")){HOME_VW=a.dataset.homeVw;document.querySelectorAll("[data-home-vw]").forEach(b=>b.classList.toggle("on",b.dataset.homeVw===HOME_VW));renderBoard();return}
 if(a=g("[data-mv]")){const v=+a.dataset.mv;if(CV==="week")CW=v?addD(CW,7*v):mon;else CM=v?new Date(CM.getFullYear(),CM.getMonth()+v,1):new Date(today.getFullYear(),today.getMonth(),1);renderCal();return}
-if(g("#addT")){formT(null,PG==="tasks"&&BK!=="all"?{b:BK}:null);return}if(g("#addE")){formE();return}
+if(g("#addT,[data-add-current-task]")){formT(null,PG==="tasks"&&BK!=="all"?{b:BK}:null);return}if(a=g("[data-cal-add]")){formE();return}if(g("#addE")){formE();return}
 
 if(a=g("[data-show-overdue]")){showOverdueList();return}if(a=g("[data-addt-block]")){formT(null,{b:a.dataset.addtBlock});return}if(a=g("[data-addt-context]")){let sub="";try{sub=decodeURIComponent(a.dataset.addsubContext||"")}catch(err){}formT(null,{b:a.dataset.addtContext,sub});return}if(a=g("[data-addt]")){formT(null,{d:a.dataset.addt,s0:a.dataset.addt});return}
 if(a=g("[data-adde]")){formE(null,{date:a.dataset.adde});return}
