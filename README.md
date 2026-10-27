@@ -1,6 +1,15 @@
-# Wild Workspace v3.5.7 — PWA build
+# Wild Workspace v4.0.0 — PWA build
 
 Wild Workspace is a static HTML/CSS/JavaScript planner. This package includes the installable Progressive Web App (PWA) shell for GitHub Pages.
+
+## Changes in v4.0.0
+
+- Added Russian/English interface language selection in Settings; the chosen language is stored locally and restored on next launch.
+- Added Halloween and Christmas themes with distinct accent palettes, falling seasonal particles, a themed logo badge, cat costumes, and seasonal cat messages. Light/dark mode remains available under either seasonal theme.
+- Removed the old “Тише: без тряски” setting; overdue tasks retain their visible motion.
+- Reworked habit history on Home into separated weekly chips so week labels and counts are readable.
+- Fixed the desktop navigation rail while the page scrolls.
+- Updated the primary script CSP hash and bumped the Service Worker cache to v4.0.0.
 
 ## Changes in v3.5.7
 
