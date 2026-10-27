@@ -1,4 +1,16 @@
-# Wild Workspace v2.10.0 — PWA build
+# Wild Workspace v3.5.1 — PWA build
+
+Wild Workspace is a static HTML/CSS/JavaScript planner. This package includes the installable Progressive Web App (PWA) shell for GitHub Pages.
+
+## Changes in v3.5.1
+
+- Removed the Zen section and separated Statistics and Settings into independent navigation sections.
+- Refined the responsive Statistics and Settings layouts to use the available desktop width cleanly and to stack appropriately on mobile.
+- Added swipe navigation between calendar weeks/months and between task blocks.
+- Increased contrast and consistency of overdue-task styling with a clearer red treatment.
+- Removed the quick-add-habit control from the Home weekly block; habit management remains in Settings.
+- Updated the Service Worker cache version to `v3.5.1` so installed PWA clients can activate the new app shell.
+- Includes the cumulative fixes and safety improvements in the v3.5.x app build.
 
 Wild Workspace is a static HTML/CSS/JavaScript planner. This package includes the installable Progressive Web App (PWA) shell for GitHub Pages, plus the current interface fixes.
 

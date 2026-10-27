@@ -47,3 +47,17 @@
 - [x] Added PWA manifest, 192/512 install icons, scoped Service Worker, app-shell caching, and `.nojekyll` for GitHub Pages.
 - [x] Static QA: both inline scripts and Service Worker pass `node --check`; manifest parses as JSON; all local PWA assets resolve; no duplicate HTML IDs; CSS parses without top-level syntax errors.
 - [ ] Browser-based install/offline end-to-end test after deployment to HTTPS. It should be completed against the published GitHub Pages URL.
+
+## Wild Workspace v3.5.1 — release validation (27 Oct 2026)
+
+- [x] Updated the PWA entry point to the validated `Wild_Workspace_v3.5.1.html` build.
+- [x] Removed the Zen section; Statistics and Settings are separate navigation sections.
+- [x] Added swipe handling for calendar period navigation and task-block navigation.
+- [x] Removed the Home weekly-block shortcut for adding a habit; Settings remain the habit-management entry point.
+- [x] Improved overdue-task contrast with the red color treatment.
+- [x] Both inline JavaScript blocks pass `node --check`.
+- [x] Both inline script hashes match the HTML Content Security Policy.
+- [x] CSS parses without reported top-level syntax errors.
+- [x] Service Worker cache version is bumped to `v3.5.1` to invalidate the previous app-shell cache.
+- [ ] After publication, verify Service Worker activation, update visibility in an installed PWA, and the real Supabase account/sync flows in a browser.
+
