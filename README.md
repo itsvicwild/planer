@@ -1,6 +1,15 @@
-# Wild Workspace v3.5.3 — PWA build
+# Wild Workspace v3.5.4 — PWA build
 
 Wild Workspace is a static HTML/CSS/JavaScript planner. This package includes the installable Progressive Web App (PWA) shell for GitHub Pages.
+
+## Changes in v3.5.4
+
+- Rebuilt the Gantt header with aligned week and day labels, clear daily grid lines, a highlighted current day, and thinner block-summary bars.
+- Added directional slide/fade transitions to calendar and task-block swipes; reduced-motion preferences are respected.
+- Changed the calendar's default view to Week, including after a local data reset.
+- Removed the redundant “Добавить задачу” button from the selected-block summary while keeping add buttons on sub-blocks.
+- Softened the archive preview card and compacted the task-block summary on mobile.
+- Bumped the Service Worker cache to v3.5.4.
 
 ## Changes in v3.5.3
 
