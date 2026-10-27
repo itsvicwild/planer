@@ -71,3 +71,16 @@
 - [x] Both inline scripts pass `node --check`; CSP hashes were recalculated and verified.
 - [ ] Actual-device validation on the user's phone is still pending; GitHub Pages deployment/Service Worker update must finish before retesting.
 
+## Wild Workspace v3.5.3 — UX and mobile sign-in hardening (27 Oct 2026)
+
+- [x] Selected navigation indicators are more elongated on desktop and mobile.
+- [x] Home “Скоро” excludes tasks scheduled for today and tasks due today.
+- [x] Home “Скоро” shows no more than five rows and prioritizes high-importance tasks, then medium/low; nearest due date breaks ties.
+- [x] Statistics KPI and chart cards have contrasting surfaces, borders, and heading separators.
+- [x] Auth, refresh-token, and REST requests have a 15-second timeout, including response-body reads.
+- [x] Persistent inline auth feedback explains timeout/network failures and errors during the first cloud read/write.
+- [x] Service Worker cache version was bumped to `v3.5.3`.
+- [x] Inline JavaScript passed `node --check`; CSP hashes were recalculated and matched both inline scripts.
+- [x] CSS parses without reported syntax errors; HTML contains no duplicate IDs.
+- [ ] Verify the published update and live Supabase sign-in from the user's physical Android phone.
+

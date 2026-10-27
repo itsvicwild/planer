@@ -1,6 +1,16 @@
-# Wild Workspace v3.5.2 — PWA build
+# Wild Workspace v3.5.3 — PWA build
 
 Wild Workspace is a static HTML/CSS/JavaScript planner. This package includes the installable Progressive Web App (PWA) shell for GitHub Pages.
+
+## Changes in v3.5.3
+
+- Made the selected navigation pills more elongated on desktop and mobile, closer to Material You navigation surfaces.
+- Removed tasks scheduled for today from the Home screen's “Скоро” list, so they are not duplicated with “Сегодня”.
+- Limited “Скоро” to five rows and sorted tasks by importance (high, medium, low), then by due date; upcoming holidays fill only remaining positions.
+- Added contrasting surfaces, subtle borders and heading separators to statistics cards and metric tiles.
+- Added a 15-second timeout to auth, refresh-token, and REST requests, including response-body reads, so mobile sign-in and initial cloud fetches cannot wait indefinitely.
+- Added persistent error text in the sign-in dialog for authentication and first-sync failures.
+- Bumped the Service Worker cache to v3.5.3.
 
 ## Changes in v3.5.2
 
