@@ -8,6 +8,9 @@ Wild Workspace is a static HTML/CSS/JavaScript planner. This package includes th
 - Replaced the task effort abbreviation with a universal hourglass icon and kept the displayed hour unit localized.
 - Softened seasonal themes into a calmer, lofi-inspired atmosphere: subtle warm/cool ambient light, a quiet window silhouette and slower, smaller particles while retaining Material You surfaces and controls.
 
+
+- Follow-up localization fix: translated the holiday reminder even with its leading sun emoji and added translation for the dynamic account-status line.
+
 ## Changes in v4.0.1
 
 - Added a segmented RU / EN language switch in Settings and expanded English coverage for common labels, statuses and task controls.
