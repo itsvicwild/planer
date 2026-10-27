@@ -1,6 +1,12 @@
-# Wild Workspace v4.0.1 — PWA build
+# Wild Workspace v4.0.2 — PWA build
 
 Wild Workspace is a static HTML/CSS/JavaScript planner. This package includes the installable Progressive Web App (PWA) shell for GitHub Pages.
+
+## Changes in v4.0.2
+
+- Expanded English localization for task creation, settings, workload labels, statistics cards and dynamically generated statistics text.
+- Replaced the task effort abbreviation with a universal hourglass icon and kept the displayed hour unit localized.
+- Softened seasonal themes into a calmer, lofi-inspired atmosphere: subtle warm/cool ambient light, a quiet window silhouette and slower, smaller particles while retaining Material You surfaces and controls.
 
 ## Changes in v4.0.1
 
