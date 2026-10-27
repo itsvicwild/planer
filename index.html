@@ -991,6 +991,33 @@ html[data-festival="christmas"] #pg-home>.card.c7{border-color:rgba(196,225,250,
   html[data-festival="halloween"] .festival-particle{animation:none!important;opacity:.08!important}
 }
 
+
+/* v4.0.10 — two-row mobile task controls; desktop layout unchanged */
+@media(min-width:361px) and (max-width:720px){
+  .ov.entry-sheet.task-form-overlay .md{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:6px;row-gap:8px;align-content:start}
+  .ov.entry-sheet.task-form-overlay .md>.modal-eyebrow,
+  .ov.entry-sheet.task-form-overlay .md>h3,
+  .ov.entry-sheet.task-form-overlay .md>.task-title-field,
+  .ov.entry-sheet.task-form-overlay .md>.extra-panel,
+  .ov.entry-sheet.task-form-overlay .md>.task-block-project-row,
+  .ov.entry-sheet.task-form-overlay .md>.act{grid-column:1/-1;min-width:0}
+  .ov.entry-sheet.task-form-overlay .task-date-row,
+  .ov.entry-sheet.task-form-overlay .task-action-row{display:contents}
+  .ov.entry-sheet.task-form-overlay .task-date-row>.plan-date-chip{grid-column:span 5;width:100%;min-width:0;padding:5px 6px;gap:4px}
+  .ov.entry-sheet.task-form-overlay .task-date-row>.quick-date{grid-column:span 4;width:100%;min-width:0;padding:5px 6px;gap:4px}
+  .ov.entry-sheet.task-form-overlay .task-date-row .plan-date-chip input[type=date],
+  .ov.entry-sheet.task-form-overlay .task-date-row>.quick-date input[type=date]{width:0;min-width:0;max-width:none;flex:1 1 0%;font-size:10.5px}
+  .ov.entry-sheet.task-form-overlay .task-date-row>.hours-stepper{grid-column:span 3;min-width:0;min-height:42px;justify-content:center;gap:2px;padding:4px 2px!important}
+  .ov.entry-sheet.task-form-overlay .task-date-row>.hours-stepper .quick-hours-icon{font-size:15px;min-width:14px}
+  .ov.entry-sheet.task-form-overlay .task-date-row>.hours-stepper .hours-step{width:16px;min-width:16px;height:28px;padding:0}
+  .ov.entry-sheet.task-form-overlay .task-date-row>.hours-stepper .hours-value{min-width:16px;font-size:10px}
+  .ov.entry-sheet.task-form-overlay .task-action-row .priority-cycle,
+  .ov.entry-sheet.task-form-overlay .task-action-row [data-toggle-extra="desc"]{grid-column:span 2}
+  .ov.entry-sheet.task-form-overlay .task-action-row [data-toggle-extra="checklist"]{grid-column:span 4}
+  .ov.entry-sheet.task-form-overlay .task-action-row [data-attach-picker="file"],
+  .ov.entry-sheet.task-form-overlay .task-action-row [data-toggle-extra="attachment-link"]{grid-column:span 2}
+}
+
 </style>
 </head>
 <body>
