@@ -9,7 +9,7 @@ Wild Workspace is a static HTML/CSS/JavaScript planner. This package includes th
 - Removed the old “Тише: без тряски” setting; overdue tasks retain their visible motion.
 - Reworked habit history on Home into separated weekly chips so week labels and counts are readable.
 - Fixed the desktop navigation rail while the page scrolls.
-- Updated the primary script CSP hash and bumped the Service Worker cache to v4.0.0.
+- Recalculated and verified the primary script CSP hash; refreshed the Service Worker cache to v4.0.1 so installed PWAs fetch the final v4.0.0 release files.
 
 ## Changes in v3.5.7
 
