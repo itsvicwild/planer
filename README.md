@@ -1,6 +1,14 @@
-# Wild Workspace v3.5.1 — PWA build
+# Wild Workspace v3.5.2 — PWA build
 
 Wild Workspace is a static HTML/CSS/JavaScript planner. This package includes the installable Progressive Web App (PWA) shell for GitHub Pages.
+
+## Changes in v3.5.2
+
+- Fixed the mobile sign-in dialog: it no longer opens the virtual keyboard automatically when the dialog appears.
+- Resized and repositioned the sign-in dialog using the mobile visual viewport so it can adapt when the keyboard is open.
+- Made the primary **Войти** action full-width and sticky in the mobile dialog, above the keyboard when possible.
+- Added a visible loading state to prevent repeated sign-in taps and Enter/Go key support for the email/password fields.
+- Bumped the Service Worker cache version to `v3.5.2` so PWA clients can install this fix.
 
 ## Changes in v3.5.1
 

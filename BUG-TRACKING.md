@@ -61,3 +61,13 @@
 - [x] Service Worker cache version is bumped to `v3.5.1` to invalidate the previous app-shell cache.
 - [ ] After publication, verify Service Worker activation, update visibility in an installed PWA, and the real Supabase account/sync flows in a browser.
 
+## Wild Workspace v3.5.2 — mobile sign-in fix (27 Oct 2026)
+
+- [x] Removed automatic email-field focus on touch/mobile devices so the virtual keyboard does not cover the login actions immediately.
+- [x] Auth modal tracks `window.visualViewport` changes and constrains its height when the mobile keyboard opens.
+- [x] Made the primary login action a full-width sticky mobile action and added an immediate loading state to prevent duplicate requests.
+- [x] Enter/Go from the email or password field triggers the login action.
+- [x] Mobile-emulated Playwright test confirms a login tap invokes the Supabase password-token request; mocked errors show feedback and restore the button.
+- [x] Both inline scripts pass `node --check`; CSP hashes were recalculated and verified.
+- [ ] Actual-device validation on the user's phone is still pending; GitHub Pages deployment/Service Worker update must finish before retesting.
+
