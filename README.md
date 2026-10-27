@@ -1,6 +1,14 @@
-# Wild Workspace v4.0.0 — PWA build
+# Wild Workspace v4.0.1 — PWA build
 
 Wild Workspace is a static HTML/CSS/JavaScript planner. This package includes the installable Progressive Web App (PWA) shell for GitHub Pages.
+
+## Changes in v4.0.1
+
+- Added a segmented RU / EN language switch in Settings and expanded English coverage for common labels, statuses and task controls.
+- Removed the four-week habit history chips from the home screen while preserving habit check-ins and stored history.
+- Moved the task-priority control directly before Description in the new-task quick action row.
+- Excluded overdue tasks from the Today list when they are already shown in the red “Didn't get to it?” block.
+- Enriched Halloween and Christmas surface styling and seasonal particles; overdue-task borders stay red in every theme.
 
 ## Changes in v4.0.0
 
