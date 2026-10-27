@@ -1,6 +1,10 @@
-# Wild Workspace v3.5.5 — PWA build
+# Wild Workspace v3.5.6 — PWA build
 
 Wild Workspace is a static HTML/CSS/JavaScript planner. This package includes the installable Progressive Web App (PWA) shell for GitHub Pages.
+
+## Changes in v3.5.6
+
+- Fixed an incorrect CSP SHA-256 hash that prevented the main JavaScript from running; bumped the Service Worker cache to refresh installed PWA assets.
 
 ## Changes in v3.5.5
 
