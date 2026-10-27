@@ -1,0 +1,57 @@
+name: Validate Wild Workspace source
+
+on:
+  push:
+    paths:
+      - "index.html"
+      - "service-worker.js"
+      - ".github/workflows/validate-app.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate inline JavaScript, Service Worker and CSP hashes
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+          const crypto = require("node:crypto");
+          const { execFileSync } = require("node:child_process");
+
+          const html = fs.readFileSync("index.html", "utf8");
+          const scripts = [...html.matchAll(/<script(?![^>]*\\bsrc=)(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/gi)].map(match => match[1]);
+          if (scripts.length !== 2) {
+            throw new Error(`Expected 2 inline scripts, found ${scripts.length}`);
+          }
+
+          const csp = html.match(/<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-([^']+)' 'sha256-([^']+)'/);
+          if (!csp) throw new Error("CSP inline-script hashes were not found");
+
+          const actualHashes = scripts.map(script =>
+            crypto.createHash("sha256").update(script, "utf8").digest("base64")
+          );
+          if (actualHashes[0] !== csp[1] || actualHashes[1] !== csp[2]) {
+            throw new Error("CSP hashes do not match the inline scripts");
+          }
+
+          scripts.forEach((script, index) => {
+            const path = `/tmp/wild-workspace-inline-${index}.js`;
+            fs.writeFileSync(path, script, "utf8");
+            execFileSync(process.execPath, ["--check", path], { stdio: "inherit" });
+          });
+          execFileSync(process.execPath, ["--check", "service-worker.js"], { stdio: "inherit" });
+          console.log("Inline JavaScript syntax and CSP hashes are valid.");
+          NODE
