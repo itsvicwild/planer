@@ -315,9 +315,20 @@
     const target=stickyHeight+8+currentHours*hourHeight-card.clientHeight/2;
     card.scrollTop=Math.max(0,Math.min(target,card.scrollHeight-card.clientHeight));
   }
+  let centerWeekAfterTodayClick=false;
+  // Mark the explicit Today action before the delegated page click handler rerenders the week.
+  document.addEventListener("click",event=>{
+    const target=event.target;
+    const button=target instanceof Element?target.closest("[data-mv]"):null;
+    if(!button||button.dataset.mv!=="0")return;
+    const root=document.getElementById("pg-cal");
+    if(root&&root.classList.contains("on")&&root.querySelector('[data-cv="week"].on'))centerWeekAfterTodayClick=true;
+  },true);
   const originalRenderCal=window.renderCal;
   if(typeof originalRenderCal==="function"){
     window.renderCal=function(...args){
+      const centerToday=centerWeekAfterTodayClick;
+      centerWeekAfterTodayClick=false;
       const root=document.getElementById("pg-cal");
       const oldCard=root&&root.querySelector(".wcard"),oldScroll=oldCard?oldCard.scrollTop:null;
       const result=originalRenderCal.apply(this,args);
@@ -326,7 +337,8 @@
       if(week)requestAnimationFrame(()=>{
         const card=active.querySelector(".wcard");
         if(!card)return;
-        if(oldScroll!==null)card.scrollTop=oldScroll;
+        if(centerToday)centerWeeklyTimeline(active);
+        else if(oldScroll!==null)card.scrollTop=oldScroll;
         else centerWeeklyTimeline(active);
       });
       return result;
