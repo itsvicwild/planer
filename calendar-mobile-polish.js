@@ -161,10 +161,11 @@
     sandbox.id=id;sandbox.className=root.className;
     const height=Math.max(1,root.getBoundingClientRect().height);
     sandbox.style.cssText="position:absolute!important;left:-100000px!important;top:0!important;width:"+width+"px!important;height:"+height+"px!important;min-height:0!important;max-width:none!important;box-sizing:border-box!important;visibility:hidden!important;pointer-events:none!important;overflow:hidden!important;z-index:-1!important";
-    root.id=id+"-live";
+    // Insert the sandbox first so ID lookups target it, but keep the live page's
+    // ID intact: CSS selectors on #pg-cal determine the visible calendar height.
     root.parentNode.insertBefore(sandbox,root);
     try { const result=bridge.preview(kind,step); return result&&result.can?result:{can:false,html:""}; }
-    finally { sandbox.remove();root.id=id; }
+    finally { sandbox.remove(); }
   }
   function scrollAtEdge(root,dx) {
     if(root.id!=="pg-cal")return true;
@@ -188,6 +189,9 @@
   }
   function makeSwipeStage(s,step) {
     if(s.stage)return true;
+    // Snapshot the visible viewport before building the offscreen preview.
+    const liveCard=s.kind==="cal"?s.root.querySelector(".wcard"):null;
+    const savedScrollTop=liveCard?liveCard.scrollTop:null,savedScrollLeft=liveCard?liveCard.scrollLeft:0;
     const result=previewMarkup(s.root,s.kind,step);if(!result.can)return false;
     const width=Math.max(1,s.root.getBoundingClientRect().width),track=document.createElement("div");
     track.className="ww-swipe-track";track.style.width=(width*2)+"px";
@@ -208,8 +212,10 @@
     Object.assign(track.style,{display:"flex",flexFlow:"row nowrap",alignItems:"stretch",gap:"0",margin:"0",padding:"0",maxWidth:"none",willChange:"transform"});
     s.track=track;s.width=width;s.step=step;s.startPosition=step>0?0:-width;s.position=s.startPosition;s.stage=true;
     if(s.kind==="cal"){
+      s.savedScrollTop=savedScrollTop;s.savedScrollLeft=savedScrollLeft;
       const sourceCard=s.currentPanel.querySelector(".wcard"),previewCard=s.previewPanel.querySelector(".wcard");
-      if(sourceCard&&previewCard){previewCard.scrollTop=sourceCard.scrollTop;previewCard.scrollLeft=sourceCard.scrollLeft;}
+      if(sourceCard&&savedScrollTop!==null){sourceCard.scrollTop=savedScrollTop;sourceCard.scrollLeft=savedScrollLeft;}
+      if(previewCard){previewCard.scrollTop=savedScrollTop!==null?savedScrollTop:(sourceCard?.scrollTop||0);previewCard.scrollLeft=savedScrollLeft;}
     }
     return true;
   }
@@ -224,6 +230,10 @@
         s.previewPanel.remove();
         s.root.style.overflow=s.saved.overflow;s.root.style.position=s.saved.position;
         s.root.style.touchAction=s.saved.touchAction;s.root.style.minHeight=s.saved.minHeight;
+        if(s.kind==="cal"&&s.savedScrollTop!==null){
+          const currentCard=s.currentPanel.querySelector(".wcard");
+          if(currentCard){currentCard.scrollTop=s.savedScrollTop;currentCard.scrollLeft=s.savedScrollLeft||0;}
+        }
         const bridge=window.__wwMobileNavigationBridge;
         if(!bridge||!bridge.move(s.kind,s.step))restoreSwipeStage(s);
       }else restoreSwipeStage(s);
