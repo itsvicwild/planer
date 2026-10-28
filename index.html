@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-lODKWL/QVYuEeorJNjjiozC5cWdw3iG4S4imMmGi180=' 'sha256-Wl6tPkGgzYtZ8oPqa/9IlgnR5ry1r78X+jqSSnhl1YE=' 'sha256-Ne0UcaSjIPRZtfbGko4YT76+FbUXnX+9povIe0JV8BU=' 'sha256-xPte2S2vYiV9C96KgSJyPo4aHIVX9Cn02KQFRD/T/kA=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-2CjFVuhtYJ4Z0PHd+4l0DysGsIQ6aGHe1HVYSbTse0A=' 'sha256-Wl6tPkGgzYtZ8oPqa/9IlgnR5ry1r78X+jqSSnhl1YE=' 'sha256-Ne0UcaSjIPRZtfbGko4YT76+FbUXnX+9povIe0JV8BU=' 'sha256-xPte2S2vYiV9C96KgSJyPo4aHIVX9Cn02KQFRD/T/kA=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Wild Workspace — личный планер v4.0.2</title>
 <meta name="description" content="Wild Workspace — личное пространство для задач, привычек, событий и маленьких побед.">
 <meta name="theme-color" content="#0e1411">
@@ -1394,6 +1394,13 @@ body.ww-calendar-draft-active #ov{background:rgba(0,0,0,.43)}
 .profile-shortcuts kbd{display:inline-grid;place-items:center;min-width:38px;height:34px;padding:0 9px;border:1px solid var(--ol);border-bottom-width:3px;border-radius:9px;background:var(--s2);color:var(--tx);font:600 13px "Roboto Flex",sans-serif;box-shadow:0 1px 0 color-mix(in srgb,var(--ol) 45%,transparent)}
 @media(max-width:720px){.profile-shortcuts{display:none!important}}
 html{background:var(--bg)!important;color-scheme:light dark}
+
+/* Real finger-following horizontal swipe track. */
+.ww-swipe-track{position:relative;flex:0 0 auto;overflow:visible;transform-style:preserve-3d;backface-visibility:hidden}
+.ww-swipe-panel{position:relative;flex-shrink:0;min-width:0;backface-visibility:hidden}
+.ww-swipe-preview{pointer-events:none;user-select:none;-webkit-user-select:none}
+.ww-swipe-preview .we,.ww-swipe-preview .ci,.ww-swipe-preview button{pointer-events:none!important}
+@media(prefers-reduced-motion:reduce){.ww-swipe-track{transition:none!important}}
 </style>
 </head>
 <body>
@@ -2324,6 +2331,6 @@ if ("serviceWorker" in navigator && (location.protocol === "https:" || location.
 }
 </script>
 <script src="./ics-import.js" integrity="sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ=" crossorigin="anonymous"></script>
-<script src="./calendar-mobile-polish.js" integrity="sha256-lODKWL/QVYuEeorJNjjiozC5cWdw3iG4S4imMmGi180=" crossorigin="anonymous"></script>
+<script src="./calendar-mobile-polish.js" integrity="sha256-2CjFVuhtYJ4Z0PHd+4l0DysGsIQ6aGHe1HVYSbTse0A=" crossorigin="anonymous"></script>
 </body>
 </html>
