@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-lIHA5C6znx6HcXg0WytNVWBsTYII7pDZLNzvttVa/wY=' 'sha256-Ne0UcaSjIPRZtfbGko4YT76+FbUXnX+9povIe0JV8BU=' 'sha256-xPte2S2vYiV9C96KgSJyPo4aHIVX9Cn02KQFRD/T/kA=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-lODKWL/QVYuEeorJNjjiozC5cWdw3iG4S4imMmGi180=' 'sha256-lIHA5C6znx6HcXg0WytNVWBsTYII7pDZLNzvttVa/wY=' 'sha256-Ne0UcaSjIPRZtfbGko4YT76+FbUXnX+9povIe0JV8BU=' 'sha256-xPte2S2vYiV9C96KgSJyPo4aHIVX9Cn02KQFRD/T/kA=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Wild Workspace — личный планер v4.0.2</title>
 <meta name="description" content="Wild Workspace — личное пространство для задач, привычек, событий и маленьких побед.">
 <meta name="theme-color" content="#0e1411">
@@ -1370,6 +1370,24 @@ html{background-color:var(--bg)!important}
 
 /* Statistics: remove the Gantt chart from the visible layout. */
 #profile-statistics-content > .grid > section.card:last-child{display:none!important}
+
+/* Mobile polish: deliberate event dragging, clear draft outline, and page-like swipe motion. */
+.swipe-busy{pointer-events:none;will-change:transform,opacity}
+.swipe-exit-left{animation:wwSwipeExitLeft 210ms cubic-bezier(.33,1,.68,1) both;pointer-events:none}
+.swipe-exit-right{animation:wwSwipeExitRight 210ms cubic-bezier(.33,1,.68,1) both;pointer-events:none}
+.swipe-enter-right{animation:wwSwipeEnterRight 330ms cubic-bezier(.22,.8,.22,1) both}
+.swipe-enter-left{animation:wwSwipeEnterLeft 330ms cubic-bezier(.22,.8,.22,1) both}
+@keyframes wwSwipeExitLeft{to{opacity:.58;transform:translate3d(-36%,0,0)}}
+@keyframes wwSwipeExitRight{to{opacity:.58;transform:translate3d(36%,0,0)}}
+@keyframes wwSwipeEnterRight{from{opacity:.62;transform:translate3d(36%,0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes wwSwipeEnterLeft{from{opacity:.62;transform:translate3d(-36%,0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+.we.ww-longpress-armed{outline:2px dashed var(--p)!important;outline-offset:2px;box-shadow:0 0 0 4px color-mix(in srgb,var(--p) 16%,transparent)!important}
+.ww-drag-tip{position:fixed;z-index:60;display:none;max-width:calc(100vw - 24px);padding:8px 12px;border-radius:12px;background:var(--tx);color:var(--bg);box-shadow:0 5px 22px rgba(0,0,0,.24);font-size:12px;font-weight:600;pointer-events:none;white-space:nowrap}
+.ww-event-outline{position:absolute!important;z-index:4;left:3px;right:3px;box-sizing:border-box;border:2px dashed var(--p);border-radius:10px;background:color-mix(in srgb,var(--p) 15%,transparent);color:var(--tx);padding:4px 5px;pointer-events:none;overflow:hidden;animation:wwEventOutlineIn .2s ease-out both}
+.ww-event-outline span{display:block;font-size:10.5px;font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:clip}
+@keyframes wwEventOutlineIn{from{opacity:.35;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+body.ww-calendar-draft-active #ov{background:rgba(0,0,0,.43)}
+@media(prefers-reduced-motion:reduce){.swipe-exit-left,.swipe-exit-right,.swipe-enter-left,.swipe-enter-right,.ww-event-outline{animation:none!important}.swipe-busy{will-change:auto}}
 </style>
 </head>
 <body>
@@ -2270,5 +2288,6 @@ if ("serviceWorker" in navigator && (location.protocol === "https:" || location.
 }
 </script>
 <script src="./ics-import.js" integrity="sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ=" crossorigin="anonymous"></script>
+<script src="./calendar-mobile-polish.js" integrity="sha256-lODKWL/QVYuEeorJNjjiozC5cWdw3iG4S4imMmGi180=" crossorigin="anonymous"></script>
 </body>
 </html>
