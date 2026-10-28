@@ -1,11 +1,12 @@
 const CACHE_PREFIX = "wild-workspace-pwa-";
-const CACHE_NAME = CACHE_PREFIX + "v4.0.21";
+const CACHE_NAME = CACHE_PREFIX + "v4.0.22";
 const scopeUrl = self.registration.scope;
 const asset = (path) => new URL(path, scopeUrl).href;
 const CORE_ASSETS = [
   asset("./"),
   asset("./index.html"),
   asset("./ics-import.js"),
+  asset("./calendar-mobile-polish.js"),
   asset("./manifest.webmanifest"),
   asset("./icons/icon-192.png"),
   asset("./icons/icon-512.png"),
