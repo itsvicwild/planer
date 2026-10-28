@@ -182,6 +182,12 @@
     s.root.style.touchAction=s.saved.touchAction;s.root.style.minHeight=s.saved.minHeight;
     const nodes=Array.from(s.currentPanel.childNodes);
     s.track.remove();nodes.forEach(node=>s.root.appendChild(node));
+    // Restore scrolling only after the original layout is back; the temporary
+    // flex stage can otherwise clamp the calendar's scrollTop to zero.
+    if(s.kind==="cal"&&s.savedScrollTop!==null){
+      const card=s.root.querySelector(".wcard");
+      if(card){void card.getBoundingClientRect();card.scrollTop=s.savedScrollTop;card.scrollLeft=s.savedScrollLeft||0;}
+    }
   }
   function setTrackX(s,x,animate) {
     s.track.style.transition=animate?"transform 245ms cubic-bezier(.22,.8,.22,1)":"none";
@@ -192,9 +198,13 @@
     // Snapshot the visible viewport before building the offscreen preview.
     const liveCard=s.kind==="cal"?s.root.querySelector(".wcard"):null;
     const savedScrollTop=liveCard?liveCard.scrollTop:null,savedScrollLeft=liveCard?liveCard.scrollLeft:0;
+    // Keep a definite height while the live page is inside the swipe track.
+    // Otherwise the added flex layer can let .wcard expand and clamp scrollTop.
+    const rootCss=s.kind==="cal"?getComputedStyle(s.root):null;
+    const stageHeight=rootCss?Math.max(1,s.root.clientHeight-(parseFloat(rootCss.paddingTop)||0)-(parseFloat(rootCss.paddingBottom)||0)):0;
     const result=previewMarkup(s.root,s.kind,step);if(!result.can)return false;
     const width=Math.max(1,s.root.getBoundingClientRect().width),track=document.createElement("div");
-    track.className="ww-swipe-track";track.style.width=(width*2)+"px";
+    track.className="ww-swipe-track";track.style.width=(width*2)+"px";if(s.kind==="cal")track.style.height=stageHeight+"px";
     track.style.transform="translate3d("+(step>0?0:-width)+"px,0,0)";track.style.transition="none";
     const current=document.createElement("div"),preview=document.createElement("div");
     current.className="ww-swipe-panel ww-swipe-current";
@@ -207,7 +217,7 @@
     for(const panel of [current,preview]){
       panel.style.flex="0 0 "+width+"px";panel.style.width=width+"px";panel.style.minWidth=width+"px";
       panel.style.maxWidth=width+"px";panel.style.boxSizing="border-box";panel.style.alignSelf="stretch";
-      if(s.kind==="cal"){panel.style.display="flex";panel.style.flexDirection="column";panel.style.height="100%";panel.style.minHeight="0";}
+      if(s.kind==="cal"){panel.style.display="flex";panel.style.flexDirection="column";panel.style.height=stageHeight+"px";panel.style.minHeight="0";}
     }
     Object.assign(track.style,{display:"flex",flexFlow:"row nowrap",alignItems:"stretch",gap:"0",margin:"0",padding:"0",maxWidth:"none",willChange:"transform"});
     s.track=track;s.width=width;s.step=step;s.startPosition=step>0?0:-width;s.position=s.startPosition;s.stage=true;
