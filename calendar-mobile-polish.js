@@ -147,7 +147,7 @@
   // Render the neighbour offscreen, then let both pages track the user's finger.
   let swipe = null;
   const isEditable = el => !!(el && el.closest('input,textarea,select,[contenteditable="true"],a'));
-  const blockedSwipeTarget = el => !!(el && el.closest('button,.we,.ci,.wh,[data-oe],[data-ot],[data-oh],.chk'));
+  const blockedSwipeTarget = el => !!(el && el.closest('button,.we,.ci,.wh,[data-oe],[data-oh],.chk'));
   function pageRoot(target) {
     if (!(target instanceof Element)) return null;
     const root = target.closest("#pg-cal, #pg-tasks");
@@ -159,7 +159,8 @@
     const id=root.id, width=Math.max(1,root.getBoundingClientRect().width);
     const sandbox=document.createElement("div");
     sandbox.id=id;sandbox.className=root.className;
-    sandbox.style.cssText="position:absolute!important;left:-100000px!important;top:0!important;width:"+width+"px!important;max-width:none!important;display:block!important;visibility:hidden!important;pointer-events:none!important;overflow:hidden!important;z-index:-1!important";
+    const height=Math.max(1,root.getBoundingClientRect().height);
+    sandbox.style.cssText="position:absolute!important;left:-100000px!important;top:0!important;width:"+width+"px!important;height:"+height+"px!important;min-height:0!important;max-width:none!important;box-sizing:border-box!important;visibility:hidden!important;pointer-events:none!important;overflow:hidden!important;z-index:-1!important";
     root.id=id+"-live";
     root.parentNode.insertBefore(sandbox,root);
     try { const result=bridge.preview(kind,step); return result&&result.can?result:{can:false,html:""}; }
@@ -202,6 +203,7 @@
     for(const panel of [current,preview]){
       panel.style.flex="0 0 "+width+"px";panel.style.width=width+"px";panel.style.minWidth=width+"px";
       panel.style.maxWidth=width+"px";panel.style.boxSizing="border-box";panel.style.alignSelf="stretch";
+      if(s.kind==="cal"){panel.style.display="flex";panel.style.flexDirection="column";panel.style.height="100%";panel.style.minHeight="0";}
     }
     Object.assign(track.style,{display:"flex",flexFlow:"row nowrap",alignItems:"stretch",gap:"0",margin:"0",padding:"0",maxWidth:"none",willChange:"transform"});
     s.track=track;s.width=width;s.step=step;s.startPosition=step>0?0:-width;s.position=s.startPosition;s.stage=true;
