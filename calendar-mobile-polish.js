@@ -302,9 +302,15 @@
   function syncSystemThemeColor(){
     const root=document.documentElement,style=getComputedStyle(root);
     const background=style.getPropertyValue("--bg").trim()||"#0e1411";
-    root.style.colorScheme=root.dataset.theme==="light"?"light":"dark";
-    root.style.backgroundColor=background;
-    const meta=$('meta[name="theme-color"]');if(meta)meta.setAttribute("content",background);
+    const scheme=root.dataset.theme==="light"?"light":"dark";
+    const signature=background+"|"+scheme;
+    const meta=$('meta[name="theme-color"]');
+    if(root.dataset.wwSystemThemeSignature!==signature){
+      if(root.style.colorScheme!==scheme)root.style.colorScheme=scheme;
+      if(root.style.backgroundColor!==background)root.style.backgroundColor=background;
+      if(meta&&meta.content!==background)meta.setAttribute("content",background);
+      root.dataset.wwSystemThemeSignature=signature;
+    } else if(meta&&meta.content!==background)meta.setAttribute("content",background);
   }
   syncSystemThemeColor();
   new MutationObserver(syncSystemThemeColor).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme","class","style"]});
