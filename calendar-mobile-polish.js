@@ -207,6 +207,10 @@
     }
     Object.assign(track.style,{display:"flex",flexFlow:"row nowrap",alignItems:"stretch",gap:"0",margin:"0",padding:"0",maxWidth:"none",willChange:"transform"});
     s.track=track;s.width=width;s.step=step;s.startPosition=step>0?0:-width;s.position=s.startPosition;s.stage=true;
+    if(s.kind==="cal"){
+      const sourceCard=s.currentPanel.querySelector(".wcard"),previewCard=s.previewPanel.querySelector(".wcard");
+      if(sourceCard&&previewCard){previewCard.scrollTop=sourceCard.scrollTop;previewCard.scrollLeft=sourceCard.scrollLeft;}
+    }
     return true;
   }
   function finishSwipe(s,commit) {
@@ -308,41 +312,52 @@
       return result;
     };
   }
-  const navBridge=window.__wwMobileNavigationBridge;
-  if(navBridge&&typeof navBridge.move==="function"){
-    const originalMove=navBridge.move.bind(navBridge);
-    navBridge.move=function(kind,step){
-      const result=originalMove(kind,step);
-      if(kind==="cal"&&result){
-        const root=document.getElementById("pg-cal");
-        if(root&&root.querySelector('[data-cv="week"].on'))requestAnimationFrame(()=>centerWeeklyTimeline(document.getElementById("pg-cal")));
-      }
+  // Centre the timeline when entering Calendar, but keep its exact
+  // vertical position while moving between weeks.
+  const originalGo=window.go;
+  if(typeof originalGo==="function"){
+    window.go=function(p,...args){
+      const root=document.getElementById("pg-cal");
+      const enteringCalendar=p==="cal"&&!!root&&!root.classList.contains("on");
+      const result=originalGo.apply(this,[p,...args]);
+      if(enteringCalendar)requestAnimationFrame(()=>requestAnimationFrame(()=>centerWeeklyTimeline(document.getElementById("pg-cal"))));
       return result;
     };
   }
 
-  // Desktop keyboard shortcuts.
+  // Desktop keyboard shortcuts. Capture first so page-level handlers cannot swallow them.
   document.addEventListener("keydown",event=>{
-    if(!window.matchMedia("(min-width:721px)").matches||event.altKey||event.ctrlKey||event.metaKey||event.shiftKey)return;
+    if(event.altKey||event.ctrlKey||event.metaKey)return;
     const target=event.target;
     if(target instanceof Element&&target.closest('input,textarea,select,[contenteditable="true"]'))return;
     const modal=$("#ov");if(modal&&modal.classList.contains("on"))return;
-    if(event.code==="Slash"){
-      const search=$("#srch"),input=$("#q");
-      if(search&&input&&!search.classList.contains("hide")){event.preventDefault();input.focus();input.select();}
+
+    // Slash may require Shift on non-US keyboard layouts, so handle it before
+    // the Shift check used for letter shortcuts.
+    if(event.key==="/"||event.code==="Slash"){
+      event.preventDefault();
+      const input=$("#q"),search=$("#srch");
+      if(!input||!search)return;
+      if(search.classList.contains("hide")||!search.getClientRects().length){
+        if(typeof window.go==="function")window.go("tasks");
+        requestAnimationFrame(()=>{const field=$("#q");if(field){field.focus();field.select();}});
+      }else{input.focus();input.select();}
       return;
     }
+    if(event.shiftKey)return;
     const actions={
-      KeyT:()=>typeof window.formT==="function"&&window.formT(),
-      KeyE:()=>typeof window.formE==="function"&&window.formE(),
-      KeyS:()=>typeof window.go==="function"&&window.go("stats"),
-      KeyH:()=>typeof window.go==="function"&&window.go("home"),
-      KeyC:()=>typeof window.go==="function"&&window.go("cal"),
-      KeyG:()=>typeof window.go==="function"&&window.go("tasks"),
-      KeyP:()=>typeof window.go==="function"&&window.go("profile")
+      KeyT:()=>typeof window.formT==="function"?window.formT():document.querySelector("#addT,[data-add-current-task]")?.click(),
+      KeyE:()=>typeof window.formE==="function"?window.formE():document.querySelector("#addE,[data-cal-add]")?.click(),
+      KeyS:()=>typeof window.go==="function"?window.go("stats"):document.querySelector('[data-p="stats"]')?.click(),
+      KeyH:()=>typeof window.go==="function"?window.go("home"):document.querySelector('[data-p="home"]')?.click(),
+      KeyC:()=>typeof window.go==="function"?window.go("cal"):document.querySelector('[data-p="cal"]')?.click(),
+      KeyG:()=>typeof window.go==="function"?window.go("tasks"):document.querySelector('[data-p="tasks"]')?.click(),
+      KeyP:()=>typeof window.go==="function"?window.go("profile"):document.querySelector('[data-p="profile"]')?.click()
     };
-    if(actions[event.code]){event.preventDefault();actions[event.code]();}
-  });
+    const action=actions[event.code];
+    if(action){event.preventDefault();action();}
+  },true);
+
   // Align browser/system UI metadata with the selected app theme where supported.
   function syncSystemThemeColor(){
     const root=document.documentElement,style=getComputedStyle(root);
