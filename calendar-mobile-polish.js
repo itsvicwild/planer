@@ -278,6 +278,49 @@
       armBackGuard();
     });
   }
+
+  // Restore the weekly viewport on rerenders, and centre it on the current time
+  // whenever the user deliberately navigates to another week.
+  function centerWeeklyTimeline(root) {
+    const card=root&&root.querySelector(".wcard");
+    if(!card)return;
+    const row=card.querySelector(".hr");
+    const hourHeight=row?row.getBoundingClientRect().height:48;
+    const now=new Date(),currentHours=now.getHours()+now.getMinutes()/60;
+    const sticky=card.querySelector(".sth"),stickyHeight=sticky?sticky.getBoundingClientRect().height:0;
+    const target=stickyHeight+8+currentHours*hourHeight-card.clientHeight/2;
+    card.scrollTop=Math.max(0,Math.min(target,card.scrollHeight-card.clientHeight));
+  }
+  const originalRenderCal=window.renderCal;
+  if(typeof originalRenderCal==="function"){
+    window.renderCal=function(...args){
+      const root=document.getElementById("pg-cal");
+      const oldCard=root&&root.querySelector(".wcard"),oldScroll=oldCard?oldCard.scrollTop:null;
+      const result=originalRenderCal.apply(this,args);
+      const active=document.getElementById("pg-cal");
+      const week=!!(active&&active.querySelector('[data-cv="week"].on'));
+      if(week)requestAnimationFrame(()=>{
+        const card=active.querySelector(".wcard");
+        if(!card)return;
+        if(oldScroll!==null)card.scrollTop=oldScroll;
+        else centerWeeklyTimeline(active);
+      });
+      return result;
+    };
+  }
+  const navBridge=window.__wwMobileNavigationBridge;
+  if(navBridge&&typeof navBridge.move==="function"){
+    const originalMove=navBridge.move.bind(navBridge);
+    navBridge.move=function(kind,step){
+      const result=originalMove(kind,step);
+      if(kind==="cal"&&result){
+        const root=document.getElementById("pg-cal");
+        if(root&&root.querySelector('[data-cv="week"].on'))requestAnimationFrame(()=>centerWeeklyTimeline(document.getElementById("pg-cal")));
+      }
+      return result;
+    };
+  }
+
   // Desktop keyboard shortcuts.
   document.addEventListener("keydown",event=>{
     if(!window.matchMedia("(min-width:721px)").matches||event.altKey||event.ctrlKey||event.metaKey||event.shiftKey)return;
