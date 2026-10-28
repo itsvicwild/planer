@@ -179,6 +179,7 @@
     if(!s||!s.track||!s.track.isConnected)return;
     s.root.style.overflow=s.saved.overflow;s.root.style.position=s.saved.position;
     s.root.style.touchAction=s.saved.touchAction;s.root.style.minHeight=s.saved.minHeight;
+    s.root.style.height=s.saved.height;
     const nodes=Array.from(s.currentPanel.childNodes);
     s.track.remove();nodes.forEach(node=>s.root.appendChild(node));
   }
@@ -188,24 +189,72 @@
   }
   function makeSwipeStage(s,step) {
     if(s.stage)return true;
+    const rootRect=s.root.getBoundingClientRect();
+    const width=Math.max(1,rootRect.width),rootHeight=Math.max(1,rootRect.height);
+    const currentCard=s.kind==="cal"?s.root.querySelector(".wcard"):null;
+    const weekScroll=currentCard?currentCard.scrollTop:null;
+    const cs=s.kind==="cal"?getComputedStyle(s.root):null;
+    const rootLayout=cs?{
+      display:cs.display,gridTemplateColumns:cs.gridTemplateColumns,gridTemplateRows:cs.gridTemplateRows,
+      gridAutoColumns:cs.gridAutoColumns,gridAutoRows:cs.gridAutoRows,gridAutoFlow:cs.gridAutoFlow,
+      alignItems:cs.alignItems,alignContent:cs.alignContent,justifyItems:cs.justifyItems,
+      justifyContent:cs.justifyContent,flexDirection:cs.flexDirection,flexWrap:cs.flexWrap,
+      columnGap:cs.columnGap,rowGap:cs.rowGap
+    }:null;
     const result=previewMarkup(s.root,s.kind,step);if(!result.can)return false;
-    const width=Math.max(1,s.root.getBoundingClientRect().width),track=document.createElement("div");
+    const track=document.createElement("div");
     track.className="ww-swipe-track";track.style.width=(width*2)+"px";
     track.style.transform="translate3d("+(step>0?0:-width)+"px,0,0)";track.style.transition="none";
     const current=document.createElement("div"),preview=document.createElement("div");
     current.className="ww-swipe-panel ww-swipe-current";
     preview.className="ww-swipe-panel ww-swipe-preview";preview.innerHTML=result.html;
-    s.saved={overflow:s.root.style.overflow,position:s.root.style.position,touchAction:s.root.style.touchAction,minHeight:s.root.style.minHeight};
-    s.root.style.overflow="hidden";s.root.style.position="relative";s.root.style.touchAction="pan-y";s.root.style.minHeight="1px";
+    s.saved={overflow:s.root.style.overflow,position:s.root.style.position,touchAction:s.root.style.touchAction,minHeight:s.root.style.minHeight,height:s.root.style.height};
+    s.root.style.overflow="hidden";s.root.style.position="relative";s.root.style.touchAction="pan-y";
+    if(s.kind==="cal"){
+      s.root.style.height=rootHeight+"px";
+      s.root.style.minHeight=rootHeight+"px";
+      // Preserve the calendar's real grid/flex layout instead of forcing each page into flex.
+      for(const panel of [current,preview]){
+        for(const cls of s.root.classList)panel.classList.add(cls);
+        panel.style.display=rootLayout.display;
+        panel.style.height=rootHeight+"px";panel.style.minHeight="0";panel.style.maxHeight=rootHeight+"px";
+        if(rootLayout.display==="grid"||rootLayout.display==="inline-grid"){
+          panel.style.gridTemplateColumns=rootLayout.gridTemplateColumns;
+          panel.style.gridTemplateRows=rootLayout.gridTemplateRows;
+          panel.style.gridAutoColumns=rootLayout.gridAutoColumns;
+          panel.style.gridAutoRows=rootLayout.gridAutoRows;
+          panel.style.gridAutoFlow=rootLayout.gridAutoFlow;
+          panel.style.alignItems=rootLayout.alignItems;
+          panel.style.alignContent=rootLayout.alignContent;
+          panel.style.justifyItems=rootLayout.justifyItems;
+          panel.style.justifyContent=rootLayout.justifyContent;
+          panel.style.columnGap=rootLayout.columnGap;panel.style.rowGap=rootLayout.rowGap;
+        }else if(rootLayout.display==="flex"||rootLayout.display==="inline-flex"){
+          panel.style.flexDirection=rootLayout.flexDirection;
+          panel.style.flexWrap=rootLayout.flexWrap;
+          panel.style.alignItems=rootLayout.alignItems;
+          panel.style.alignContent=rootLayout.alignContent;
+          panel.style.justifyContent=rootLayout.justifyContent;
+          panel.style.columnGap=rootLayout.columnGap;panel.style.rowGap=rootLayout.rowGap;
+        }
+      }
+    }else s.root.style.minHeight="1px";
     while(s.root.firstChild)current.appendChild(s.root.firstChild);
     if(step>0){track.append(current,preview);s.currentPanel=current;}else{track.append(preview,current);s.currentPanel=current;}
-    s.previewPanel=preview;s.root.appendChild(track);
+    s.previewPanel=preview;
     for(const panel of [current,preview]){
       panel.style.flex="0 0 "+width+"px";panel.style.width=width+"px";panel.style.minWidth=width+"px";
       panel.style.maxWidth=width+"px";panel.style.boxSizing="border-box";panel.style.alignSelf="stretch";
-      if(s.kind==="cal"){panel.style.display="flex";panel.style.flexDirection="column";panel.style.height="100%";panel.style.minHeight="0";}
     }
     Object.assign(track.style,{display:"flex",flexFlow:"row nowrap",alignItems:"stretch",gap:"0",margin:"0",padding:"0",maxWidth:"none",willChange:"transform"});
+    s.root.appendChild(track);
+    // Both week panels must begin at the same vertical time. Otherwise the preview
+    // visibly jumps to midnight while the finger-following animation is in progress.
+    if(s.kind==="cal"&&weekScroll!==null){
+      const currentWeek=s.currentPanel.querySelector(".wcard"),previewWeek=s.previewPanel.querySelector(".wcard");
+      if(currentWeek)currentWeek.scrollTop=weekScroll;
+      if(previewWeek)previewWeek.scrollTop=weekScroll;
+    }
     s.track=track;s.width=width;s.step=step;s.startPosition=step>0?0:-width;s.position=s.startPosition;s.stage=true;
     return true;
   }
@@ -219,7 +268,7 @@
       if(commit){
         s.previewPanel.remove();
         s.root.style.overflow=s.saved.overflow;s.root.style.position=s.saved.position;
-        s.root.style.touchAction=s.saved.touchAction;s.root.style.minHeight=s.saved.minHeight;
+        s.root.style.touchAction=s.saved.touchAction;s.root.style.minHeight=s.saved.minHeight;s.root.style.height=s.saved.height;
         const bridge=window.__wwMobileNavigationBridge;
         if(!bridge||!bridge.move(s.kind,s.step))restoreSwipeStage(s);
       }else restoreSwipeStage(s);
