@@ -237,15 +237,34 @@
       if(!s.track||!s.track.isConnected)return;
       s.track.removeEventListener("transitionend",onEnd);clearTimeout(s.fallback);
       if(commit){
-        s.previewPanel.remove();
-        s.root.style.overflow=s.saved.overflow;s.root.style.position=s.saved.position;
-        s.root.style.touchAction=s.saved.touchAction;s.root.style.minHeight=s.saved.minHeight;
-        if(s.kind==="cal"&&s.savedScrollTop!==null){
-          const currentCard=s.currentPanel.querySelector(".wcard");
-          if(currentCard){currentCard.scrollTop=s.savedScrollTop;currentCard.scrollLeft=s.savedScrollLeft||0;}
-        }
         const bridge=window.__wwMobileNavigationBridge;
-        if(!bridge||!bridge.move(s.kind,s.step))restoreSwipeStage(s);
+        let adoptedCalendarPreview=false;
+        // Keep the exact preview DOM that was visible at the end of the animation.
+        // Re-rendering the same week here creates a redundant layout/compositing
+        // pass, which can flash a frame on mobile browsers.
+        if(s.kind==="cal"&&bridge&&typeof bridge.move==="function"&&bridge.move(s.kind,s.step,false)){
+          const content=document.createDocumentFragment();
+          while(s.previewPanel.firstChild)content.appendChild(s.previewPanel.firstChild);
+          s.track.remove();
+          s.root.style.overflow=s.saved.overflow;s.root.style.position=s.saved.position;
+          s.root.style.touchAction=s.saved.touchAction;s.root.style.minHeight=s.saved.minHeight;
+          s.root.appendChild(content);
+          if(s.savedScrollTop!==null){
+            const card=s.root.querySelector(".wcard");
+            if(card){void card.getBoundingClientRect();card.scrollTop=s.savedScrollTop;card.scrollLeft=s.savedScrollLeft||0;}
+          }
+          adoptedCalendarPreview=true;
+        }
+        if(!adoptedCalendarPreview){
+          s.previewPanel.remove();
+          s.root.style.overflow=s.saved.overflow;s.root.style.position=s.saved.position;
+          s.root.style.touchAction=s.saved.touchAction;s.root.style.minHeight=s.saved.minHeight;
+          if(s.kind==="cal"&&s.savedScrollTop!==null){
+            const currentCard=s.currentPanel.querySelector(".wcard");
+            if(currentCard){currentCard.scrollTop=s.savedScrollTop;currentCard.scrollLeft=s.savedScrollLeft||0;}
+          }
+          if(!bridge||!bridge.move(s.kind,s.step))restoreSwipeStage(s);
+        }
       }else restoreSwipeStage(s);
     };
     const onEnd=e=>{if(e.target===s.track&&e.propertyName==="transform")done();};
