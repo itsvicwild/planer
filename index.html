@@ -2160,7 +2160,8 @@ function renderLibrary(){
   const visibleShelfIds=new Set(shelves.map(s=>s.id));
   shelves.push({id:"uncategorized",title:"Без категории",color:"var(--ol)",uncategorized:true});
   const byShelf=new Map(shelves.map(s=>[s.id,[]]));
-  const allBooks=[...builtInBooks,...shelves.flatMap(s=>libraryBooksForShelf(s.id).map(book=>({...book,kind:"Ссылка",icon:"link"})))];
+  const hiddenShelfBooks=(LIB_BOOKS||[]).map((book,index)=>({book,index,position:Number.isFinite(book.order)?book.order:index*1000})).filter(x=>x.book.shelf!=="uncategorized"&&!visibleShelfIds.has(x.book.shelf)).sort((a,b)=>a.position-b.position||a.index-b.index).map(x=>({...x.book,shelf:"uncategorized",kind:"Ссылка",icon:"link"}));
+  const allBooks=[...builtInBooks,...shelves.flatMap(s=>libraryBooksForShelf(s.id).map(book=>({...book,kind:"Ссылка",icon:"link"}))),...hiddenShelfBooks];
   for(const book of allBooks){const wanted=book.shelf,shelfId=wanted==="uncategorized"||visibleShelfIds.has(wanted)?wanted:"uncategorized";byShelf.get(shelfId).push(book)}
   const countLabel=count=>{const a=count%10,b=count%100;return a===1&&b!==11?"книга":a>=2&&a<=4&&(b<12||b>14)?"книги":"книг"};
   const cardMarkup=book=>{
