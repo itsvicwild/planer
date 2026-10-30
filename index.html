@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-lYUb/jzFivQL3I1DiS5ePtAePvb2E1JtHwMf6TvHz/Y=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-xPte2S2vYiV9C96KgSJyPo4aHIVX9Cn02KQFRD/T/kA=' 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-2q4IbUhz6l/OWV1Wx9lR9WMrCF08GTowFjCA2RneShc=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-xPte2S2vYiV9C96KgSJyPo4aHIVX9Cn02KQFRD/T/kA=' 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Wild Workspace</title>
 <meta name="description" content="Wild Workspace — личное пространство для задач, привычек, событий и маленьких побед.">
 <meta name="theme-color" content="#0e1411">
@@ -1407,7 +1407,8 @@ html{background:var(--bg)!important;color-scheme:light dark}
 .library-shelf-heading{display:flex;align-items:center;gap:10px;min-width:0}
 .library-shelf-heading>.i{flex:none;color:var(--shelf-color);font-size:22px}
 .library-shelf-heading h2{margin:0;font:500 18px/1.25 "Roboto Flex",sans-serif;overflow-wrap:anywhere}
-.library-toolbar{display:flex;justify-content:flex-end;width:100%;max-width:1040px;margin:0 0 12px}.library-book-form-row{align-items:end}.library-color-input{height:44px!important;padding:4px!important;cursor:pointer}.library-book-open-link{display:flex;flex:1;flex-direction:column;min-height:0;min-width:0;color:inherit;text-decoration:none;outline-offset:3px;-webkit-touch-callout:none;user-select:none}.library-book-open-link:hover .library-book-title{text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--book-color) 75%,transparent)}
+.library-toolbar{display:flex;justify-content:flex-end;width:100%;max-width:1040px;margin:0 0 12px}.library-move-options{display:grid;gap:7px;margin:14px 0}.library-move-option{display:flex;align-items:center;gap:12px;width:100%;min-height:48px;padding:10px 13px;border:1px solid var(--s3);border-radius:14px;background:var(--s2);color:var(--tx);text-align:left;font:inherit;font-size:14px;font-weight:500;cursor:pointer}.library-move-option:hover{background:var(--s3)}.library-move-option>.i{color:var(--p)}.library-move-option .trailing{margin-left:auto;color:var(--tx2)}
+.library-book-form-row{align-items:end}.library-color-input{height:44px!important;padding:4px!important;cursor:pointer}.library-book-open-link{display:flex;flex:1;flex-direction:column;min-height:0;min-width:0;color:inherit;text-decoration:none;outline-offset:3px;-webkit-touch-callout:none;user-select:none}.library-book-open-link:hover .library-book-title{text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--book-color) 75%,transparent)}
 .library-shelf-count{margin-left:auto;flex:none;color:var(--tx2);font-size:12px}
 .library-shelf-books{display:flex;align-items:stretch;flex-wrap:nowrap;gap:12px;width:100%;max-width:100%;min-width:0;padding:16px 2px 12px 0;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;overscroll-behavior-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:var(--ol) transparent}
 .library-shelf-books>*{scroll-snap-align:start;flex-shrink:0}
@@ -1415,7 +1416,7 @@ html{background:var(--bg)!important;color-scheme:light dark}
 .library-shelf-books::-webkit-scrollbar-track{background:transparent}
 .library-shelf-books::-webkit-scrollbar-thumb{background:var(--ol);border-radius:99px}
 .library-book-card{position:relative;display:flex;flex-direction:column;align-items:stretch;flex:0 0 134px;width:134px;height:170px;min-width:0;padding:12px 10px 11px 21px;overflow:hidden;border:1px solid color-mix(in srgb,var(--book-color) 54%,var(--ol));border-radius:16px;background:color-mix(in srgb,var(--book-color) 37%,var(--s2));color:var(--tx);text-align:left;font:inherit;box-shadow:0 1px 2px rgba(0,0,0,.12)}
-.library-move-notice{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;max-width:1040px;margin:0 0 12px;padding:12px 14px;border:1px solid var(--ol);border-radius:16px;background:var(--pc);color:var(--tx)}.library-move-notice-copy{display:grid;gap:2px;min-width:0}.library-move-notice-copy strong{font-size:13px;font-weight:650}.library-move-notice-copy small{color:var(--tx2);font-size:12px;overflow-wrap:anywhere}.library-move-mode .library-book-card{cursor:grab}.library-book-card.is-move-source{outline:2px solid var(--p);outline-offset:3px;transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.2)}
+.library-move-notice{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;max-width:1040px;margin:0 0 12px;padding:12px 14px;border:1px solid var(--ol);border-radius:16px;background:var(--pc);color:var(--tx)}.library-move-notice-copy{display:grid;gap:2px;min-width:0}.library-move-notice-copy strong{font-size:13px;font-weight:650}.library-move-notice-copy small{color:var(--tx2);font-size:12px;overflow-wrap:anywhere}.library-move-mode .library-book-card{cursor:grab}.library-book-card.is-move-source{outline:2px solid var(--p);outline-offset:3px;transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.2)}.library-book-card.is-drop-target{outline:2px dashed var(--p);outline-offset:3px;filter:brightness(1.12)}.library-shelf.is-drop-shelf{outline:2px solid var(--p);outline-offset:2px;background:color-mix(in srgb,var(--pc) 24%,var(--s2))}.library-book-dragging,.library-book-dragging *{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important}
 .library-book-card::before{content:"";position:absolute;inset:0 auto 0 0;width:10px;background:var(--book-color)}
 .library-shelf-books:focus-visible{outline:2px solid var(--p);outline-offset:3px}
 .library-book-card-action{cursor:pointer;appearance:none}
@@ -1516,7 +1517,7 @@ let E=[];
 const hd=(id,t,date)=>({id,t,date,rec:"year"});
 let HD=[];
 let H=[];
-let LIB_BOOKS=[],LIBRARY_DELETIONS={},LIBRARY_PRESS_GESTURE=null,LIBRARY_SUPPRESS_CLICK=null,LIBRARY_MOVE_MODE=null;
+let LIB_BOOKS=[],LIBRARY_DELETIONS={},LIBRARY_PRESS_GESTURE=null,LIBRARY_SUPPRESS_CLICK=null,LIBRARY_MOVE_MODE=null,LIBRARY_DRAG=null;
 const LEGACY_HABITS=[{id:"h1",t:"Утренняя зарядка, 10 минут",b:"health",goal:1,cnt:0},{id:"h2",t:"Чтение книги",b:"life",goal:2,cnt:0},{id:"h3",t:"Фортепиано, 30–40 минут",b:"life",goal:2,cnt:0},{id:"h4",t:"Подкасты на английском",b:"eng",goal:2,cnt:0},{id:"h5",t:"Слова из Academic Word List",b:"eng",goal:1,cnt:0}];
 const SUPABASE_URL="https://adsfjbrjgimgovtcjqvl.supabase.co",SUPABASE_PUBLISHABLE_KEY="sb_publishable_n2fm35ypb6pt2AWJKXBF6w_zoC50Cs9";
 const KEY="planner-v2",KS="planner-v2-set",SET={acc:"mint",name:"",lv:[40,55],theme:"dark",locale:"ru",festival:"none",onboarded:false,quietOverdue:false,touched:{},cloudUrl:SUPABASE_URL,cloudKey:SUPABASE_PUBLISHABLE_KEY},LV=[40,55];
@@ -1570,7 +1571,7 @@ function sanitizeTask(source){if(!source||typeof source!=="object"||!safeRecordI
 function sanitizeEvent(source){if(!source||typeof source!=="object"||!safeRecordId(source.id))return null;let x={...source,id:safeRecordId(source.id)};normalizeEventType(x);x.t=String(x.t??"").trim().slice(0,240)||"Без названия";x.date=validISODate(x.date)?x.date:ds(today);x.endDate=validISODate(x.endDate)&&x.endDate>=x.date&&(pd(x.endDate)-pd(x.date))/864e5<=366?x.endDate:x.date;x.k=["work","personal","holiday"].includes(x.k)?x.k:"work";x.c=cssColor(x.c,ET[x.k]?.c||ET.work.c);x.allDay=!!x.allDay||x.k==="holiday";x.a=validTime(x.a)?x.a:"10:00";x.z=validTime(x.z)?x.z:"11:00";if(x.allDay){x.a="00:00";x.z="23:59"}else if(hm(x.z)<=hm(x.a)){const start=Math.min(1438,Math.round(hm(x.a)*60)),end=Math.min(1439,start+60);if(start>=1439){x.a="22:59";x.z="23:59"}else{x.a=String(Math.floor(start/60)).padStart(2,"0")+":"+String(start%60).padStart(2,"0");x.z=String(Math.floor(end/60)).padStart(2,"0")+":"+String(end%60).padStart(2,"0")}}x.rec=["none","day","week","biweek","month","year"].includes(x.rec)?x.rec:"none";x.wd=Array.isArray(x.wd)?[...new Set(x.wd.map(Number).filter(n=>Number.isInteger(n)&&n>=1&&n<=7))]:[];x.until=validISODate(x.until)&&x.until>=x.date?x.until:"";x.ex=Array.isArray(x.ex)?x.ex.filter(validISODate):[];x.p=String(x.p??"").slice(0,240);x.desc=String(x.desc??"").slice(0,20000);x.links=Array.isArray(x.links)?x.links.map(v=>{const raw=typeof v==="string"?v:v?.url,url=safeWebUrl(raw);return url?(typeof v==="string"?url:{...v,url}):null}).filter(Boolean).slice(0,100):[];x.updatedAt=safeStamp(x.updatedAt);return normalizeEventType(x)}
 function sanitizeHabit(source){if(!source||typeof source!=="object"||!safeRecordId(source.id))return null;const h=normalizeHabitRecord({...source,id:safeRecordId(source.id)});h.t=String(h.t??"").trim().slice(0,120)||"Без названия";h.goal=Math.round(clampNumber(h.goal,1,7,1));h.updatedAt=safeStamp(h.updatedAt);return h}
 function sanitizeBlock(id,source){const raw=source&&typeof source==="object"?source:{},base=normalizedBlockForSync(String(id),raw),fallback=DEFAULT_BLOCKS[id]?.c||BLOCK_PALETTE[0];base.n=String(base.n??"").trim().slice(0,36)||DEFAULT_BLOCKS[id]?.n||"Блок";base.c=typeof base.c==="string"&&/^#[0-9a-f]{6}$/i.test(base.c)?base.c:fallback;base.updatedAt=base.systemDefault?DEFAULT_BLOCK_STAMP:safeStamp(base.updatedAt);return base}
-function sanitizeLibraryBook(source){if(!source||typeof source!=="object"||!safeRecordId(source.id))return null;const title=String(source.title??"").trim().slice(0,100),url=safeWebUrl(source.url),shelf=source.shelf==="uncategorized"?"uncategorized":safeRecordId(source.shelf)||"uncategorized";if(!title||!url)return null;return {id:safeRecordId(source.id),title,url,color:typeof source.color==="string"&&/^#[0-9a-f]{6}$/i.test(source.color)?source.color:"#29472b",shelf,updatedAt:safeStamp(source.updatedAt)}}
+function sanitizeLibraryBook(source){if(!source||typeof source!=="object"||!safeRecordId(source.id))return null;const title=String(source.title??"").trim().slice(0,100),url=safeWebUrl(source.url),shelf=source.shelf==="uncategorized"?"uncategorized":safeRecordId(source.shelf)||"uncategorized",order=source.order!=null&&Number.isFinite(Number(source.order))?Math.max(0,Math.min(1000000000,Math.trunc(Number(source.order)))):null;if(!title||!url)return null;return {id:safeRecordId(source.id),title,url,color:typeof source.color==="string"&&/^#[0-9a-f]{6}$/i.test(source.color)?source.color:"#29472b",shelf,order,updatedAt:safeStamp(source.updatedAt)}}
 function sanitizeHoliday(source){if(!source||typeof source!=="object"||!safeRecordId(source.id))return null;return {...source,id:safeRecordId(source.id),t:String(source.t??"").trim().slice(0,200)||"Праздник",date:validISODate(source.date)?source.date:ds(today),rec:source.rec==="year"?"year":"none",updatedAt:safeStamp(source.updatedAt)}}
 function sanitizeWorkspaceRecords(){T=(Array.isArray(T)?T:[]).map(sanitizeTask).filter(Boolean);E=(Array.isArray(E)?E:[]).map(sanitizeEvent).filter(Boolean);HD=(Array.isArray(HD)?HD:[]).map(sanitizeHoliday).filter(Boolean);H=(Array.isArray(H)?H:[]).map(sanitizeHabit).filter(Boolean);LIB_BOOKS=(Array.isArray(LIB_BOOKS)?LIB_BOOKS:[]).map(sanitizeLibraryBook).filter(Boolean);LIBRARY_DELETIONS=LIBRARY_DELETIONS&&typeof LIBRARY_DELETIONS==="object"?LIBRARY_DELETIONS:{};BL=Object.fromEntries(Object.entries(BL&&typeof BL==="object"?BL:{}).filter(([id])=>!!safeRecordId(id)).map(([id,b])=>[safeRecordId(id),sanitizeBlock(safeRecordId(id),b)]));for(const [id,b] of Object.entries(DEFAULT_BLOCKS))if(!BL[id])BL[id]=sanitizeBlock(id,{...b,updatedAt:DEFAULT_BLOCK_STAMP,systemDefault:true});}
 function calculateTaskMove(task,newDate,mode="both"){if(!task)return {ok:false,message:"Задача не найдена — обнови список"};if(!validISODate(newDate))return {ok:false,message:"Укажите корректную дату"};const plan=taskPlanDate(task),deadline=taskDeadlineDate(task);if(mode==="both"){if(plan&&deadline){const shift=Math.round((pd(newDate)-pd(deadline))/864e5);let nextPlan=ds(addD(pd(plan),shift));if(nextPlan>newDate)nextPlan=newDate;return {ok:true,planDate:nextPlan,d:newDate}}if(plan)return {ok:true,planDate:newDate,d:""};if(deadline)return {ok:true,planDate:"",d:newDate};return {ok:false,message:"У задачи пока нет даты"}}if(mode==="deadline"){if(!plan)return {ok:true,planDate:"",d:newDate};if(newDate<plan)return {ok:false,message:"Срок не может быть раньше даты плана. Выбери перенос плана и срока."};return {ok:true,planDate:plan,d:newDate}}if(mode==="plan"){if(deadline&&newDate>deadline)return {ok:false,message:"Плановая дата не может быть позже дедлайна."};return {ok:true,planDate:newDate,d:deadline}}return {ok:false,message:"Выбери, что переносить"}}
@@ -2139,13 +2140,13 @@ function renderLibrary(){
   const shelves=Object.entries(BL||{}).map(([id,block])=>({id,title:block?.n||"Блок",color:cssColor(block?.c,"var(--p)"),uncategorized:false}));
   shelves.push({id:"uncategorized",title:"Без категории",color:"var(--ol)",uncategorized:true});
   const byShelf=new Map(shelves.map(s=>[s.id,[]]));
-  const allBooks=[...LIB_BOOKS.map(book=>({...book,kind:"Ссылка",icon:"link"})),...builtInBooks];
+  const allBooks=[...shelves.flatMap(s=>libraryBooksForShelf(s.id).map(book=>({...book,kind:"Ссылка",icon:"link"}))),...builtInBooks];
   for(const book of allBooks){const wanted=book.shelf,shelfId=wanted==="uncategorized"||Object.prototype.hasOwnProperty.call(BL||{},wanted)?wanted:"uncategorized";byShelf.get(shelfId).push(book)}
   const countLabel=count=>{const a=count%10,b=count%100;return a===1&&b!==11?"книга":a>=2&&a<=4&&(b<12||b>14)?"книги":"книг"};
   const cardMarkup=book=>{
     const style=`--book-color:${cssColor(book.color,"#29472b")}`;
     if(book.target)return `<button type="button" class="library-book-card library-book-card-action" style="${style}" data-library-target="${esc(book.target)}" aria-label="Открыть раздел «${esc(book.title)}»"><span class="library-book-top"><span class="library-book-icon"><span class="i" aria-hidden="true">${book.icon}</span></span></span><span class="library-book-title">${esc(book.title)}</span><span class="library-book-kind">${esc(book.kind)}</span></button>`;
-    return `<article class="library-book-card" data-library-book="${esc(book.id)}" style="${style}" aria-label="${esc(book.title)}"><span class="library-book-top"><span class="library-book-icon"><span class="i" aria-hidden="true">link</span></span><button type="button" class="library-book-menu" data-library-menu="${esc(book.id)}" aria-label="Действия книги «${esc(book.title)}»" title="Действия книги"><span class="i" aria-hidden="true">more_vert</span></button></span><a class="library-book-open-link" data-library-book-open="${esc(book.id)}" href="${esc(book.url)}" target="_blank" rel="noopener noreferrer"><span class="library-book-title">${esc(book.title)}</span><span class="library-book-kind">Ссылка</span></a></article>`;
+    return `<article class="library-book-card" data-library-book="${esc(book.id)}" style="${style}" aria-label="${esc(book.title)}"><span class="library-book-top"><span class="library-book-icon"><span class="i" aria-hidden="true">link</span></span><button type="button" class="library-book-menu" data-library-menu="${esc(book.id)}" aria-label="Действия книги «${esc(book.title)}»" title="Действия книги"><span class="i" aria-hidden="true">more_vert</span></button></span><a class="library-book-open-link" data-library-book-open="${esc(book.id)}" href="${esc(book.url)}" target="_blank" rel="noopener noreferrer" draggable="false"><span class="library-book-title">${esc(book.title)}</span><span class="library-book-kind">Ссылка</span></a></article>`;
   };
   $("pg-library").innerHTML=`<div class="library-toolbar"><button type="button" class="btn n" data-library-add><span class="i">add</span> Добавить книгу</button></div><div class="library-move-notice hide" id="libraryMoveNotice" role="status" aria-live="polite"><span class="library-move-notice-copy"><strong>Режим перемещения</strong><small id="libraryMoveNoticeText"></small></span><button type="button" class="btn n o" data-library-cancel-move>Отмена</button></div><div class="library-shelves">${shelves.map(s=>{const books=byShelf.get(s.id)||[],contents=books.length?`<div class="library-shelf-books">${books.map(cardMarkup).join("")}</div>`:`<div class="library-shelf-books"><div class="library-empty-card"><span class="library-empty-icon"><span class="i" aria-hidden="true">menu_book</span></span><span class="library-empty-copy"><strong>Пока пусто</strong><span>Здесь будут книги этого направления.</span></span></div></div>`;return `<section class="library-shelf" data-library-shelf="${esc(s.id)}" style="--shelf-color:${s.color}"><div class="library-shelf-heading"><span class="i" aria-hidden="true">${s.uncategorized?"inventory_2":"circle"}</span><h2>${esc(s.title)}</h2><span class="library-shelf-count">${books.length} ${countLabel(books.length)}</span></div>${contents}<div class="library-shelf-board" aria-hidden="true"></div></section>`}).join("")}</div>`;
 }
@@ -2155,20 +2156,96 @@ function activateLibraryMoveMode(id){
   const page=$("pg-library");page?.classList.add("library-move-mode");
   page?.querySelectorAll("[data-library-book]").forEach(card=>card.classList.toggle("is-move-source",card.dataset.libraryBook===id));
   $("libraryMoveNotice")?.classList.remove("hide");
-  const label=$("libraryMoveNoticeText");if(label)label.textContent="Выбрана книга «"+book.title+"».";
+  const label=$("libraryMoveNoticeText");if(label)label.textContent="Перетащи «"+book.title+"» на новое место или на другую полку.";
   toast("Режим перемещения включён");
 }
 function cancelLibraryMoveMode(){
-  LIBRARY_MOVE_MODE=null;
+  cancelLibraryDrag();LIBRARY_MOVE_MODE=null;
   const page=$("pg-library");page?.classList.remove("library-move-mode");
   page?.querySelectorAll(".is-move-source").forEach(card=>card.classList.remove("is-move-source"));
   $("libraryMoveNotice")?.classList.add("hide");
 }
+function libraryEffectiveShelf(book){return book&&(book.shelf==="uncategorized"||Object.prototype.hasOwnProperty.call(BL||{},book.shelf))?book.shelf:"uncategorized"}
+function libraryBooksForShelf(shelfId){return LIB_BOOKS.map((book,index)=>({book,index,position:Number.isFinite(book.order)?book.order:index*1000})).filter(x=>libraryEffectiveShelf(x.book)===shelfId).sort((a,b)=>a.position-b.position||a.index-b.index).map(x=>x.book)}
+function setLibraryShelfOrder(list,stamp){list.forEach((book,index)=>{book.order=index*1000;book.updatedAt=stamp})}
+function clearLibraryDragVisuals(){const page=$("pg-library");page?.classList.remove("library-book-dragging");page?.querySelectorAll(".is-drop-target,.is-drop-shelf").forEach(el=>el.classList.remove("is-drop-target","is-drop-shelf"))}
+function cancelLibraryDrag(){LIBRARY_DRAG=null;clearLibraryDragVisuals()}
+function updateLibraryDragAt(x,y){
+  if(!LIBRARY_DRAG)return;
+  const hit=document.elementFromPoint(x,y),shelf=hit instanceof Element?hit.closest("[data-library-shelf]"):null;
+  clearLibraryDragVisuals();if(!shelf)return;
+  const shelfId=shelf.dataset.libraryShelf;
+  if(shelfId!=="uncategorized"&&!Object.prototype.hasOwnProperty.call(BL||{},shelfId))return;
+  const card=hit instanceof Element?hit.closest("[data-library-book]"):null;
+  const targetCard=card&&card.closest("[data-library-shelf]")===shelf?card:null;
+  const targetId=targetCard?.dataset.libraryBook||"";
+  const rect=targetCard?.getBoundingClientRect();
+  LIBRARY_DRAG.targetShelf=shelfId;LIBRARY_DRAG.targetBookId=targetId;
+  LIBRARY_DRAG.after=!!(rect&&x>rect.left+rect.width/2);
+  shelf.classList.add("is-drop-shelf");targetCard?.classList.add("is-drop-target");
+}
+function applyLibraryBookDrop(bookId,targetShelf,targetBookId="",after=false){
+  const book=LIB_BOOKS.find(item=>item.id===bookId);if(!book)return toast("Книга уже удалена или изменилась.");
+  const sourceShelf=libraryEffectiveShelf(book);
+  if(targetShelf!=="uncategorized"&&!Object.prototype.hasOwnProperty.call(BL||{},targetShelf))targetShelf="uncategorized";
+  if(sourceShelf===targetShelf&&targetBookId===bookId){cancelLibraryDrag();return}
+  const previous=deepCloneData(LIB_BOOKS),now=new Date().toISOString();
+  const sourceList=libraryBooksForShelf(sourceShelf),sourceIndex=sourceList.findIndex(item=>item.id===bookId);
+  if(sourceIndex<0)return;
+  sourceList.splice(sourceIndex,1);
+  const destinationList=sourceShelf===targetShelf?sourceList:libraryBooksForShelf(targetShelf);
+  if(sourceShelf!==targetShelf)book.shelf=targetShelf;
+  let insertAt=destinationList.length;
+  if(targetBookId){const targetIndex=destinationList.findIndex(item=>item.id===targetBookId);if(targetIndex>=0)insertAt=targetIndex+(after?1:0)}
+  destinationList.splice(Math.max(0,Math.min(insertAt,destinationList.length)),0,book);
+  if(sourceShelf!==targetShelf)setLibraryShelfOrder(sourceList,now);
+  setLibraryShelfOrder(destinationList,now);
+  if(!save()){LIB_BOOKS=previous;cancelLibraryDrag();return toast("Не удалось сохранить новый порядок книг.")}
+  cancelLibraryDrag();cancelLibraryMoveMode();renderLibrary();
+  toast(sourceShelf===targetShelf?"Порядок книг изменён":"Книга перемещена на другую полку");
+}
+function startLibraryBookDrag(bookId,x,y){
+  if(!LIBRARY_MOVE_MODE||LIBRARY_MOVE_MODE.bookId!==bookId||LIBRARY_DRAG)return;
+  LIBRARY_DRAG={bookId,x,y,targetShelf:"",targetBookId:"",after:false};
+  $("pg-library")?.classList.add("library-book-dragging");updateLibraryDragAt(x,y);
+}
+function finishLibraryBookDrag(x,y){
+  if(!LIBRARY_DRAG)return;
+  updateLibraryDragAt(x,y);const drag=LIBRARY_DRAG;
+  if(!drag.targetShelf){cancelLibraryDrag();return}
+  applyLibraryBookDrop(drag.bookId,drag.targetShelf,drag.targetBookId,drag.after);
+}
+function showLibraryMovePicker(id){
+  const book=LIB_BOOKS.find(item=>item.id===id);if(!book)return toast("Книга уже удалена или изменилась.");
+  const current=libraryEffectiveShelf(book);
+  const destinations=[...Object.entries(BL||{}).map(([key,value])=>({id:key,title:value?.n||"Блок"})),{id:"uncategorized",title:"Без категории"}].filter(item=>item.id!==current);
+  openM(`<div class="modal-eyebrow"><span class="i">drive_file_move</span> БИБЛИОТЕКА</div><h3>Переместить книгу</h3><p class="modal-hint">Выбери полку для «${esc(book.title)}».</p><div class="library-move-options">${destinations.map(item=>`<button type="button" class="library-move-option" data-library-move-to="${esc(item.id)}" data-library-move-book="${esc(id)}"><span class="i">${item.id==="uncategorized"?"inventory_2":"shelves"}</span><span>${esc(item.title)}</span><span class="i trailing">chevron_right</span></button>`).join("")}</div><div class="act"><button type="button" class="btn n o" data-close>Отмена</button></div>`);
+}
 function libraryBookId(){let id;do{id="lib-"+((window.crypto&&crypto.randomUUID)?crypto.randomUUID():Date.now().toString(36)+"-"+Math.random().toString(36).slice(2))}while(LIB_BOOKS.some(book=>book.id===id));return id}
 function formLibraryBook(id){const book=id?LIB_BOOKS.find(item=>item.id===id):null;if(id&&!book)return toast("Книга уже удалена или изменилась.");const shelf=book?(BL[book.shelf]?book.shelf:"uncategorized"):(Object.keys(BL||{})[0]||"uncategorized"),options=[...Object.entries(BL||{}).map(([key,value])=>[key,value?.n||"Блок"]),["uncategorized","Без категории"]];openM(`<div class="modal-eyebrow"><span class="i">menu_book</span> БИБЛИОТЕКА</div><h3>${book?"Редактировать книгу":"Новая книга"}</h3><label class="fl">Название<input id="libraryBookTitle" maxlength="100" autocomplete="off" placeholder="Например, Учебный портал" value="${esc(book?.title||"")}"></label><label class="fl">Ссылка<input id="libraryBookUrl" type="url" inputmode="url" autocomplete="url" placeholder="https://example.com" value="${esc(book?.url||"")}"></label><div class="fr library-book-form-row"><label class="fl">Цвет<input class="library-color-input" id="libraryBookColor" type="color" value="${esc(book?.color||"#29472b")}"></label><label class="fl">Полка<select id="libraryBookShelf">${options.map(([key,name])=>`<option value="${esc(key)}" ${key===shelf?"selected":""}>${esc(name)}</option>`).join("")}</select></label></div><div class="act"><button type="button" class="btn n o" data-close>Отмена</button><button type="button" class="btn n" data-library-save="${esc(book?.id||"")}">Сохранить</button></div>`)}
-function showLibraryBookMenu(id){const book=LIB_BOOKS.find(item=>item.id===id);if(!book)return toast("Книга уже удалена или изменилась.");openM(`<div class="modal-eyebrow"><span class="i">menu_book</span> ${esc(book.title)}</div><h3>Действия с книгой</h3><p class="modal-hint">Можно изменить карточку или убрать её из Библиотеки. Сам документ по ссылке не затрагивается.</p><div class="act"><button type="button" class="btn n o" data-close>Отмена</button><button type="button" class="btn n o" data-library-edit="${esc(id)}"><span class="i">edit</span> Изменить</button><button type="button" class="btn n d" data-library-delete="${esc(id)}"><span class="i">delete</span> Удалить</button></div>`)}
+function showLibraryBookMenu(id){const book=LIB_BOOKS.find(item=>item.id===id);if(!book)return toast("Книга уже удалена или изменилась.");openM(`<div class="modal-eyebrow"><span class="i">menu_book</span> ${esc(book.title)}</div><h3>Действия с книгой</h3><p class="modal-hint">Можно изменить карточку, переместить её на другую полку или убрать из Библиотеки. Сам документ по ссылке не затрагивается.</p><div class="act"><button type="button" class="btn n o" data-close>Отмена</button><button type="button" class="btn n o" data-library-edit="${esc(id)}"><span class="i">edit</span> Изменить</button><button type="button" class="btn n o" data-library-move-open="${esc(id)}"><span class="i">drive_file_move</span> Переместить</button><button type="button" class="btn n d" data-library-delete="${esc(id)}"><span class="i">delete</span> Удалить</button></div>`)}
 function confirmDeleteLibraryBook(id){const book=LIB_BOOKS.find(item=>item.id===id);if(!book)return toast("Книга уже удалена.");openM(`<div class="modal-eyebrow"><span class="i">delete</span> УДАЛЕНИЕ КАРТОЧКИ</div><h3>Убрать «${esc(book.title)}»?</h3><p class="modal-hint">Из Библиотеки исчезнет только карточка. Сам сайт или документ по ссылке не будет удалён.</p><div class="act"><button type="button" class="btn n o" data-close>Оставить</button><button type="button" class="btn n d" data-library-confirm-delete="${esc(id)}">Удалить карточку</button></div>`)}
-function saveLibraryBook(id){const title=$("libraryBookTitle")?.value.trim()||"",rawUrl=$("libraryBookUrl")?.value.trim()||"",url=safeWebUrl(/^https?:\/\//i.test(rawUrl)?rawUrl:rawUrl?"https://"+rawUrl:""),color=$("libraryBookColor")?.value||"#29472b";let shelf=$("libraryBookShelf")?.value||"uncategorized";if(!title)return toast("Введите название книги.");if(!url)return toast("Введите корректную ссылку на сайт.");if(shelf!=="uncategorized"&&!BL[shelf])shelf="uncategorized";const previousBooks=deepCloneData(LIB_BOOKS),previousDeleted=deepCloneData(LIBRARY_DELETIONS),now=new Date().toISOString();let book=id?LIB_BOOKS.find(item=>item.id===id):null;if(id&&!book)return toast("Книга уже удалена или изменилась.");if(book)Object.assign(book,{title,url,color,shelf,updatedAt:now});else{book={id:libraryBookId(),title,url,color,shelf,updatedAt:now};LIB_BOOKS.push(book)}delete LIBRARY_DELETIONS[book.id];if(!save()){LIB_BOOKS=previousBooks;LIBRARY_DELETIONS=previousDeleted;return toast("Не удалось сохранить книгу на устройстве.")}closeM();renderLibrary();toast(id?"Книга обновлена":"Книга добавлена на полку")}
+function saveLibraryBook(id){
+  const title=$("libraryBookTitle")?.value.trim()||"",rawUrl=$("libraryBookUrl")?.value.trim()||"",url=safeWebUrl(/^https?:\/\//i.test(rawUrl)?rawUrl:rawUrl?"https://"+rawUrl:""),color=$("libraryBookColor")?.value||"#29472b";
+  let shelf=$("libraryBookShelf")?.value||"uncategorized";if(!title)return toast("Введите название книги.");if(!url)return toast("Введите корректную ссылку на сайт.");if(shelf!=="uncategorized"&&!BL[shelf])shelf="uncategorized";
+  const previousBooks=deepCloneData(LIB_BOOKS),previousDeleted=deepCloneData(LIBRARY_DELETIONS),now=new Date().toISOString();
+  let book=id?LIB_BOOKS.find(item=>item.id===id):null;if(id&&!book)return toast("Книга уже удалена или изменилась.");
+  const oldShelf=book?libraryEffectiveShelf(book):"";
+  if(book){
+    Object.assign(book,{title,url,color,shelf,updatedAt:now});
+    if(oldShelf!==shelf){
+      const oldList=libraryBooksForShelf(oldShelf).filter(item=>item.id!==book.id),newList=libraryBooksForShelf(shelf);
+      setLibraryShelfOrder(oldList,now);setLibraryShelfOrder(newList,now);
+    }
+  }else{
+    const list=libraryBooksForShelf(shelf);
+    if(list.some(item=>!Number.isFinite(item.order)))setLibraryShelfOrder(list,now);
+    book={id:libraryBookId(),title,url,color,shelf,order:list.length?list[list.length-1].order+1000:0,updatedAt:now};LIB_BOOKS.push(book);
+  }
+  delete LIBRARY_DELETIONS[book.id];
+  if(!save()){LIB_BOOKS=previousBooks;LIBRARY_DELETIONS=previousDeleted;return toast("Не удалось сохранить книгу на устройстве.")}
+  cancelLibraryMoveMode();closeM();renderLibrary();toast(id?"Книга обновлена":"Книга добавлена на полку")
+}
 function deleteLibraryBook(id){const previousBooks=deepCloneData(LIB_BOOKS),previousDeleted=deepCloneData(LIBRARY_DELETIONS),exists=LIB_BOOKS.some(book=>book.id===id);if(!exists)return closeM();LIB_BOOKS=LIB_BOOKS.filter(book=>book.id!==id);LIBRARY_DELETIONS[id]=new Date().toISOString();if(!save()){LIB_BOOKS=previousBooks;LIBRARY_DELETIONS=previousDeleted;return toast("Не удалось удалить карточку.")}closeM();renderLibrary();toast("Карточка удалена. Ссылка не затронута.")}
 function renderPage(){({tasks:renderTasks,archive:renderArchive,cal:renderCal,library:renderLibrary,stats:()=>renderStats("profile-statistics-content"),profile:renderProfile}[PG]||(()=>{}))()}
 function setMobileQuickMenu(open){const menu=$("mobileQuickMenu"),backdrop=$("mobileQuickBackdrop"),fab=$("mobileFab");if(!menu||!backdrop||!fab)return;const active=!!open&&PG==="home"&&window.matchMedia("(max-width:720px)").matches;menu.hidden=!active;backdrop.hidden=!active;menu.setAttribute("aria-hidden",String(!active));backdrop.setAttribute("aria-hidden",String(!active));fab.classList.toggle("is-open",active);fab.setAttribute("aria-expanded",String(active));fab.setAttribute("aria-label",active?"Закрыть меню добавления":"Добавить задачу или мероприятие");fab.title=active?"Закрыть":"Добавить"}
@@ -2244,32 +2321,54 @@ document.addEventListener("pointerdown",e=>{if(!$("ov")?.classList.contains("tas
 document.addEventListener("pointerup",e=>{const start=TASK_SHEET_GESTURE;TASK_SHEET_GESTURE=null;if(!start||!$("ov")?.classList.contains("task-create-compact"))return;const dy=e.clientY-start.y,dx=e.clientX-start.x;if(dy>92&&dy>Math.abs(dx)*1.2&&start.scrollTop<=1&&(start.top||!(start.target instanceof Element&&start.target.closest("input,textarea,select,button,a"))))closeM(true)},{passive:true});
 document.addEventListener("change",e=>{if(e.target?.id==="f_p"){const b=$("mobileTaskToolbar")?.querySelector('[data-task-pop="priority"]'),v=Number(e.target.value)||2,labels=SET.locale==="en"?["","High","Medium","Low"]:["","Высокая","Средняя","Низкая"];if(b){b.title=(SET.locale==="en"?"Priority: ":"Важность: ")+labels[v];b.setAttribute("aria-label",b.title)}}});
 document.addEventListener("pointerdown",e=>{
-  if(PG!=="library"||!e.isPrimary||e.button!==0)return;
-  const target=e.target instanceof Element?e.target:null;
-  const link=target?.closest("[data-library-book-open]");
+  if(PG!=="library"||e.pointerType==="touch"||!e.isPrimary||e.button!==0)return;
+  const target=e.target instanceof Element?e.target:null,link=target?.closest("[data-library-book-open]");
   if(!link||target.closest("button"))return;
   if(LIBRARY_PRESS_GESTURE?.timer)clearTimeout(LIBRARY_PRESS_GESTURE.timer);
-  const gesture={bookId:link.dataset.libraryBookOpen,pointerId:e.pointerId,x:e.clientX,y:e.clientY,fired:false,timer:null};
-  gesture.timer=setTimeout(()=>{
-    if(LIBRARY_PRESS_GESTURE!==gesture)return;
-    gesture.fired=true;LIBRARY_SUPPRESS_CLICK=gesture.bookId;
-    activateLibraryMoveMode(gesture.bookId);
-  },450);
+  const gesture={bookId:link.dataset.libraryBookOpen,pointerId:e.pointerId,pointerType:"mouse",x:e.clientX,y:e.clientY,fired:false,timer:null};
+  gesture.timer=setTimeout(()=>{if(LIBRARY_PRESS_GESTURE!==gesture)return;gesture.fired=true;LIBRARY_SUPPRESS_CLICK=gesture.bookId;activateLibraryMoveMode(gesture.bookId)},450);
   LIBRARY_PRESS_GESTURE=gesture;
 },{passive:true});
 document.addEventListener("pointermove",e=>{
-  const gesture=LIBRARY_PRESS_GESTURE;if(!gesture||gesture.pointerId!==e.pointerId||gesture.fired)return;
+  const gesture=LIBRARY_PRESS_GESTURE;if(!gesture||gesture.pointerType!=="mouse"||gesture.pointerId!==e.pointerId)return;
   const dx=e.clientX-gesture.x,dy=e.clientY-gesture.y;
-  if(dx*dx+dy*dy>144){clearTimeout(gesture.timer);LIBRARY_PRESS_GESTURE=null}
+  if(!gesture.fired){if(dx*dx+dy*dy>144){clearTimeout(gesture.timer);LIBRARY_PRESS_GESTURE=null}return}
+  if(dx*dx+dy*dy>64){startLibraryBookDrag(gesture.bookId,e.clientX,e.clientY);updateLibraryDragAt(e.clientX,e.clientY)}
 },{passive:true});
 document.addEventListener("pointerup",e=>{
-  const gesture=LIBRARY_PRESS_GESTURE;if(!gesture||gesture.pointerId!==e.pointerId)return;
+  const gesture=LIBRARY_PRESS_GESTURE;if(!gesture||gesture.pointerType!=="mouse"||gesture.pointerId!==e.pointerId)return;
   clearTimeout(gesture.timer);LIBRARY_PRESS_GESTURE=null;
-  if(gesture.fired)setTimeout(()=>{if(LIBRARY_SUPPRESS_CLICK===gesture.bookId)LIBRARY_SUPPRESS_CLICK=null},450);
+  if(gesture.fired){if(LIBRARY_DRAG)finishLibraryBookDrag(e.clientX,e.clientY);setTimeout(()=>{if(LIBRARY_SUPPRESS_CLICK===gesture.bookId)LIBRARY_SUPPRESS_CLICK=null},450)}
 },{passive:true});
 document.addEventListener("pointercancel",e=>{
-  const gesture=LIBRARY_PRESS_GESTURE;if(!gesture||gesture.pointerId!==e.pointerId)return;
+  const gesture=LIBRARY_PRESS_GESTURE;if(!gesture||gesture.pointerType!=="mouse"||gesture.pointerId!==e.pointerId)return;
+  clearTimeout(gesture.timer);LIBRARY_PRESS_GESTURE=null;cancelLibraryDrag();
+},{passive:true});
+document.addEventListener("touchstart",e=>{
+  if(PG!=="library"||e.touches.length!==1)return;
+  const target=e.target instanceof Element?e.target:null,link=target?.closest("[data-library-book-open]"),touch=e.touches[0];
+  if(!link||target.closest("button"))return;
+  if(LIBRARY_PRESS_GESTURE?.timer)clearTimeout(LIBRARY_PRESS_GESTURE.timer);
+  const gesture={bookId:link.dataset.libraryBookOpen,pointerId:touch.identifier,pointerType:"touch",x:touch.clientX,y:touch.clientY,fired:false,timer:null};
+  gesture.timer=setTimeout(()=>{if(LIBRARY_PRESS_GESTURE!==gesture)return;gesture.fired=true;LIBRARY_SUPPRESS_CLICK=gesture.bookId;activateLibraryMoveMode(gesture.bookId)},450);
+  LIBRARY_PRESS_GESTURE=gesture;
+},{passive:true});
+document.addEventListener("touchmove",e=>{
+  const gesture=LIBRARY_PRESS_GESTURE;if(!gesture||gesture.pointerType!=="touch")return;
+  const touch=Array.from(e.touches).find(item=>item.identifier===gesture.pointerId);if(!touch)return;
+  const dx=touch.clientX-gesture.x,dy=touch.clientY-gesture.y;
+  if(!gesture.fired){if(dx*dx+dy*dy>144){clearTimeout(gesture.timer);LIBRARY_PRESS_GESTURE=null}return}
+  if(dx*dx+dy*dy>64){e.preventDefault();startLibraryBookDrag(gesture.bookId,touch.clientX,touch.clientY);updateLibraryDragAt(touch.clientX,touch.clientY)}
+},{passive:false});
+document.addEventListener("touchend",e=>{
+  const gesture=LIBRARY_PRESS_GESTURE;if(!gesture||gesture.pointerType!=="touch")return;
+  const touch=Array.from(e.changedTouches).find(item=>item.identifier===gesture.pointerId);if(!touch)return;
   clearTimeout(gesture.timer);LIBRARY_PRESS_GESTURE=null;
+  if(gesture.fired){if(LIBRARY_DRAG)finishLibraryBookDrag(touch.clientX,touch.clientY);setTimeout(()=>{if(LIBRARY_SUPPRESS_CLICK===gesture.bookId)LIBRARY_SUPPRESS_CLICK=null},450)}
+},{passive:true});
+document.addEventListener("touchcancel",e=>{
+  const gesture=LIBRARY_PRESS_GESTURE;if(!gesture||gesture.pointerType!=="touch")return;
+  clearTimeout(gesture.timer);LIBRARY_PRESS_GESTURE=null;cancelLibraryDrag();
 },{passive:true});
 document.addEventListener("contextmenu",e=>{
   const target=e.target instanceof Element?e.target:null,link=target?.closest("[data-library-book-open]");
@@ -2287,6 +2386,8 @@ if(a=g("[data-library-target]")){go(a.dataset.libraryTarget);return}
 if(a=g("[data-library-add]")){formLibraryBook();return}
 if(a=g("[data-library-menu]")){showLibraryBookMenu(a.dataset.libraryMenu);return}
 if(a=g("[data-library-edit]")){formLibraryBook(a.dataset.libraryEdit);return}
+if(a=g("[data-library-move-open]")){showLibraryMovePicker(a.dataset.libraryMoveOpen);return}
+if(a=g("[data-library-move-to]")){applyLibraryBookDrop(a.dataset.libraryMoveBook,a.dataset.libraryMoveTo,"",false);closeM();return}
 if(a=g("[data-library-delete]")){confirmDeleteLibraryBook(a.dataset.libraryDelete);return}
 if(a=g("[data-library-confirm-delete]")){deleteLibraryBook(a.dataset.libraryConfirmDelete);return}
 if(a=g("[data-library-save]")){saveLibraryBook(a.dataset.librarySave);return}
