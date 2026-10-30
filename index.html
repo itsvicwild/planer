@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-hEW9CYOx4nyjbdfnsQpP3MBJcxTszCiyP/tWaveC0gc=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-xPte2S2vYiV9C96KgSJyPo4aHIVX9Cn02KQFRD/T/kA=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-qVzlSkn5yXoiB50UraOPBUl/v88yhq//HA1Pj7bN720=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-xPte2S2vYiV9C96KgSJyPo4aHIVX9Cn02KQFRD/T/kA=' 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Wild Workspace</title>
 <meta name="description" content="Wild Workspace — личное пространство для задач, привычек, событий и маленьких побед.">
 <meta name="theme-color" content="#0e1411">
@@ -1407,10 +1407,28 @@ html{background:var(--bg)!important;color-scheme:light dark}
 .library-shelf-heading{display:flex;align-items:center;gap:10px;min-width:0}
 .library-shelf-heading>.i{flex:none;color:var(--shelf-color);font-size:22px}
 .library-shelf-heading h2{margin:0;font:500 18px/1.25 "Roboto Flex",sans-serif;overflow-wrap:anywhere}
-.library-shelf-empty{display:flex;align-items:center;min-height:58px;padding:8px 2px;color:var(--tx2);font-size:13px}
+.library-shelf-count{margin-left:auto;flex:none;color:var(--tx2);font-size:12px}
+.library-shelf-books{display:flex;align-items:stretch;flex-wrap:wrap;gap:12px;padding:16px 0 10px}
+.library-book-card{position:relative;display:flex;flex-direction:column;align-items:stretch;flex:0 0 134px;width:134px;height:170px;min-width:0;padding:12px 10px 11px 21px;overflow:hidden;border:1px solid color-mix(in srgb,var(--book-color) 54%,var(--ol));border-radius:16px;background:color-mix(in srgb,var(--book-color) 37%,var(--s2));color:var(--tx);text-align:left;font:inherit;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.library-book-card::before{content:"";position:absolute;inset:0 auto 0 0;width:10px;background:var(--book-color)}
+.library-book-card-action{cursor:pointer;appearance:none}
+.library-book-card-action:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.library-book-top{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:28px}
+.library-book-icon{display:grid;place-items:center;width:25px;height:25px;color:var(--book-color);flex:none}
+.library-book-icon .i{font-size:21px}
+.library-book-menu{display:grid;place-items:center;flex:none;width:32px;height:32px;padding:0;border:1px solid color-mix(in srgb,var(--tx) 10%,transparent);border-radius:10px;background:color-mix(in srgb,var(--bg) 65%,transparent);color:var(--tx2);opacity:1;font:inherit;cursor:default}
+.library-book-menu .i{font-size:18px}
+.library-book-title{display:block;margin-top:13px;overflow-wrap:anywhere;font-size:13px;font-weight:650;line-height:1.3}
+.library-book-kind{display:block;margin-top:auto;color:var(--tx2);font-size:12px;line-height:1.25}
+.library-empty-card{display:flex;align-items:center;gap:13px;flex:0 0 320px;width:min(320px,100%);min-height:136px;padding:15px 17px;border:1px dashed var(--ol);border-radius:18px;background:color-mix(in srgb,var(--s3) 42%,var(--s2));color:var(--tx2)}
+.library-empty-icon{display:grid;place-items:center;flex:none;width:48px;height:48px;border-radius:14px;background:var(--s3);color:var(--p)}
+.library-empty-icon .i{font-size:25px}
+.library-empty-copy{display:grid;gap:4px;min-width:0}
+.library-empty-copy strong{color:var(--tx);font-size:15px;font-weight:600}
+.library-empty-copy span{font-size:13px;line-height:1.4}
 .library-shelf-board{height:5px;border-radius:5px;background:var(--shelf-color);opacity:.7;box-shadow:0 3px 0 color-mix(in srgb,var(--shelf-color) 22%,transparent)}
 #pg-library.page.on,#pg-library.page-enter{animation:none!important}
-@media(max-width:720px){.library-shelf{padding:16px 15px 13px}.library-shelf-heading h2{font-size:16px}}
+@media(max-width:720px){.library-shelf{padding:16px 15px 13px}.library-shelf-heading h2{font-size:16px}.library-shelf-books{gap:10px}.library-book-card{flex-basis:calc((100% - 20px)/3);width:calc((100% - 20px)/3);min-width:104px}.library-empty-card{flex-basis:100%;width:100%}}
 </style>
 </head>
 <body>
@@ -2103,18 +2121,42 @@ async function handleCloud(action){try{if(action==="auth"){showCloudAuth();retur
 const NAMES={home:"",cal:"Календарь",tasks:"Задачи",archive:"Архив",stats:"Статистика",profile:"Настройки"};
 function renderProfile(){renderSet()}
 function renderLibrary(){
+  // Temporary visual samples only. No books are written to localStorage or Supabase in this step.
+  const demoBooks=[
+    {id:"demo-link",shelf:"study",title:"BBB",kind:"Ссылка",icon:"link",color:"#29472b",menu:true},
+    {id:"demo-stats",shelf:"uncategorized",title:"Статистика",kind:"Встроенный раздел",icon:"monitoring",color:"#3d3854",target:"stats"},
+    {id:"demo-settings",shelf:"uncategorized",title:"Настройки",kind:"Встроенный раздел",icon:"settings",color:"#174555",target:"profile"}
+  ];
   const shelves=Object.entries(BL||{}).map(([id,block])=>({id,title:block?.n||"Блок",color:cssColor(block?.c,"var(--p)"),uncategorized:false}));
-  // Keep this shelf independent from BL: future books with a deleted block ID can live here.
+  // A book whose former block no longer exists remains visible on the independent "Без категории" shelf.
   shelves.push({id:"uncategorized",title:"Без категории",color:"var(--ol)",uncategorized:true});
-  $("pg-library").innerHTML=`<div class="library-shelves">${shelves.map(s=>`
-    <section class="library-shelf" data-library-shelf="${esc(s.id)}" style="--shelf-color:${s.color}">
-      <div class="library-shelf-heading">
-        <span class="i" aria-hidden="true">${s.uncategorized?"inventory_2":"shelves"}</span>
-        <h2>${esc(s.title)}</h2>
-      </div>
-      <div class="library-shelf-empty">Здесь пока нет книг</div>
-      <div class="library-shelf-board" aria-hidden="true"></div>
-    </section>`).join("")}</div>`;
+  const byShelf=new Map(shelves.map(s=>[s.id,[]]));
+  for(const book of demoBooks){
+    const wanted=book.shelf;
+    const shelfId=(wanted==="uncategorized"||Object.prototype.hasOwnProperty.call(BL||{},wanted))?wanted:"uncategorized";
+    byShelf.get(shelfId).push(book);
+  }
+  const countLabel=count=>{
+    const mod10=count%10,mod100=count%100;
+    return mod10===1&&mod100!==11?"книга":mod10>=2&&mod10<=4&&(mod100<12||mod100>14)?"книги":"книг";
+  };
+  const cardMarkup=book=>{
+    const inner=`<span class="library-book-top"><span class="library-book-icon"><span class="i" aria-hidden="true">${book.icon}</span></span>${book.menu?`<button type="button" class="library-book-menu" disabled aria-label="Действия книги — появятся позже" title="Меню книги"><span class="i" aria-hidden="true">more_vert</span></button>`:""}</span><span class="library-book-title">${esc(book.title)}</span><span class="library-book-kind">${esc(book.kind)}</span>`;
+    const style=`--book-color:${cssColor(book.color,"var(--p)")}`;
+    return book.target
+      ?`<button type="button" class="library-book-card library-book-card-action" style="${style}" data-library-target="${esc(book.target)}" aria-label="Открыть раздел «${esc(book.title)}»">${inner}</button>`
+      :`<article class="library-book-card" style="${style}" aria-label="Тестовая книга «${esc(book.title)}»">${inner}</article>`;
+  };
+  $("pg-library").innerHTML=`<div class="library-shelves">${shelves.map(s=>{
+    const books=byShelf.get(s.id)||[];
+    const contents=books.length
+      ?`<div class="library-shelf-books">${books.map(cardMarkup).join("")}</div>`
+      :`<div class="library-shelf-books"><div class="library-empty-card"><span class="library-empty-icon"><span class="i" aria-hidden="true">menu_book</span></span><span class="library-empty-copy"><strong>Пока пусто</strong><span>Здесь будут книги этого направления.</span></span></div></div>`;
+    return `<section class="library-shelf" data-library-shelf="${esc(s.id)}" style="--shelf-color:${s.color}">
+      <div class="library-shelf-heading"><span class="i" aria-hidden="true">${s.uncategorized?"inventory_2":"circle"}</span><h2>${esc(s.title)}</h2><span class="library-shelf-count">${books.length} ${countLabel(books.length)}</span></div>
+      ${contents}<div class="library-shelf-board" aria-hidden="true"></div>
+    </section>`;
+  }).join("")}</div>`;
 }
 function renderPage(){({tasks:renderTasks,archive:renderArchive,cal:renderCal,library:renderLibrary,stats:()=>renderStats("profile-statistics-content"),profile:renderProfile}[PG]||(()=>{}))()}
 function setMobileQuickMenu(open){const menu=$("mobileQuickMenu"),backdrop=$("mobileQuickBackdrop"),fab=$("mobileFab");if(!menu||!backdrop||!fab)return;const active=!!open&&PG==="home"&&window.matchMedia("(max-width:720px)").matches;menu.hidden=!active;backdrop.hidden=!active;menu.setAttribute("aria-hidden",String(!active));backdrop.setAttribute("aria-hidden",String(!active));fab.classList.toggle("is-open",active);fab.setAttribute("aria-expanded",String(active));fab.setAttribute("aria-label",active?"Закрыть меню добавления":"Добавить задачу или мероприятие");fab.title=active?"Закрыть":"Добавить"}
@@ -2190,6 +2232,7 @@ document.addEventListener("pointerdown",e=>{if(!$("ov")?.classList.contains("tas
 document.addEventListener("pointerup",e=>{const start=TASK_SHEET_GESTURE;TASK_SHEET_GESTURE=null;if(!start||!$("ov")?.classList.contains("task-create-compact"))return;const dy=e.clientY-start.y,dx=e.clientX-start.x;if(dy>92&&dy>Math.abs(dx)*1.2&&start.scrollTop<=1&&(start.top||!(start.target instanceof Element&&start.target.closest("input,textarea,select,button,a"))))closeM(true)},{passive:true});
 document.addEventListener("change",e=>{if(e.target?.id==="f_p"){const b=$("mobileTaskToolbar")?.querySelector('[data-task-pop="priority"]'),v=Number(e.target.value)||2,labels=SET.locale==="en"?["","High","Medium","Low"]:["","Высокая","Средняя","Низкая"];if(b){b.title=(SET.locale==="en"?"Priority: ":"Важность: ")+labels[v];b.setAttribute("aria-label",b.title)}}});
 document.addEventListener("click",e=>{if(performance.now()-SUP<300)return;const g=s=>e.target.closest(s);let a;
+if(a=g("[data-library-target]")){go(a.dataset.libraryTarget);return}
 if(g("[data-close-task-popover]")){closeMobileTaskOption();return}
 if(a=g("[data-task-pop]")){openMobileTaskOption(a.dataset.taskPop,a);return}
 if(a=g("[data-locale-choice]")){SET.locale=a.dataset.localeChoice==="en"?"en":"ru";saveSet("locale");applyTheme();head();all();renderProfile();applyLocale(document.body);toast(SET.locale==="en"?"Language set to English":"Язык установлен: русский");return}
