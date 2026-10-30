@@ -43,6 +43,8 @@ jobs:
           const actualHashes = scripts.map(script =>
             crypto.createHash("sha256").update(script, "utf8").digest("base64")
           );
+          console.log("Inline script hashes:", JSON.stringify(actualHashes));
+          console.log("CSP hashes:", JSON.stringify(csp.slice(1)));
           if (actualHashes.some((hash, index) => hash !== csp[index + 1])) {
             throw new Error("CSP hashes do not match the inline scripts");
           }
