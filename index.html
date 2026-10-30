@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-/ACP00UKBIeRIk9SlD8bOhy/2T2NPt8MzrqmU8w760c=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-xPte2S2vYiV9C96KgSJyPo4aHIVX9Cn02KQFRD/T/kA=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-hEW9CYOx4nyjbdfnsQpP3MBJcxTszCiyP/tWaveC0gc=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-xPte2S2vYiV9C96KgSJyPo4aHIVX9Cn02KQFRD/T/kA=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Wild Workspace</title>
 <meta name="description" content="Wild Workspace — личное пространство для задач, привычек, событий и маленьких побед.">
 <meta name="theme-color" content="#0e1411">
@@ -1402,6 +1402,15 @@ html{background:var(--bg)!important;color-scheme:light dark}
 .ww-swipe-preview{pointer-events:none;user-select:none;-webkit-user-select:none}
 .ww-swipe-preview .we,.ww-swipe-preview .ci,.ww-swipe-preview button{pointer-events:none!important}
 @media(prefers-reduced-motion:reduce){.ww-swipe-track{transition:none!important}}
+.library-shelves{display:grid;gap:14px;width:100%;max-width:1040px}
+.library-shelf{--shelf-color:var(--p);min-width:0;padding:18px 20px 14px;background:var(--s2);border:1px solid var(--s3);border-radius:var(--r)}
+.library-shelf-heading{display:flex;align-items:center;gap:10px;min-width:0}
+.library-shelf-heading>.i{flex:none;color:var(--shelf-color);font-size:22px}
+.library-shelf-heading h2{margin:0;font:500 18px/1.25 "Roboto Flex",sans-serif;overflow-wrap:anywhere}
+.library-shelf-empty{display:flex;align-items:center;min-height:58px;padding:8px 2px;color:var(--tx2);font-size:13px}
+.library-shelf-board{height:5px;border-radius:5px;background:var(--shelf-color);opacity:.7;box-shadow:0 3px 0 color-mix(in srgb,var(--shelf-color) 22%,transparent)}
+#pg-library.page.on,#pg-library.page-enter{animation:none!important}
+@media(max-width:720px){.library-shelf{padding:16px 15px 13px}.library-shelf-heading h2{font-size:16px}}
 </style>
 </head>
 <body>
@@ -2093,7 +2102,21 @@ async function handleCloud(action){try{if(action==="auth"){showCloudAuth();retur
 
 const NAMES={home:"",cal:"Календарь",tasks:"Задачи",archive:"Архив",stats:"Статистика",profile:"Настройки"};
 function renderProfile(){renderSet()}
-function renderPage(){({tasks:renderTasks,archive:renderArchive,cal:renderCal,stats:()=>renderStats("profile-statistics-content"),profile:renderProfile}[PG]||(()=>{}))()}
+function renderLibrary(){
+  const shelves=Object.entries(BL||{}).map(([id,block])=>({id,title:block?.n||"Блок",color:cssColor(block?.c,"var(--p)"),uncategorized:false}));
+  // Keep this shelf independent from BL: future books with a deleted block ID can live here.
+  shelves.push({id:"uncategorized",title:"Без категории",color:"var(--ol)",uncategorized:true});
+  $("pg-library").innerHTML=`<div class="library-shelves">${shelves.map(s=>`
+    <section class="library-shelf" data-library-shelf="${esc(s.id)}" style="--shelf-color:${s.color}">
+      <div class="library-shelf-heading">
+        <span class="i" aria-hidden="true">${s.uncategorized?"inventory_2":"shelves"}</span>
+        <h2>${esc(s.title)}</h2>
+      </div>
+      <div class="library-shelf-empty">Здесь пока нет книг</div>
+      <div class="library-shelf-board" aria-hidden="true"></div>
+    </section>`).join("")}</div>`;
+}
+function renderPage(){({tasks:renderTasks,archive:renderArchive,cal:renderCal,library:renderLibrary,stats:()=>renderStats("profile-statistics-content"),profile:renderProfile}[PG]||(()=>{}))()}
 function setMobileQuickMenu(open){const menu=$("mobileQuickMenu"),backdrop=$("mobileQuickBackdrop"),fab=$("mobileFab");if(!menu||!backdrop||!fab)return;const active=!!open&&PG==="home"&&window.matchMedia("(max-width:720px)").matches;menu.hidden=!active;backdrop.hidden=!active;menu.setAttribute("aria-hidden",String(!active));backdrop.setAttribute("aria-hidden",String(!active));fab.classList.toggle("is-open",active);fab.setAttribute("aria-expanded",String(active));fab.setAttribute("aria-label",active?"Закрыть меню добавления":"Добавить задачу или мероприятие");fab.title=active?"Закрыть":"Добавить"}
 function closeMobileQuickMenu(){setMobileQuickMenu(false)}
 function syncEventAllDayUI(){const allDay=!!$("f_allDay")?.checked||$("f_k")?.value==="holiday";$("eventTimeFields")?.classList.toggle("is-all-day",allDay);document.querySelectorAll("#eventTimeFields .event-time-control input").forEach(input=>{input.disabled=allDay})}
