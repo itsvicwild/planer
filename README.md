@@ -1,4 +1,13 @@
-# Wild Workspace v4.0.2 — PWA build
+# Wild Workspace v5.1 — PWA build
+
+## Changes in v5.1
+
+- Expanded the Library with built-in Statistics and Settings cards followed by user-created book links on the Uncategorized shelf.
+- Made the entire Uncategorized shelf, including built-in cards, move together during horizontal scrolling while preserving their order.
+- Added Android system Back navigation for Library screens and open menus/forms.
+- Expanded English localization across Library screens, book actions, shelves and dynamic labels.
+- Added desktop quick actions for opening the Library and creating a book.
+- Refreshed the PWA cache and app version for the 5.1 release.
 
 Wild Workspace is a static HTML/CSS/JavaScript planner. This package includes the installable Progressive Web App (PWA) shell for GitHub Pages.
 
