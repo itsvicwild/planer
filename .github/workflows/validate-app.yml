@@ -33,17 +33,17 @@ jobs:
 
           const html = fs.readFileSync("index.html", "utf8");
           const scripts = [...html.matchAll(/<script(?![^>]*\bsrc=)(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(match => match[1]);
-          if (scripts.length !== 2) {
-            throw new Error("Expected 2 inline scripts, found " + scripts.length);
+          if (scripts.length !== 3) {
+            throw new Error("Expected 3 inline scripts, found " + scripts.length);
           }
 
-          const csp = html.match(/<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-([^']+)' 'sha256-([^']+)'/);
+          const csp = html.match(/<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-([^']+)' 'sha256-([^']+)' 'sha256-([^']+)'/);
           if (!csp) throw new Error("CSP inline-script hashes were not found");
 
           const actualHashes = scripts.map(script =>
             crypto.createHash("sha256").update(script, "utf8").digest("base64")
           );
-          if (actualHashes[0] !== csp[1] || actualHashes[1] !== csp[2]) {
+          if (actualHashes.some((hash, index) => hash !== csp[index + 1])) {
             throw new Error("CSP hashes do not match the inline scripts");
           }
 
