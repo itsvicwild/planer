@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-ayRLe5GzSehJ+dGdDRpFjtl1Tnf4NSGbEeYf0VRxrgw=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-xPte2S2vYiV9C96KgSJyPo4aHIVX9Cn02KQFRD/T/kA=' 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-c7uTFj4kJnOjBaFfJAnUXjnDq6wl2HZ+ULPsSRyYjeo=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-xPte2S2vYiV9C96KgSJyPo4aHIVX9Cn02KQFRD/T/kA=' 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Wild Workspace</title>
 <meta name="description" content="Wild Workspace — личное пространство для задач, привычек, событий и маленьких побед.">
 <meta name="theme-color" content="#0e1411">
@@ -1092,7 +1092,7 @@ html[data-festival="christmas"] #pg-home>.card.c7{border-color:rgba(196,225,250,
   }
   .ov.entry-sheet.task-form-overlay.task-create-compact>.md>.task-form-root.task-form-create{
     position:relative!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;
-    grid-template-areas:"task-title" "task-tools" "task-groups"!important;align-content:end!important;
+    grid-template-areas:"task-title" "task-tools" "task-description" "task-groups"!important;align-content:end!important;
     align-items:stretch!important;gap:10px!important;width:100%!important;min-width:0!important;
     min-height:0!important;margin:0!important;padding:0!important;
   }
@@ -1147,6 +1147,28 @@ html[data-festival="christmas"] #pg-home>.card.c7{border-color:rgba(196,225,250,
   .ov.task-create-compact .task-form-create>.mobile-task-toolbar>[data-savet]>.i{
     display:inline-block!important;position:static!important;font-size:22px!important;line-height:22px!important
   }
+  .ov.task-create-compact .task-form-create>.mobile-task-toolbar>.task-date-tool{position:relative!important;overflow:hidden!important}
+  .ov.task-create-compact .task-form-create>.mobile-task-toolbar>.task-date-tool>.mobile-native-date-input{
+    display:block!important;position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+    min-width:0!important;max-width:none!important;min-height:0!important;margin:0!important;padding:0!important;
+    border:0!important;border-radius:0!important;opacity:0!important;background:transparent!important;
+    z-index:2!important;cursor:pointer!important;appearance:none!important;-webkit-appearance:none!important;
+  }
+  .ov.task-create-compact .task-form-create>#taskExtraDesc:not(.hide){
+    grid-area:task-description!important;display:block!important;position:relative!important;
+    width:100%!important;min-width:0!important;margin:0!important;padding:0!important;
+    animation:mobileTaskDescriptionIn .18s ease-out both;
+  }
+  .ov.task-create-compact .task-form-create>#taskExtraDesc .fl{
+    display:block!important;margin:0!important;color:#c9c7d3!important;font-size:12px!important;
+  }
+  .ov.task-create-compact .task-form-create>#taskExtraDesc textarea{
+    display:block!important;width:100%!important;min-height:96px!important;box-sizing:border-box!important;
+    margin:6px 0 0!important;padding:9px 10px!important;border:1px solid rgba(224,222,240,.13)!important;
+    border-radius:10px!important;background:#30313a!important;color:#f4f2f8!important;
+    font:14px/1.45 "Roboto Flex",sans-serif!important;resize:vertical!important;
+  }
+  @keyframes mobileTaskDescriptionIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
   .ov.task-create-compact .task-form-create>.task-block-project-row{
     grid-area:task-groups!important;display:grid!important;position:relative!important;
     grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:start!important;gap:9px!important;
@@ -1184,13 +1206,13 @@ html[data-festival="christmas"] #pg-home>.card.c7{border-color:rgba(196,225,250,
   .ov.task-create-compact .task-form-create{gap:12px!important}
   .ov.task-create-compact .task-form-create .task-title-input{min-height:62px!important}
   .ov.task-create-compact .task-form-create>.mobile-task-toolbar{
-    grid-template-columns:repeat(3,minmax(0,1fr)) 44px!important;gap:5px!important;min-height:52px!important;padding:5px 0!important
+    grid-template-columns:repeat(4,minmax(0,1fr)) 44px!important;gap:5px!important;min-height:52px!important;padding:5px 0!important
   }
   .ov.task-create-compact .task-form-create>.mobile-task-toolbar>.task-tool-button{
     height:44px!important;min-height:44px!important;max-height:44px!important
   }
   .ov.task-create-compact .task-form-create>.mobile-task-toolbar>[data-savet]{
-    grid-column:4!important;grid-row:1!important;width:44px!important;min-width:44px!important;max-width:44px!important;height:44px!important;min-height:44px!important
+    grid-column:5!important;grid-row:1!important;width:44px!important;min-width:44px!important;max-width:44px!important;height:44px!important;min-height:44px!important
   }
   .ov.task-create-compact .task-form-create>.mobile-task-toolbar>.task-tool-button.priority-cycle.priority-p1{color:#ff8b84!important;background:rgba(198,40,30,.16)!important}
   .ov.task-create-compact .task-form-create>.mobile-task-toolbar>.task-tool-button.priority-cycle.priority-p2{color:#f6cf67!important;background:rgba(229,165,10,.15)!important}
@@ -1878,17 +1900,13 @@ openM(`${compactTaskCreate?'<div class="task-form-root task-form-create">':""}<d
 <div class="extra-panel ${o.time?"":"hide"}" id="taskExtraTime"><label class="fl">Время выполнения (необязательно)<input type="time" id="f_time" value="${esc(o.time||"")}"></label></div><div class="extra-panel ${o.desc?"":"hide"}" id="taskExtraDesc"><label class="fl">Описание<textarea id="f_desc" placeholder="Контекст, заметки или полезные ссылки">${esc(o.desc)}</textarea></label></div>
 <div class="extra-panel ${o.subtasks.length?"":"hide"}" id="taskExtraChecklist"><div class="subtask-head"><b>Маленькие шаги</b><span class="subtask-caption">Можно отмечать по мере выполнения</span></div><div id="f_subtasks">${o.subtasks.map(formSubtaskRow).join("")}</div><div class="add-subtask-row"><input id="newSubtaskInput" type="text" placeholder="Добавить шаг…" maxlength="180"><button type="button" class="btn n t" data-addsubtask><span class="i">add</span>Добавить</button></div></div>
 <div class="fr task-block-project-row"><label class="fl">Блок<select id="f_b">${opt(orderedBlockEntries().map(([k,b])=>[k,b.n]),o.b)}</select></label><label class="fl">Проект / направление<input id="f_sub" value="${esc(o.sub)}" placeholder="Например, диплом или TOEFL"></label></div>
-${compactTaskCreate?`<div class="mobile-task-toolbar" id="mobileTaskToolbar" role="toolbar" aria-label="Инструменты задачи">
-<button type="button" class="task-tool-button" data-task-pop="schedule" aria-label="${SET.locale==="en"?"Choose date":"Выбрать дату"}" title="${SET.locale==="en"?"Choose date":"Выбрать дату"}"><span class="i" aria-hidden="true">calendar_month</span></button>
-<button type="button" class="task-tool-button priority-cycle priority-p${o.p}" data-priority-cycle data-priority="${o.p}" aria-label="Важность" title="Важность"><span class="i" aria-hidden="true">flag</span></button>
-<button type="button" class="task-tool-button" data-task-pop="desc" aria-label="${SET.locale==="en"?"Description":"Описание"}" title="${SET.locale==="en"?"Description":"Описание"}"><span class="i" aria-hidden="true">notes</span></button>
-</div>
+${compactTaskCreate?`<div class="mobile-task-toolbar" id="mobileTaskToolbar" role="toolbar" aria-label="Инструменты задачи"><label class="task-tool-button task-date-tool" data-task-date-tool="plan"><span class="i" aria-hidden="true">calendar_month</span></label><label class="task-tool-button task-date-tool" data-task-date-tool="deadline"><span class="i" aria-hidden="true">event</span></label><button type="button" class="task-tool-button priority-cycle priority-p${o.p}" data-priority-cycle data-priority="${o.p}" aria-label="Важность" title="Важность"><span class="i" aria-hidden="true">flag</span></button><button type="button" class="task-tool-button" data-toggle-extra="desc" aria-label="${SET.locale==="en"?"Description":"Описание"}" title="${SET.locale==="en"?"Description":"Описание"}" aria-expanded="false" aria-controls="taskExtraDesc"><span class="i" aria-hidden="true">notes</span></button></div>
 <div class="task-option-popover hide" id="taskOptionPopup" role="dialog" aria-modal="false" aria-label="Настройки задачи" hidden>
 <div class="task-option-head"><b id="taskOptionTitle">Настройки задачи</b><button type="button" class="task-option-close" data-close-task-popover aria-label="Закрыть"><span class="i" aria-hidden="true">close</span></button></div>
 <div id="taskOptionBody" class="task-option-body"></div>
 </div>`:""}
 <div class="act"><button type="button" class="btn n o" data-close>Отмена</button><button type="button" class="btn n" data-savet="${x?x.id:""}"><span class="i">${x?"check":"add"}</span>${x?"Сохранить изменения":"Сохранить задачу"}</button></div>${compactTaskCreate?"</div>":""}`);
-if(compactTaskCreate){const md=$("md"),toolbar=$("mobileTaskToolbar"),saveButton=md?.querySelector("[data-savet]"),titleInput=$("f_t"),optionPopup=md?.querySelector("#taskOptionPopup");if(optionPopup)$("ov").append(optionPopup);if(toolbar&&saveButton){toolbar.append(saveButton);saveButton.className="mobile-task-save";saveButton.innerHTML='<span class="i" aria-hidden="true">save</span>';saveButton.setAttribute("aria-label",SET.locale==="en"?"Save task":"Сохранить задачу");saveButton.title=SET.locale==="en"?"Save task":"Сохранить задачу"}if(titleInput){titleInput.placeholder=SET.locale==="en"?"New task":"Новая задача";try{titleInput.focus({preventScroll:true});if(titleInput.setSelectionRange)titleInput.setSelectionRange(titleInput.value.length,titleInput.value.length)}catch(e){}}syncMobileTaskSave()}
+if(compactTaskCreate){const md=$("md"),toolbar=$("mobileTaskToolbar"),planDateInput=$("f_planDate"),deadlineDateInput=$("f_d"),saveButton=md?.querySelector("[data-savet]"),titleInput=$("f_t"),optionPopup=md?.querySelector("#taskOptionPopup");const dateTools=[["plan",planDateInput],["deadline",deadlineDateInput]];dateTools.forEach(([kind,input])=>{const tool=toolbar?.querySelector('[data-task-date-tool="'+kind+'"]');if(tool&&input){input.classList.add("mobile-native-date-input");tool.append(input)}});if(optionPopup)$("ov").append(optionPopup);if(toolbar&&saveButton){toolbar.append(saveButton);saveButton.className="mobile-task-save";saveButton.innerHTML='<span class="i" aria-hidden="true">save</span>';saveButton.setAttribute("aria-label",SET.locale==="en"?"Save task":"Сохранить задачу");saveButton.title=SET.locale==="en"?"Save task":"Сохранить задачу"}if(titleInput){titleInput.placeholder=SET.locale==="en"?"New task":"Новая задача";try{titleInput.focus({preventScroll:true});if(titleInput.setSelectionRange)titleInput.setSelectionRange(titleInput.value.length,titleInput.value.length)}catch(e){}}syncMobileTaskSave()}
 setTimeout(()=>{const input=$("f_t");if(input&&window.matchMedia("(min-width:721px)").matches)input.focus({preventScroll:true})},410)}
 function formE(x,pre,editContext){const singleOccurrence=editContext?.scope==="single";const o=Object.assign({k:"work",date:ds(today),endDate:"",a:"10:00",z:"11:00",rec:"none",wd:[],p:"",until:"",desc:"",links:[],allDay:false,c:""},pre||{},x||{});if(!["work","personal","holiday"].includes(o.k))o.k="work";if(o.k==="holiday")o.allDay=true;const startDate=validISODate(o.date)?o.date:ds(today),endDate=validISODate(o.endDate)&&o.endDate>=startDate?o.endDate:startDate,selectedEventColor=cssColor(o.c,ET[o.k].c),w0=pd(startDate).getDay()||7,wd=o.wd.length?o.wd:[w0];
 openM(`<div class="event-type-pills" role="group" aria-label="Тип мероприятия">${Object.entries(ET).map(([k,b])=>`<button type="button" class="event-type-pill ${o.k===k?"on":""}" data-event-type="${k}" style="--event-color:${b.c}"><span class="i">${k==="work"?"school":k==="personal"?"favorite":"celebration"}</span>${b.n}</button>`).join("")}</div><input id="f_k" type="hidden" value="${o.k}">
@@ -2498,7 +2516,7 @@ if(a=g("[data-subtoggle]")){const [tid,sid]=a.dataset.subtoggle.split("|");const
 if(a=g("[data-attach-picker]")){const input=$(a.dataset.attachPicker==="image"?"f_imageUpload":"f_fileUpload");if(input)input.click();return}
 if(a=g("[data-hours-step]")){const field=$("f_h"),output=$("f_h_display");if(!field||!output)return;const current=Math.max(0,Math.min(1000,Number(field.value)||0)),next=Math.max(0,Math.min(1000,Math.round((current+Number(a.dataset.hoursStep)*0.5)*2)/2));field.value=String(next);output.textContent=next+" "+(SET.locale==="en"?"h":"ч");field.dispatchEvent(new Event("input",{bubbles:true}));return}
 if(a=g("[data-priority-cycle]")){const field=$("f_p");if(!field)return;const current=Math.max(1,Math.min(3,Number(field.value)||Number(a.dataset.priority)||2)),next=current===3?2:current===2?1:3;field.value=String(next);a.dataset.priority=String(next);a.classList.remove("priority-p1","priority-p2","priority-p3");a.classList.add("priority-p"+next);const labels=SET.locale==="en"?["","High","Medium","Low"]:["","Высокая","Средняя","Низкая"];const label=a.querySelector(".priority-label");if(label)label.textContent=labels[next];a.setAttribute("aria-label",(SET.locale==="en"?"Priority: ":"Важность: ")+labels[next]);a.title=(SET.locale==="en"?"Priority: ":"Важность: ")+labels[next];applyLocale(a);return}
-if(a=g("[data-toggle-extra]")){if($("ov")?.classList.contains("task-create-compact")&&a.dataset.toggleExtra!=="time"){const key={"desc":"desc","checklist":"checklist","hours":"hours","priority":"priority","attachment-link":"link","attachments":"files"}[a.dataset.toggleExtra];if(key){openMobileTaskOption(key,a);return}}const ids={time:"taskExtraTime",desc:"taskExtraDesc",checklist:"taskExtraChecklist",hours:"taskExtraHours",priority:"taskExtraPriority","attachment-link":"taskExtraLink",attachments:"taskExtraAttachments"},el=$(ids[a.dataset.toggleExtra]);if(el){el.classList.toggle("hide");const opened=!el.classList.contains("hide");a.setAttribute("aria-expanded",String(opened));if(a.dataset.toggleExtra==="hours"||a.dataset.toggleExtra==="priority")a.classList.toggle("expanded",opened);if(a.dataset.toggleExtra==="desc"&&opened)$("f_desc")?.focus();if(a.dataset.toggleExtra==="time"&&opened)$("f_time")?.focus();if(a.dataset.toggleExtra==="hours"&&opened)$("f_h")?.focus();if(a.dataset.toggleExtra==="priority"&&opened)$("f_p")?.focus();if(a.dataset.toggleExtra==="checklist"&&opened)$("newSubtaskInput")?.focus()}return}
+if(a=g("[data-toggle-extra]")){if($("ov")?.classList.contains("task-create-compact")&&a.dataset.toggleExtra==="desc"){const panel=$("taskExtraDesc"),field=$("f_desc"),opened=!!panel?.classList.contains("hide");if(panel){panel.classList.toggle("hide",!opened);a.setAttribute("aria-expanded",String(opened));if(opened)field?.focus({preventScroll:true});else $("f_t")?.focus({preventScroll:true})}return}if($("ov")?.classList.contains("task-create-compact")&&a.dataset.toggleExtra!=="time"){const key={"desc":"desc","checklist":"checklist","hours":"hours","priority":"priority","attachment-link":"link","attachments":"files"}[a.dataset.toggleExtra];if(key){openMobileTaskOption(key,a);return}}const ids={time:"taskExtraTime",desc:"taskExtraDesc",checklist:"taskExtraChecklist",hours:"taskExtraHours",priority:"taskExtraPriority","attachment-link":"taskExtraLink",attachments:"taskExtraAttachments"},el=$(ids[a.dataset.toggleExtra]);if(el){el.classList.toggle("hide");const opened=!el.classList.contains("hide");a.setAttribute("aria-expanded",String(opened));if(a.dataset.toggleExtra==="hours"||a.dataset.toggleExtra==="priority")a.classList.toggle("expanded",opened);if(a.dataset.toggleExtra==="desc"&&opened)$("f_desc")?.focus();if(a.dataset.toggleExtra==="time"&&opened)$("f_time")?.focus();if(a.dataset.toggleExtra==="hours"&&opened)$("f_h")?.focus();if(a.dataset.toggleExtra==="priority"&&opened)$("f_p")?.focus();if(a.dataset.toggleExtra==="checklist"&&opened)$("newSubtaskInput")?.focus()}return}
 if(g("[data-addsubtask]")){const input=$("newSubtaskInput"),v=input.value.trim();if(!v)return toast("Напиши название шага");const id="st-"+Date.now()+"-"+Math.random().toString(36).slice(2,7),wrap=$("f_subtasks");wrap.insertAdjacentHTML("beforeend",formSubtaskRow({id,t:v,done:false}));input.value="";$("taskExtraChecklist").classList.remove("hide");input.focus();return}
 if(a=g("[data-removesub]")){a.closest(".check-edit-row")?.remove();return}
 if(a=g("[data-add-linkattachment]")){const oldCount=FORM_ATTACHMENTS.length;addAttachmentLink();if($("ov")?.classList.contains("task-create-compact")&&FORM_ATTACHMENTS.length>oldCount)openMobileTaskOption("files");return}
