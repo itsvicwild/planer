@@ -37,7 +37,7 @@ jobs:
             throw new Error("Expected 3 inline scripts, found " + scripts.length);
           }
 
-          const csp = html.match(/<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-([^']+)' 'sha256-([^']+)' 'sha256-([^']+)'/);
+          const csp = html.match(/<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src (?:'self' )?'sha256-([^']+)' 'sha256-([^']+)' 'sha256-([^']+)'/);
           if (!csp) throw new Error("CSP inline-script hashes were not found");
 
           const actualHashes = scripts.map(script =>
