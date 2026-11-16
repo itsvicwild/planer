@@ -2712,7 +2712,8 @@ initAppBackNavigation();initSwipeNavigation();initLocaleObserver();applyAcc();ap
 // PWA support. The regular web app continues to work if Service Workers are unavailable.
 if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register(new URL("./service-worker.js", location.href), {scope: "./"})
+    navigator.serviceWorker.register(new URL("./service-worker.js", location.href), {scope: "./", updateViaCache: "none"})
+      .then(registration => registration.update().catch(err => console.warn("Wild Workspace update check failed:", err)))
       .catch(err => console.warn("Wild Workspace offline support could not be enabled:", err));
   });
 }
