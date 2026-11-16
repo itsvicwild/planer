@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-UplPQpXwt4abty/n1g3idt+RJAg6n449TKgy45agUsA=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-HDOeS/AfUS9OzUZlFK7y9DGsvUQkWJxjmqLPiRvHyto=' 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-WIXpYDuB9AUYkBsA6059clEB+/206p2Rar4Q5homgow=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-HDOeS/AfUS9OzUZlFK7y9DGsvUQkWJxjmqLPiRvHyto=' 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Wild Workspace</title>
 <meta name="description" content="Wild Workspace — личное пространство для задач, привычек, событий и маленьких побед.">
 <meta name="theme-color" content="#0e1411">
@@ -1923,6 +1923,29 @@ ${singleOccurrence?`<div class="sub2">Изменится только выбра
 // Чек-листы: одинаково работают в карточке, списке и окне задачи.
 function normalizeSubtasks(items){if(!Array.isArray(items))return [];const used=new Set();return items.filter(st=>st&&typeof st==="object").map((st,i)=>{const title=String(st.t??st.text??"").trim();const base=String(st.id??"").trim()||("st-"+Date.now().toString(36)+"-"+i+"-"+Math.random().toString(36).slice(2,7));let id=base,n=1;while(used.has(id))id=base+"-"+n++;used.add(id);st.id=id;st.t=title;st.done=!!st.done;return {id,t:title,done:st.done}}).filter(st=>st.t)}
 function subtaskMarkup(x,limit=3){const subs=normalizeSubtasks(x.subtasks);if(!subs.length)return "";const done=subs.filter(st=>st.done).length;return `<div class="sub-list" aria-label="Чек-лист задачи"><div class="sub-progress"><span>Шаги · ${done} из ${subs.length}</span><span class="sub-mini-bar"><i style="width:${done/subs.length*100}%"></i></span></div>${subs.slice(0,limit).map(st=>`<button type="button" class="sub-check ${st.done?"checked":""}" data-subtoggle="${x.id}|${esc(st.id)}" aria-pressed="${!!st.done}" aria-label="${st.done?"Отметить незавершённым":"Отметить выполненным"}: ${esc(st.t)}"><span class="i" aria-hidden="true">${st.done?"check_box":"check_box_outline_blank"}</span><span>${esc(st.t)}</span></button>`).join("")}${subs.length>limit?`<button type="button" class="sub-more" data-ot="${x.id}" aria-label="Открыть задачу и все шаги">Ещё ${subs.length-limit} шагов</button>`:""}</div>`}
+function updateSubtaskMarkup(x){
+ const subs=Array.isArray(x?.subtasks)?x.subtasks:[],done=subs.filter(st=>st.done).length,updatedLists=new Set(),taskId=String(x?.id??"");
+ document.querySelectorAll("[data-subtoggle]").forEach(button=>{
+  const [buttonTaskId,stepId]=String(button.dataset.subtoggle||"").split("|");
+  if(buttonTaskId!==taskId)return;
+  const step=subs.find(item=>String(item.id)===stepId);
+  if(!step)return;
+  const checked=!!step.done;
+  button.classList.toggle("checked",checked);
+  button.setAttribute("aria-pressed",String(checked));
+  button.setAttribute("aria-label",`${SET.locale==="en"?(checked?"Mark as incomplete":"Mark as complete"):(checked?"Отметить незавершённым":"Отметить выполненным")}: ${step.t}`);
+  const icon=button.querySelector(".i");
+  if(icon)icon.textContent=checked?"check_box":"check_box_outline_blank";
+  const list=button.closest(".sub-list");
+  if(list)updatedLists.add(list);
+ });
+ updatedLists.forEach(list=>{
+  const label=list.querySelector(".sub-progress span");
+  if(label)label.textContent=SET.locale==="en"?`Steps · ${done} of ${subs.length}`:`Шаги · ${done} из ${subs.length}`;
+  const fill=list.querySelector(".sub-mini-bar i");
+  if(fill)fill.style.width=`${subs.length?done/subs.length*100:0}%`;
+ });
+}
 function completionSnapshot(){const start=ds(mon),end=ds(addD(mon,6)),dayTasks=T.filter(x=>(x.planDate||x.d)===ds(today)),weekTasks=T.filter(x=>(x.planDate||x.d)>=start&&(x.planDate||x.d)<=end);return {dayPending:dayTasks.length>0&&dayTasks.some(x=>x.s!=="done"),weekPending:weekTasks.length>0&&weekTasks.some(x=>x.s!=="done")}}
 function maybeCelebrate(before){if(!before)return;const dayKey="day-"+ds(today),weekKey="week-"+ds(mon),d=T.filter(x=>(x.planDate||x.d)===ds(today)),w=T.filter(x=>(x.planDate||x.d)>=ds(mon)&&(x.planDate||x.d)<=ds(addD(mon,6)));const day=before.dayPending&&d.length>0&&d.every(x=>x.s==="done")&&!CELEBRATIONS[dayKey],week=before.weekPending&&w.length>0&&w.every(x=>x.s==="done")&&!CELEBRATIONS[weekKey];if(!day&&!week)return;if(day)CELEBRATIONS[dayKey]=1;if(week)CELEBRATIONS[weekKey]=1;try{localStorage.setItem(CELEBR_KEY,JSON.stringify(CELEBRATIONS))}catch(e){}showCelebration(day&&week?"День и неделя закрыты!":day?"Все задачи дня выполнены!":"Все задачи недели выполнены!",day&&week?"Ты сделал всё, что запланировал. Пора выдохнуть и похвалить себя.":day?"Сегодняшний план выполнен. Ты заслужил немного отдыха.":"Целая неделя задач позади. Отличная работа — двигайся в своём темпе.")}
 function showCelebration(title,caption){const el=$("celebrate");el.innerHTML=`<div class="celebrate-sky">${Array.from({length:42},(_,i)=>`<i style="--x:${Math.random()*100}%;--delay:${Math.random()*1.2}s;--h:${Math.floor(Math.random()*360)}deg;--dur:${2.2+Math.random()*1.8}s"></i>`).join("")}</div><div class="celebrate-content"><div class="celebrate-icon">✦</div><div class="celebrate-kicker">МАЛЕНЬКАЯ ПОБЕДА</div><h2>${esc(title)}</h2><p>${esc(caption)}</p><div class="celebrate-note">Не обязательно делать всё идеально. Важно — что ты продолжаешь.</div><button type="button" class="btn celebrate-btn" data-celebrate-close><span class="i">favorite</span> Продолжить</button></div>`;el.classList.add("on")}
@@ -2512,7 +2535,7 @@ if(g("[data-celebrate-close]")){hideCelebration();return}
 if(g("[data-finish-welcome]")){SET.name=$("welcomeName").value.trim();SET.onboarded=true;saveSet("name");closeM();head();toast("Рады видеть тебя в Wild Workspace");return}
 if(a=g("[data-open-archive]")){go("archive");window.scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});return}
 if(a=g("[data-openblock]")){BK=a.dataset.openblock;go("tasks");renderTasks();return}
-if(a=g("[data-subtoggle]")){const [tid,sid]=a.dataset.subtoggle.split("|");const x=T.find(y=>String(y.id)===tid),st=x&&x.subtasks&&x.subtasks.find(y=>String(y.id)===sid);if(!st||COMPLETING_TASK_IDS.has(String(x.id)))return;const wasInModal=!!a.closest("#md"),scrollTop=$("md")?.scrollTop||0;st.done=!st.done;if(st.done&&x.s!=="done"&&Array.isArray(x.subtasks)&&x.subtasks.length&&x.subtasks.every(step=>step.done)){completeTaskWithCat(x,a,{closeModal:wasInModal});return}x.updatedAt=new Date().toISOString();save();all();if(wasInModal){showT(tid);$("md").scrollTop=scrollTop}return}
+if(a=g("[data-subtoggle]")){const [tid,sid]=a.dataset.subtoggle.split("|");const x=T.find(y=>String(y.id)===tid),st=x&&x.subtasks&&x.subtasks.find(y=>String(y.id)===sid);if(!st||COMPLETING_TASK_IDS.has(String(x.id)))return;const previousDone=st.done;st.done=!previousDone;if(st.done&&x.s!=="done"&&Array.isArray(x.subtasks)&&x.subtasks.length&&x.subtasks.every(step=>step.done)){completeTaskWithCat(x,a,{closeModal:!!a.closest("#md")});return}x.updatedAt=new Date().toISOString();if(!save()){st.done=previousDone;toast("Не удалось сохранить отметку шага");return}const savedTask=T.find(y=>String(y.id)===tid);if(savedTask)updateSubtaskMarkup(savedTask);return}
 if(a=g("[data-attach-picker]")){const input=$(a.dataset.attachPicker==="image"?"f_imageUpload":"f_fileUpload");if(input)input.click();return}
 if(a=g("[data-hours-step]")){const field=$("f_h"),output=$("f_h_display");if(!field||!output)return;const current=Math.max(0,Math.min(1000,Number(field.value)||0)),next=Math.max(0,Math.min(1000,Math.round((current+Number(a.dataset.hoursStep)*0.5)*2)/2));field.value=String(next);output.textContent=next+" "+(SET.locale==="en"?"h":"ч");field.dispatchEvent(new Event("input",{bubbles:true}));return}
 if(a=g("[data-priority-cycle]")){const field=$("f_p");if(!field)return;const current=Math.max(1,Math.min(3,Number(field.value)||Number(a.dataset.priority)||2)),next=current===3?2:current===2?1:3;field.value=String(next);a.dataset.priority=String(next);a.classList.remove("priority-p1","priority-p2","priority-p3");a.classList.add("priority-p"+next);const labels=SET.locale==="en"?["","High","Medium","Low"]:["","Высокая","Средняя","Низкая"];const label=a.querySelector(".priority-label");if(label)label.textContent=labels[next];a.setAttribute("aria-label",(SET.locale==="en"?"Priority: ":"Важность: ")+labels[next]);a.title=(SET.locale==="en"?"Priority: ":"Важность: ")+labels[next];applyLocale(a);return}
