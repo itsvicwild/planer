@@ -1541,7 +1541,7 @@ const me=(id,t,k,date,a,z,rec,wd,p,until)=>({id,t,k,date,a,z,rec,wd,p:p||"",unti
 let E=[];
 const hd=(id,t,date)=>({id,t,date,rec:"year"});
 let HD=[];
-let H=[];let PENDING_ADDITIVE_IMPORT=null;
+let H=[];
 let LIB_BOOKS=[],LIBRARY_DELETIONS={},LIBRARY_PRESS_GESTURE=null,LIBRARY_SUPPRESS_CLICK=null,LIBRARY_MOVE_MODE=null,LIBRARY_DRAG=null;
 const LEGACY_HABITS=[{id:"h1",t:"Утренняя зарядка, 10 минут",b:"health",goal:1,cnt:0},{id:"h2",t:"Чтение книги",b:"life",goal:2,cnt:0},{id:"h3",t:"Фортепиано, 30–40 минут",b:"life",goal:2,cnt:0},{id:"h4",t:"Подкасты на английском",b:"eng",goal:2,cnt:0},{id:"h5",t:"Слова из Academic Word List",b:"eng",goal:1,cnt:0}];
 const SUPABASE_URL="https://adsfjbrjgimgovtcjqvl.supabase.co",SUPABASE_PUBLISHABLE_KEY="sb_publishable_n2fm35ypb6pt2AWJKXBF6w_zoC50Cs9";
@@ -1646,96 +1646,6 @@ function touchSyncDevice(){SYNC_META=normalizeSyncMeta(SYNC_META);SYNC_META.devi
 function pruneAcknowledgedTombstones(now=Date.now()){const devices=Object.values(normalizeSyncMeta(SYNC_META).devices).map(parseSyncTimestamp).filter(Boolean);if(!devices.length)return 0;const cutoff=now-20*86400000;let removed=0;for(const kind of ["T","E","HD","H","BL"]){const map=SYNC_TOMBSTONES[kind]||(SYNC_TOMBSTONES[kind]={});for(const [id,raw] of Object.entries(map)){const dead=parseSyncTimestamp(raw);if(!dead||dead>cutoff)continue;if(devices.every(lastSeen=>lastSeen>=dead)){delete map[id];removed++}}}return removed}
 function snapshotWorkspaceState(){return {version:3,T:deepCloneData(T),E:deepCloneData(E),HD:deepCloneData(HD),H:deepCloneData(H),BL:deepCloneData(BL),LIB_BOOKS:deepCloneData(LIB_BOOKS),_libraryDeleted:deepCloneData(LIBRARY_DELETIONS),_deleted:deepCloneData(SYNC_TOMBSTONES),_syncMeta:deepCloneData(SYNC_META)}}
 function migrateWorkspacePayload(source){const p=source&&typeof source==="object"?deepCloneData(source):{};const version=Number(p.version)||1;if(version<3){p.T=(Array.isArray(p.T)?p.T:[]).map(x=>x&&typeof x==="object"?({...x,planDate:validISODate(x.planDate)?x.planDate:(validISODate(x.s0)?x.s0:x.d),s0:validISODate(x.planDate)?x.planDate:(validISODate(x.s0)?x.s0:x.d),attachments:Array.isArray(x.attachments)?x.attachments:[],subtasks:Array.isArray(x.subtasks)?x.subtasks:[]}):x);p.E=(Array.isArray(p.E)?p.E:[]).map(x=>x&&typeof x==="object"?({...x,ex:Array.isArray(x.ex)?x.ex:[],desc:String(x.desc||"")}):x);p.H=Array.isArray(p.H)?p.H:[]}p.version=3;return p}
-
-function additiveImportName(value){return String(value??"").trim().replace(/\s+/g," ").toLocaleLowerCase("ru-RU")}
-function mergeHabitHistoryForAdditiveImport(current,imported){
- const local=normalizeHabitRecord(deepCloneData(current)),incoming=normalizeHabitRecord(deepCloneData(imported)),logOps={...local.logOps},legacyCounts={...local.legacyCounts};let changed=false;
- for(const [date,op] of Object.entries(incoming.logOps)){const old=logOps[date];if(!old||parseSyncTimestamp(op.updatedAt)>parseSyncTimestamp(old.updatedAt)){if(!old||old.done!==op.done||old.updatedAt!==op.updatedAt)changed=true;logOps[date]=op}}
- for(const [week,count] of Object.entries(incoming.legacyCounts)){if((legacyCounts[week]||0)<count){legacyCounts[week]=count;changed=true}}
- return {record:changed?normalizeHabitRecord({...local,log:[],logOps,legacyCounts,updatedAt:new Date().toISOString()}):local,changed}
-}
-function buildAdditiveImportPlan(source){
- if(!source||typeof source!=="object"||Array.isArray(source))throw new Error("Файл не содержит резервную копию Wild Workspace.");
- const payload=migrateWorkspacePayload(source),recognized=["T","E","HD","H","BL","LIB_BOOKS"].some(k=>Array.isArray(payload[k])||(k==="BL"&&payload[k]&&typeof payload[k]==="object"&&!Array.isArray(payload[k])));
- if(!recognized)throw new Error("В JSON не найдены поддерживаемые данные Wild Workspace.");
- const now=new Date().toISOString(),newBlocks={},blockMap=new Map(),usedBlockIds=new Set(Object.keys(BL||{}));let nextOrder=orderedBlockEntries().length;
- const findBlockByName=name=>{const target=additiveImportName(name);if(!target)return "";for(const [id,b] of [...Object.entries(BL||{}),...Object.entries(newBlocks)])if(additiveImportName(b?.n)===target)return id;return ""};
- const freshId=prefix=>{let id;do{id=prefix+"-"+nid()}while(usedBlockIds.has(id));usedBlockIds.add(id);return id};
- for(const [rawId,rawBlock] of Object.entries(payload.BL&&typeof payload.BL==="object"?payload.BL:{})){
-  const sourceId=safeRecordId(rawId);if(!sourceId||!rawBlock||typeof rawBlock!=="object")continue;
-  if(Object.prototype.hasOwnProperty.call(BL,sourceId)){blockMap.set(sourceId,sourceId);continue}
-  const sameName=findBlockByName(rawBlock.n);if(sameName){blockMap.set(sourceId,sameName);continue}
-  let id=sourceId;if(usedBlockIds.has(id))id=freshId("import-block");else usedBlockIds.add(id);
-  const block=sanitizeBlock(id,{...deepCloneData(rawBlock),systemDefault:false,sortOrder:nextOrder++,orderUpdatedAt:now,updatedAt:now});block.systemDefault=false;newBlocks[id]=block;blockMap.set(sourceId,id);
- }
- let fallbackBlockId="";
- const resolveTaskBlock=rawId=>{
-  const key=safeRecordId(rawId);
-  if(key&&blockMap.has(key))return blockMap.get(key);
-  if(key&&Object.prototype.hasOwnProperty.call(BL,key))return key;
-  if(key&&Object.prototype.hasOwnProperty.call(newBlocks,key))return key;
-  const first=orderedBlockEntries()[0]?.[0]||Object.keys(newBlocks)[0];if(first)return first;
-  if(!fallbackBlockId){fallbackBlockId=freshId("import-block");newBlocks[fallbackBlockId]=sanitizeBlock(fallbackBlockId,{n:"Импортировано",c:BLOCK_PALETTE[0],systemDefault:false,sortOrder:nextOrder++,orderUpdatedAt:now,updatedAt:now});newBlocks[fallbackBlockId].systemDefault=false}
-  return fallbackBlockId;
- };
- const taskIds=new Set((Array.isArray(T)?T:[]).map(x=>String(x?.id))),tasks=[];let skippedTasks=0;
- for(const raw of Array.isArray(payload.T)?payload.T:[]){
-  const id=safeRecordId(raw?.id);if(!id||taskIds.has(id)){skippedTasks++;continue}
-  const blockId=resolveTaskBlock(raw.b),existingFallback=orderedBlockEntries()[0]?.[0]||"study";
-  const task=sanitizeTask({...deepCloneData(raw),id,b:Object.prototype.hasOwnProperty.call(BL,blockId)?blockId:existingFallback});
-  if(!task){skippedTasks++;continue}task.b=blockId;tasks.push(task);taskIds.add(id);
- }
- const eventIds=new Set((Array.isArray(E)?E:[]).map(x=>String(x?.id))),events=[];let skippedEvents=0;
- for(const raw of Array.isArray(payload.E)?payload.E:[]){const id=safeRecordId(raw?.id);if(!id||eventIds.has(id)){skippedEvents++;continue}const event=sanitizeEvent({...deepCloneData(raw),id});if(!event){skippedEvents++;continue}events.push(event);eventIds.add(id)}
- const holidayIds=new Set((Array.isArray(HD)?HD:[]).map(x=>String(x?.id))),holidays=[];let skippedHolidays=0;
- for(const raw of Array.isArray(payload.HD)?payload.HD:[]){const id=safeRecordId(raw?.id);if(!id||holidayIds.has(id)){skippedHolidays++;continue}const holiday=sanitizeHoliday({...deepCloneData(raw),id});if(!holiday){skippedHolidays++;continue}holidays.push(holiday);holidayIds.add(id)}
- const habitById=new Map((Array.isArray(H)?H:[]).map((h,index)=>[String(h?.id),{kind:"existing",index,record:h}])),habits=[],habitUpdates=new Map();let skippedHabits=0;
- for(const raw of Array.isArray(payload.H)?payload.H:[]){
-  const id=safeRecordId(raw?.id);if(!id){skippedHabits++;continue}
-  const imported=sanitizeHabit({...deepCloneData(raw),id});if(!imported){skippedHabits++;continue}
-  const current=habitById.get(id);
-  if(current){const merged=mergeHabitHistoryForAdditiveImport(current.kind==="existing"?(habitUpdates.get(id)||H[current.index]):current.record,imported);if(merged.changed){if(current.kind==="existing")habitUpdates.set(id,merged.record);else{current.record=merged.record;const at=habits.findIndex(x=>String(x.id)===id);if(at>=0)habits[at]=merged.record}}continue}
-  habits.push(imported);habitById.set(id,{kind:"new",record:imported});
- }
- const bookIds=new Set((Array.isArray(LIB_BOOKS)?LIB_BOOKS:[]).map(x=>String(x?.id))),bookKeys=new Set((Array.isArray(LIB_BOOKS)?LIB_BOOKS:[]).map(x=>additiveImportName(x?.title)+"|"+String(x?.url||"").trim().toLowerCase())),books=[];let skippedBooks=0;
- for(const raw of Array.isArray(payload.LIB_BOOKS)?payload.LIB_BOOKS:[]){
-  const id=safeRecordId(raw?.id);if(!id||bookIds.has(id)){skippedBooks++;continue}
-  const shelfRaw=raw?.shelf,sourceShelf=shelfRaw==="uncategorized"?"uncategorized":safeRecordId(shelfRaw),shelf=sourceShelf==="uncategorized"?"uncategorized":(blockMap.get(sourceShelf)||(Object.prototype.hasOwnProperty.call(BL,sourceShelf)||Object.prototype.hasOwnProperty.call(newBlocks,sourceShelf)?sourceShelf:"uncategorized"));
-  const book=sanitizeLibraryBook({...deepCloneData(raw),id,shelf});if(!book){skippedBooks++;continue}
-  const key=additiveImportName(book.title)+"|"+String(book.url||"").trim().toLowerCase();if(bookKeys.has(key)){skippedBooks++;continue}
-  books.push(book);bookIds.add(id);bookKeys.add(key);
- }
- const counts={blocks:Object.keys(newBlocks).length,tasks:tasks.length,events:events.length,holidays:holidays.length,habits:habits.length,habitHistory:habitUpdates.size,books:books.length};
- counts.total=Object.values(counts).reduce((sum,n)=>sum+n,0);
- return {blocks:newBlocks,tasks,events,holidays,habits,habitUpdates:[...habitUpdates.entries()].map(([id,record])=>({id,record})),books,counts,skipped:{tasks:skippedTasks,events:skippedEvents,holidays:skippedHolidays,habits:skippedHabits,books:skippedBooks}};
-}
-function openAdditiveImportPreview(fileName,source,plan){
- PENDING_ADDITIVE_IMPORT={fileName,source};
- const labels=[["Новые блоки",plan.counts.blocks],["Новые задачи",plan.counts.tasks],["Новые мероприятия",plan.counts.events],["Новые праздники",plan.counts.holidays],["Новые привычки",plan.counts.habits],["Дополненная история привычек",plan.counts.habitHistory],["Новые книги и ссылки",plan.counts.books]];
- const rows=labels.map(([label,count])=>'<div class="ics-preview-row"><b>'+esc(label)+'</b><small>'+count+'</small></div>').join("");
- const skipped=Object.values(plan.skipped).reduce((sum,n)=>sum+n,0);
- const hint="Текущие записи и настройки останутся без изменений. Совпадающие ID будут пропущены"+(skipped?"; пропущено совпадений или некорректных записей: "+skipped:"")+". История привычек будет дополнена новыми отметками.";
- openM('<div class="modal-eyebrow"><span class="i">merge</span> ДОБАВЛЕНИЕ ДАННЫХ</div><h3>Объединить резервную копию?</h3><p class="modal-hint">'+esc(fileName)+' · новых элементов: '+plan.counts.total+'</p><div class="ics-preview-list">'+rows+'</div><p class="modal-hint">'+esc(hint)+'</p><p class="modal-hint">Настройки, история удалений и служебные данные из файла не импортируются.</p><div class="act"><button type="button" class="btn n o" data-add-json-cancel>Отмена</button><button type="button" class="btn n" data-add-json-confirm '+(plan.counts.total?"":"disabled")+'>'+(plan.counts.total?"Добавить новые данные":"Новых данных нет")+'</button></div>');
-}
-function applyPendingAdditiveImport(){
- if(!PENDING_ADDITIVE_IMPORT)return;
- const pending=PENDING_ADDITIVE_IMPORT;let plan;
- try{plan=buildAdditiveImportPlan(pending.source)}catch(err){PENDING_ADDITIVE_IMPORT=null;closeM();toast(err?.message||"Не удалось подготовить импорт");return}
- if(!plan.counts.total){PENDING_ADDITIVE_IMPORT=null;closeM();toast("Новых данных для добавления нет");return}
- const before={T:deepCloneData(T),E:deepCloneData(E),HD:deepCloneData(HD),H:deepCloneData(H),BL:deepCloneData(BL),LIB_BOOKS:deepCloneData(LIB_BOOKS)};
- try{
-  BL={...BL,...plan.blocks};T.push(...plan.tasks);E.push(...plan.events);HD.push(...plan.holidays);H.push(...plan.habits);
-  for(const update of plan.habitUpdates){const index=H.findIndex(x=>String(x.id)===String(update.id));if(index>=0)H[index]=update.record}
-  LIB_BOOKS.push(...plan.books);sanitizeWorkspaceRecords();
-  if(!save())throw new Error("Не удалось сохранить данные. Текущая информация восстановлена.");
- }catch(err){
-  T=before.T;E=before.E;HD=before.HD;H=before.H;BL=before.BL;LIB_BOOKS=before.LIB_BOOKS;sanitizeWorkspaceRecords();all();PENDING_ADDITIVE_IMPORT=null;closeM();toast(err?.message||"Импорт не выполнен; текущие данные не изменены.");return;
- }
- PENDING_ADDITIVE_IMPORT=null;closeM();all();
- const total=plan.counts.total,summary="Добавлено из JSON: "+plan.counts.tasks+" задач, "+plan.counts.events+" мероприятий, "+plan.counts.blocks+" блоков, "+plan.counts.habits+" привычек, "+plan.counts.books+" книг";
- recordActivity("import",summary);toast("Добавлено новых элементов: "+total);
-}
-
 function assignWorkspaceState(p){p=migrateWorkspacePayload(p);T=Array.isArray(p?.T)?deepCloneData(p.T):[];E=Array.isArray(p?.E)?deepCloneData(p.E):[];HD=Array.isArray(p?.HD)?deepCloneData(p.HD):[];H=normalizeHabits(p?.H);BL=p?.BL&&typeof p.BL==="object"?deepCloneData(p.BL):deepCloneData(DEFAULT_WORKSPACE.BL);LIBRARY_DELETIONS=mergeLibraryBookDeletions(p?._libraryDeleted);LIB_BOOKS=mergeLibraryBookLists([],p?.LIB_BOOKS,LIBRARY_DELETIONS,0);SYNC_TOMBSTONES=filterDemoTombstones(p?._deleted);SYNC_META=mergeSyncMeta(SYNC_META,p?._syncMeta)}
 function workspacePayload(){const settings={...SET,lv:[LV[0],LV[1]],touched:deepCloneData(SET.touched||{})};delete settings.cloudUrl;delete settings.cloudKey;return {version:3,T:deepCloneData(T),E:deepCloneData(E),HD:deepCloneData(HD),H:deepCloneData(H),BL:deepCloneData(BL),LIB_BOOKS:deepCloneData(LIB_BOOKS),_libraryDeleted:deepCloneData(LIBRARY_DELETIONS),_deleted:deepCloneData(SYNC_TOMBSTONES),_syncMeta:deepCloneData(SYNC_META),SET:settings}}
 function syncWorkspacePayload(){const payload=workspacePayload();payload.H=normalizeHabits(payload.H);for(const kind of ["T","E","HD","H"])payload[kind]=(Array.isArray(payload[kind])?payload[kind]:[]).filter(x=>!isDemoRecord(kind,x));payload._deleted=filterDemoTombstones(payload._deleted);payload._syncMeta=normalizeSyncMeta(payload._syncMeta);payload.SET={name:SET.name||"",acc:SET.acc||"mint",lv:[LV[0],LV[1]],touched:deepCloneData(SET.touched||{})};return payload}
@@ -2192,7 +2102,7 @@ $("pg-set").innerHTML=`<div class="profile-layout">
 <div class="ww-shortcut"><kbd>C</kbd><span>Календарь</span></div><div class="ww-shortcut"><kbd>G</kbd><span>Задачи</span></div>
 <div class="ww-shortcut"><kbd>P</kbd><span>Настройки</span></div><div class="ww-shortcut"><kbd>/</kbd><span>Перейти к поиску</span></div>
 </div></section>
-<section class="card set profile-data"><h2><span class="i f">database</span>Данные и резервные копии</h2><div class="sr"><div class="nm">Резервная копия<small>JSON — задачи, мероприятия, блоки и настройки; .ics — календарь для импорта.</small></div><div class="profile-action-stack"><button type="button" class="bt2" id="ex1">Скачать JSON</button><button type="button" class="bt2" id="ex2">Скачать .ics для календаря</button></div></div><div class="sr"><div class="nm">Добавить данные из JSON<small>Добавляет только новые задачи, мероприятия, привычки, блоки и книги. Текущие данные и настройки не заменяются.</small></div><label class="bt2 profile-file-button">Добавить файл<input type="file" id="impMerge" accept=".json,application/json" hidden></label></div><div class="sr"><div class="nm">Полное восстановление<small>Заменяет текущие данные резервной копией из JSON.</small></div><label class="bt2 profile-file-button">Восстановить JSON<input type="file" id="imp" accept=".json,application/json" hidden></label></div><div class="sr"><div class="nm">Очистить это устройство<small>Удалит данные и локальный вход только в этом браузере. Облачная копия и другие устройства останутся без изменений.</small></div><button type="button" class="bt2 danger-text" id="rs">Очистить устройство</button></div><div class="sr"><div class="nm">Удалить все данные аккаунта<small>Перед удалением приложение скачает резервную копию, затем попросит ввести слово-подтверждение. Будут удалены данные планера из облака и с этого устройства; сам аккаунт Supabase не удаляется.</small></div><button type="button" class="bt2 danger-text" data-start-account-delete>Удалить все данные аккаунта</button></div></section>
+<section class="card set profile-data"><h2><span class="i f">database</span>Данные и резервные копии</h2><div class="sr"><div class="nm">Резервная копия<small>JSON — задачи, мероприятия, блоки и настройки; .ics — календарь для импорта.</small></div><div class="profile-action-stack"><button type="button" class="bt2" id="ex1">Скачать JSON</button><button type="button" class="bt2" id="ex2">Скачать .ics для календаря</button></div></div><div class="sr"><div class="nm">Импорт<small>Восстановить ранее выгруженный JSON.</small></div><label class="bt2 profile-file-button">Выбрать файл<input type="file" id="imp" accept=".json,application/json" hidden></label></div><div class="sr"><div class="nm">Очистить это устройство<small>Удалит данные и локальный вход только в этом браузере. Облачная копия и другие устройства останутся без изменений.</small></div><button type="button" class="bt2 danger-text" id="rs">Очистить устройство</button></div><div class="sr"><div class="nm">Удалить все данные аккаунта<small>Перед удалением приложение скачает резервную копию, затем попросит ввести слово-подтверждение. Будут удалены данные планера из облака и с этого устройства; сам аккаунт Supabase не удаляется.</small></div><button type="button" class="bt2 danger-text" data-start-account-delete>Удалить все данные аккаунта</button></div></section>
 ${activitySectionMarkup()}
 <section class="card set profile-about"><h2><span class="i f">info</span>О приложении</h2><p class="app-about-copy"><strong>Wild Workspace</strong> — личное пространство для планов, задач и маленьких побед.</p><div class="sr"><div class="nm">Версия приложения<small>Текущая сборка интерфейса.</small></div><span class="app-version">v5.1</span></div></section>
 <footer class="settings-footer">by <strong>Victor Wild</strong> · <a href="mailto:itsvictorwild@gmail.com">itsvictorwild@gmail.com</a></footer></div>`}
@@ -2688,21 +2598,6 @@ if(t.id==="f_rec"){$("wdbox").classList.toggle("hide",!(t.value==="week"||t.valu
 if(t.dataset&&t.dataset.name!=null){SET.name=t.value.trim();saveSet("name");if(PG==="home")head();toast("Имя сохранено");return}
 if(t.dataset&&t.dataset.lv!=null){LV[+t.dataset.lv]=Math.max(1,+t.value||LV[+t.dataset.lv]);if(LV[0]>=LV[1])LV[1]=LV[0]+5;saveSet("lv");all();return}
 if(t.id==="imp"&&t.files[0]){const r=new FileReader();r.onload=()=>{try{let s=JSON.parse(r.result);if(!s||typeof s!=="object")throw new Error("bad backup");s=migrateWorkspacePayload(s);if(Array.isArray(s.T))T=s.T;if(s._deleted&&typeof s._deleted==="object")SYNC_TOMBSTONES=mergeTombstoneMaps(SYNC_TOMBSTONES,s._deleted);if(Array.isArray(s.E))E=s.E;if(Array.isArray(s.HD))HD=s.HD;if(s.BL&&typeof s.BL==="object")BL=s.BL;E.forEach(normalizeEventType);T.forEach(x=>{if(!x.updatedAt)x.updatedAt=new Date().toISOString();x.subtasks=normalizeSubtasks(x.subtasks);if(!Array.isArray(x.attachments))x.attachments=[];if(!Array.isArray(x.links))x.links=[];if(!validISODate(x.planDate))x.planDate=validISODate(x.s0)?x.s0:"";if(!BL[x.b])x.b=orderedBlockEntries()[0]?.[0]});if(Array.isArray(s.H)){H=s.H.map(normalizeHabitRecord)}else if(s.H&&typeof s.H==="object"){if(!H.length)H=LEGACY_HABITS.filter(h=>Object.prototype.hasOwnProperty.call(s.H,h.id)).map(h=>({...h,cnt:Math.max(0,Math.min(h.goal,+s.H[h.id]||0))}));else H.forEach(h=>{if(s.H[h.id]!=null)h.cnt=s.H[h.id]})}H=normalizeHabits(H);if(s.SET||s.set){Object.assign(SET,s.SET||s.set);SET.locale=SET.locale==="en"?"en":"ru";SET.festival=["halloween","christmas"].includes(SET.festival)?SET.festival:"none";SET.quietOverdue=false;if(SET.lv){LV[0]=+SET.lv[0]||40;LV[1]=+SET.lv[1]||55}}sanitizeWorkspaceRecords();applyAcc();applyTheme();saveSet();if(!save())throw new Error("Не удалось сохранить импортированные данные");all();recordActivity("import","Данные восстановлены из файла JSON");toast("Данные загружены")}catch(x){toast("Не удалось прочитать файл")}};r.readAsText(t.files[0])}});
-
-document.addEventListener("change",e=>{
- const input=e.target;if(input?.id!=="impMerge"||!input.files?.[0])return;
- const file=input.files[0];input.value="";
- if(file.size>10*1024*1024){toast("JSON-файл больше 10 МБ.");return}
- const reader=new FileReader();
- reader.onload=()=>{try{const source=JSON.parse(String(reader.result||""));const plan=buildAdditiveImportPlan(source);openAdditiveImportPreview(file.name,source,plan)}catch(err){PENDING_ADDITIVE_IMPORT=null;toast(err?.message||"Не удалось прочитать JSON-файл")}};
- reader.onerror=()=>toast("Не удалось прочитать JSON-файл");
- reader.readAsText(file);
-});
-document.addEventListener("click",e=>{
- if(e.target.closest("[data-add-json-cancel]")){PENDING_ADDITIVE_IMPORT=null;closeM();return}
- if(e.target.closest("[data-add-json-confirm]")){applyPendingAdditiveImport();return}
-});
-
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){if($("mobileQuickMenu")&&!$("mobileQuickMenu").hidden){closeMobileQuickMenu();return}if(SET.onboarded)requestModalClose();hideCelebration()}if((e.key==="Enter"||e.key===" ")&&e.target.matches("[data-done]")){e.preventDefault();e.target.click()}if((e.key==="Enter"||e.key===" ")&&e.target.matches(".overdue-card")){e.preventDefault();showT(e.target.dataset.ot)}if((e.key==="Enter"||e.key===" ")&&e.target.matches("[data-openblock]")){e.preventDefault();BK=e.target.dataset.openblock;go("tasks");renderTasks()}if((e.key==="Enter"||e.key===" ")&&e.target.matches("[data-open-archive]")){e.preventDefault();e.target.click()}if((e.key==="Enter"||e.key===" ")&&e.target.matches("[data-h]")){e.preventDefault();e.target.click()}});
 document.addEventListener("dragstart",e=>{const k=e.target.closest&&e.target.closest(".tk");if(k){dragId=k.dataset.id;k.classList.add("drag");e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",String(dragId))}});
 document.addEventListener("dragend",()=>{dragId=null;document.querySelectorAll(".drag,.over").forEach(n=>n.classList.remove("drag","over"))});
