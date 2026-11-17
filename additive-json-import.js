@@ -11,9 +11,12 @@ function mergeHabitHistoryForAdditiveImport(current,imported){
 }
 function buildAdditiveImportPlan(source){
  if(!source||typeof source!=="object"||Array.isArray(source))throw new Error("Файл не содержит резервную копию Wild Workspace.");
- const payload=migrateWorkspacePayload(source),recognized=["T","E","HD","H","BL","LIB_BOOKS"].some(k=>Array.isArray(payload[k])||(k==="BL"&&payload[k]&&typeof payload[k]==="object"&&!Array.isArray(payload[k])));
+ const payload=migrateWorkspacePayload(source),recognized=["T","E","HD","H","BL","LIB_BOOKS","LIB_SHELVES"].some(k=>Array.isArray(payload[k])||(k==="BL"&&payload[k]&&typeof payload[k]==="object"&&!Array.isArray(payload[k])));
  if(!recognized)throw new Error("В JSON не найдены поддерживаемые данные Wild Workspace.");
- const now=new Date().toISOString(),newBlocks={},blockMap=new Map(),usedBlockIds=new Set(Object.keys(BL||{}));let nextOrder=orderedBlockEntries().length;
+ const now=new Date().toISOString(),newBlocks={},blockMap=new Map(),usedBlockIds=new Set(Object.keys(BL||{})),newShelves=[],shelfMap=new Map(),usedShelfIds=new Set((LIB_SHELVES||[]).map(item=>String(item?.id)));let nextOrder=orderedBlockEntries().length,nextShelfOrder=orderedLibraryShelfEntries().length;
+  const findShelfByName=name=>{const target=additiveImportName(name);if(!target)return null;return [...(LIB_SHELVES||[]),...newShelves].find(shelf=>additiveImportName(shelf?.title)===target)||null};
+  const freshShelfId=()=>{let id;do{id="import-shelf-"+nid()}while(usedShelfIds.has(id));usedShelfIds.add(id);return id};
+  for(const rawShelf of Array.isArray(payload.LIB_SHELVES)?payload.LIB_SHELVES:[]){const incoming=sanitizeLibraryShelf(rawShelf);if(!incoming||shelfMap.has(incoming.id))continue;const sameId=(LIB_SHELVES||[]).find(shelf=>shelf.id===incoming.id);if(sameId){shelfMap.set(incoming.id,sameId.id);continue}const sameName=findShelfByName(incoming.title);if(sameName){shelfMap.set(incoming.id,sameName.id);continue}let id=incoming.id;if(usedShelfIds.has(id))id=freshShelfId();else usedShelfIds.add(id);const shelf=sanitizeLibraryShelf({...incoming,id,order:nextShelfOrder++,systemDefault:false,updatedAt:now});if(shelf){newShelves.push(shelf);shelfMap.set(incoming.id,id)}}
  const findBlockByName=name=>{const target=additiveImportName(name);if(!target)return "";for(const [id,b] of [...Object.entries(BL||{}),...Object.entries(newBlocks)])if(additiveImportName(b?.n)===target)return id;return ""};
  const freshId=prefix=>{let id;do{id=prefix+"-"+nid()}while(usedBlockIds.has(id));usedBlockIds.add(id);return id};
  for(const [rawId,rawBlock] of Object.entries(payload.BL&&typeof payload.BL==="object"?payload.BL:{})){
@@ -55,18 +58,18 @@ function buildAdditiveImportPlan(source){
  const bookIds=new Set((Array.isArray(LIB_BOOKS)?LIB_BOOKS:[]).map(x=>String(x?.id))),bookKeys=new Set((Array.isArray(LIB_BOOKS)?LIB_BOOKS:[]).map(x=>additiveImportName(x?.title)+"|"+String(x?.url||"").trim().toLowerCase())),books=[];let skippedBooks=0;
  for(const raw of Array.isArray(payload.LIB_BOOKS)?payload.LIB_BOOKS:[]){
   const id=safeRecordId(raw?.id);if(!id||bookIds.has(id)){skippedBooks++;continue}
-  const shelfRaw=raw?.shelf,sourceShelf=shelfRaw==="uncategorized"?"uncategorized":safeRecordId(shelfRaw),shelf=sourceShelf==="uncategorized"?"uncategorized":(blockMap.get(sourceShelf)||(Object.prototype.hasOwnProperty.call(BL,sourceShelf)||Object.prototype.hasOwnProperty.call(newBlocks,sourceShelf)?sourceShelf:"uncategorized"));
+  const shelfRaw=raw?.shelf,sourceShelf=shelfRaw==="uncategorized"?"uncategorized":safeRecordId(shelfRaw),shelf=sourceShelf==="uncategorized"?"uncategorized":(shelfMap.get(sourceShelf)||(libraryHasShelf(sourceShelf)?sourceShelf:"uncategorized"));
   const book=sanitizeLibraryBook({...deepCloneData(raw),id,shelf});if(!book){skippedBooks++;continue}
   const key=additiveImportName(book.title)+"|"+String(book.url||"").trim().toLowerCase();if(bookKeys.has(key)){skippedBooks++;continue}
   books.push(book);bookIds.add(id);bookKeys.add(key);
  }
- const counts={blocks:Object.keys(newBlocks).length,tasks:tasks.length,events:events.length,holidays:holidays.length,habits:habits.length,habitHistory:habitUpdates.size,books:books.length};
+ const counts={blocks:Object.keys(newBlocks).length,shelves:newShelves.length,tasks:tasks.length,events:events.length,holidays:holidays.length,habits:habits.length,habitHistory:habitUpdates.size,books:books.length};
  counts.total=Object.values(counts).reduce((sum,n)=>sum+n,0);
- return {blocks:newBlocks,tasks,events,holidays,habits,habitUpdates:[...habitUpdates.entries()].map(([id,record])=>({id,record})),books,counts,skipped:{tasks:skippedTasks,events:skippedEvents,holidays:skippedHolidays,habits:skippedHabits,books:skippedBooks}};
+ return {blocks:newBlocks,shelves:newShelves,tasks,events,holidays,habits,habitUpdates:[...habitUpdates.entries()].map(([id,record])=>({id,record})),books,counts,skipped:{tasks:skippedTasks,events:skippedEvents,holidays:skippedHolidays,habits:skippedHabits,books:skippedBooks}};
 }
 function openAdditiveImportPreview(fileName,source,plan){
  PENDING_ADDITIVE_IMPORT={fileName,source};
- const labels=[["Новые блоки",plan.counts.blocks],["Новые задачи",plan.counts.tasks],["Новые мероприятия",plan.counts.events],["Новые праздники",plan.counts.holidays],["Новые привычки",plan.counts.habits],["Дополненная история привычек",plan.counts.habitHistory],["Новые книги и ссылки",plan.counts.books]];
+ const labels=[["Новые блоки",plan.counts.blocks],["Новые полки библиотеки",plan.counts.shelves],["Новые задачи",plan.counts.tasks],["Новые мероприятия",plan.counts.events],["Новые праздники",plan.counts.holidays],["Новые привычки",plan.counts.habits],["Дополненная история привычек",plan.counts.habitHistory],["Новые книги и ссылки",plan.counts.books]];
  const rows=labels.map(([label,count])=>'<div class="ics-preview-row"><b>'+esc(label)+'</b><small>'+count+'</small></div>').join("");
  const skipped=Object.values(plan.skipped).reduce((sum,n)=>sum+n,0);
  const hint="Текущие записи и настройки останутся без изменений. Совпадающие ID будут пропущены"+(skipped?"; пропущено совпадений или некорректных записей: "+skipped:"")+". История привычек будет дополнена новыми отметками.";
@@ -77,17 +80,17 @@ function applyPendingAdditiveImport(){
  const pending=PENDING_ADDITIVE_IMPORT;let plan;
  try{plan=buildAdditiveImportPlan(pending.source)}catch(err){PENDING_ADDITIVE_IMPORT=null;closeM();toast(err?.message||"Не удалось подготовить импорт");return}
  if(!plan.counts.total){PENDING_ADDITIVE_IMPORT=null;closeM();toast("Новых данных для добавления нет");return}
- const before={T:deepCloneData(T),E:deepCloneData(E),HD:deepCloneData(HD),H:deepCloneData(H),BL:deepCloneData(BL),LIB_BOOKS:deepCloneData(LIB_BOOKS)};
+ const before={T:deepCloneData(T),E:deepCloneData(E),HD:deepCloneData(HD),H:deepCloneData(H),BL:deepCloneData(BL),LIB_BOOKS:deepCloneData(LIB_BOOKS),LIB_SHELVES:deepCloneData(LIB_SHELVES)};
  try{
-  BL={...BL,...plan.blocks};T.push(...plan.tasks);E.push(...plan.events);HD.push(...plan.holidays);H.push(...plan.habits);
+  BL={...BL,...plan.blocks};LIB_SHELVES.push(...plan.shelves);T.push(...plan.tasks);E.push(...plan.events);HD.push(...plan.holidays);H.push(...plan.habits);
   for(const update of plan.habitUpdates){const index=H.findIndex(x=>String(x.id)===String(update.id));if(index>=0)H[index]=update.record}
   LIB_BOOKS.push(...plan.books);sanitizeWorkspaceRecords();
   if(!save())throw new Error("Не удалось сохранить данные. Текущая информация восстановлена.");
  }catch(err){
-  T=before.T;E=before.E;HD=before.HD;H=before.H;BL=before.BL;LIB_BOOKS=before.LIB_BOOKS;sanitizeWorkspaceRecords();all();PENDING_ADDITIVE_IMPORT=null;closeM();toast(err?.message||"Импорт не выполнен; текущие данные не изменены.");return;
+  T=before.T;E=before.E;HD=before.HD;H=before.H;BL=before.BL;LIB_BOOKS=before.LIB_BOOKS;LIB_SHELVES=before.LIB_SHELVES;sanitizeWorkspaceRecords();all();PENDING_ADDITIVE_IMPORT=null;closeM();toast(err?.message||"Импорт не выполнен; текущие данные не изменены.");return;
  }
  PENDING_ADDITIVE_IMPORT=null;closeM();all();
- const total=plan.counts.total,summary="Добавлено из JSON: "+plan.counts.tasks+" задач, "+plan.counts.events+" мероприятий, "+plan.counts.blocks+" блоков, "+plan.counts.habits+" привычек, "+plan.counts.books+" книг";
+ const total=plan.counts.total,summary="Добавлено из JSON: "+plan.counts.tasks+" задач, "+plan.counts.events+" мероприятий, "+plan.counts.blocks+" блоков, "+plan.counts.shelves+" полок, "+plan.counts.habits+" привычек, "+plan.counts.books+" книг";
  recordActivity("import",summary);toast("Добавлено новых элементов: "+total);
 }
 
