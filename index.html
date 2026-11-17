@@ -1460,6 +1460,7 @@ html{background:var(--bg)!important;color-scheme:light dark}
 .library-empty-copy span{font-size:13px;line-height:1.4}
 .library-shelf-board{height:5px;border-radius:5px;background:var(--shelf-color);opacity:.7;box-shadow:0 3px 0 color-mix(in srgb,var(--shelf-color) 22%,transparent)}
 #pg-library.page.on,#pg-library.page-enter{animation:none!important}
+@media(min-width:721px){.library-book-card-builtin[data-library-target="stats"],.library-book-card-builtin[data-library-target="profile"]{display:none!important}}
 @media(max-width:720px){.library-shelf{padding:16px 15px 13px}.library-shelf-heading h2{font-size:16px}.library-shelf-books{gap:10px}.library-book-card{flex:0 0 134px;width:134px;min-width:134px}.library-empty-card{flex:0 0 320px;width:320px;min-width:280px}}
 </style>
 </head>
