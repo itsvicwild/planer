@@ -830,7 +830,7 @@ html,body{max-width:100%;overflow-x:hidden}main,.grid,.card,.page{min-width:0}.c
 /* Wild Workspace v4.0.2 — localization, seasonal themes and fixed desktop navigation. */
 .app{position:relative;z-index:1;overflow:visible!important}
 @media(min-width:721px){.rail{position:fixed;left:0;top:0;width:96px;height:100vh;height:100dvh;align-self:start;z-index:12}main{grid-column:2}}
-@media(max-width:720px){main{grid-column:1}}
+@media(max-width:720px){main{grid-column:1}.rail .desktop-only-nav{display:none!important}}
 .profile-appearance .locale-select{flex:0 0 132px;max-width:100%;height:42px;padding:0 12px;border-radius:13px;border:1px solid var(--ol);background:var(--s1);color:var(--tx);font:500 14px "Roboto Flex",sans-serif}
 .settings-festival .settings-copy{margin:4px 0 12px;font-size:12.5px}
 .festival-theme-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
@@ -1471,6 +1471,8 @@ html{background:var(--bg)!important;color-scheme:light dark}
   <button class="ni" data-p="cal"><span class="pill"><span class="i">calendar_month</span></span>Календарь</button>
   <button class="ni" data-p="tasks"><span class="pill"><span class="i">task_alt</span></span>Задачи</button>
   <button class="ni" data-p="library"><span class="pill"><span class="i">menu_book</span></span>Библиотека</button>
+  <button class="ni desktop-only-nav" data-p="stats"><span class="pill"><span class="i">monitoring</span></span>Статистика</button>
+  <button class="ni desktop-only-nav" data-p="profile"><span class="pill"><span class="i">settings</span></span>Настройки</button>
 </nav>
 <main>
   <div class="top" id="appTop">
