@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9lG9rt+6fuyUOQv74yrS3XtyCkv2WpVw9yy2p9WCPF8=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-HDOeS/AfUS9OzUZlFK7y9DGsvUQkWJxjmqLPiRvHyto=' 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-mQcJtauVwoaEq9+VeBxGSV+NSsIZyVTZ6NiyfG4DjB8=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-HDOeS/AfUS9OzUZlFK7y9DGsvUQkWJxjmqLPiRvHyto=' 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Wild Workspace</title>
 <meta name="description" content="Wild Workspace — личное пространство для задач, привычек, событий и маленьких побед.">
 <meta name="theme-color" content="#0e1411">
@@ -1150,7 +1150,7 @@ html[data-festival="christmas"] #pg-home>.card.c7{border-color:rgba(196,225,250,
     font-variation-settings:"FILL" 0,"wght" 350,"GRAD" 0,"opsz" 20!important;
   }
   .ov.task-create-compact .task-form-create>.mobile-task-toolbar>[data-savet]{
-    grid-column:8!important;grid-row:1!important;display:flex!important;position:static!important;align-items:center!important;
+    grid-column:6!important;grid-row:1!important;display:flex!important;position:static!important;align-items:center!important;
     justify-content:center!important;flex:none!important;width:42px!important;min-width:42px!important;max-width:42px!important;
     height:42px!important;min-height:42px!important;margin:0!important;padding:0!important;border:0!important;
     border-radius:12px!important;background:#35363e!important;color:#777985!important;box-shadow:none!important;transform:none;
@@ -1183,6 +1183,42 @@ html[data-festival="christmas"] #pg-home>.card.c7{border-color:rgba(196,225,250,
     font:14px/1.45 "Roboto Flex",sans-serif!important;resize:vertical!important;
   }
   @keyframes mobileTaskDescriptionIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+
+  .ov.task-create-compact .task-form-create:has(>#taskRepeatCreate:not(.hide)){
+    grid-template-areas:"task-title" "task-tools" "task-repeat" "task-description" "task-groups"!important;
+  }
+  .ov.task-create-compact .task-form-create>#taskRepeatCreate:not(.hide){
+    grid-area:task-repeat!important;display:block!important;position:relative!important;
+    width:100%!important;min-width:0!important;margin:0!important;padding:0!important;
+    border:0!important;border-radius:0!important;background:transparent!important;
+    animation:mobileTaskDescriptionIn .18s ease-out both;
+  }
+  .ov.task-create-compact .task-form-create>#taskRepeatCreate:not(.hide) .task-repeat-fields{
+    grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr)!important;gap:9px!important;align-items:end!important;
+  }
+  .ov.task-create-compact .task-form-create>#taskRepeatCreate:not(.hide) .fl{
+    display:block!important;min-width:0!important;margin:0!important;color:#a9aab5!important;font-size:11px!important;
+  }
+  .ov.task-create-compact .task-form-create>#taskRepeatCreate:not(.hide) .fl select,
+  .ov.task-create-compact .task-form-create>#taskRepeatCreate:not(.hide) .fl input{
+    display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;
+    height:35px!important;min-height:35px!important;margin:4px 0 0!important;padding:5px 8px!important;
+    border:1px solid rgba(214,213,228,.14)!important;border-radius:9px!important;
+    background:#202127!important;color:#f1eff6!important;font-family:inherit!important;font-size:12px!important;
+    box-shadow:none!important;
+  }
+  .ov.task-create-compact .task-form-create>#taskRepeatCreate:not(.hide) .task-repeat-interval{
+    display:flex!important;align-items:end!important;gap:5px!important;min-width:0!important;
+  }
+  .ov.task-create-compact .task-form-create>#taskRepeatCreate:not(.hide) .task-repeat-interval .fl{
+    flex:1 1 0!important;min-width:0!important;
+  }
+  .ov.task-create-compact .task-form-create>#taskRepeatCreate:not(.hide) .task-repeat-interval>span{
+    min-width:35px!important;padding:0 0 9px!important;color:#a9aab5!important;font-size:11px!important;
+  }
+  .ov.task-create-compact .task-form-create>#taskRepeatCreate:not(.hide) .task-repeat-preview{
+    margin:8px 1px 0!important;color:#a5a4b1!important;font-size:11px!important;line-height:1.4!important;
+  }
   .ov.task-create-compact .task-form-create>.task-block-project-row{
     grid-area:task-groups!important;display:grid!important;position:relative!important;
     grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:start!important;gap:9px!important;
@@ -1226,7 +1262,7 @@ html[data-festival="christmas"] #pg-home>.card.c7{border-color:rgba(196,225,250,
     height:44px!important;min-height:44px!important;max-height:44px!important
   }
   .ov.task-create-compact .task-form-create>.mobile-task-toolbar>[data-savet]{
-    grid-column:5!important;grid-row:1!important;width:44px!important;min-width:44px!important;max-width:44px!important;height:44px!important;min-height:44px!important
+    grid-column:6!important;grid-row:1!important;width:44px!important;min-width:44px!important;max-width:44px!important;height:44px!important;min-height:44px!important
   }
   .ov.task-create-compact .task-form-create>.mobile-task-toolbar>.task-tool-button.priority-cycle.priority-p1{color:#ff8b84!important;background:rgba(198,40,30,.16)!important}
   .ov.task-create-compact .task-form-create>.mobile-task-toolbar>.task-tool-button.priority-cycle.priority-p2{color:#f6cf67!important;background:rgba(229,165,10,.15)!important}
@@ -2046,7 +2082,7 @@ openM(`${compactTaskCreate?'<div class="task-form-root task-form-create">':""}<d
 <div class="extra-panel ${o.time?"":"hide"}" id="taskExtraTime"><label class="fl">Время выполнения (необязательно)<input type="time" id="f_time" value="${esc(o.time||"")}"></label></div><div class="extra-panel ${o.desc?"":"hide"}" id="taskExtraDesc"><label class="fl">Описание<textarea id="f_desc" placeholder="Контекст, заметки или полезные ссылки">${esc(o.desc)}</textarea></label></div>
 <div class="extra-panel ${o.subtasks.length?"":"hide"}" id="taskExtraChecklist"><div class="subtask-head"><b>Маленькие шаги</b><span class="subtask-caption">Можно отмечать по мере выполнения</span></div><div id="f_subtasks">${o.subtasks.map(formSubtaskRow).join("")}</div><div class="add-subtask-row"><input id="newSubtaskInput" type="text" placeholder="Добавить шаг…" maxlength="180"><button type="button" class="btn n t" data-addsubtask><span class="i">add</span>Добавить</button></div></div>
 <div class="fr task-block-project-row"><label class="fl">Блок<select id="f_b">${opt(orderedBlockEntries().map(([k,b])=>[k,b.n]),o.b)}</select></label><label class="fl">Проект / направление<input id="f_sub" value="${esc(o.sub)}" placeholder="Например, диплом или TOEFL"></label></div>
-${compactTaskCreate?`<div class="mobile-task-toolbar" id="mobileTaskToolbar" role="toolbar" aria-label="Инструменты задачи"><label class="task-tool-button task-date-tool" data-task-date-tool="plan"><span class="i" aria-hidden="true">calendar_month</span></label><label class="task-tool-button task-date-tool" data-task-date-tool="deadline"><span class="i" aria-hidden="true">event</span></label><button type="button" class="task-tool-button priority-cycle priority-p${o.p}" data-priority-cycle data-priority="${o.p}" aria-label="Важность" title="Важность"><span class="i" aria-hidden="true">flag</span></button><button type="button" class="task-tool-button" data-toggle-extra="desc" aria-label="${SET.locale==="en"?"Description":"Описание"}" title="${SET.locale==="en"?"Description":"Описание"}" aria-expanded="false" aria-controls="taskExtraDesc"><span class="i" aria-hidden="true">notes</span></button><button type="button" class="task-tool-button" data-task-pop="repeat" aria-label="Повторение задачи" title="Повторение задачи" aria-expanded="false" aria-controls="taskOptionPopup"><span class="i" aria-hidden="true">repeat</span></button></div>
+${compactTaskCreate?`<div class="mobile-task-toolbar" id="mobileTaskToolbar" role="toolbar" aria-label="Инструменты задачи"><label class="task-tool-button task-date-tool" data-task-date-tool="plan"><span class="i" aria-hidden="true">calendar_month</span></label><label class="task-tool-button task-date-tool" data-task-date-tool="deadline"><span class="i" aria-hidden="true">event</span></label><button type="button" class="task-tool-button priority-cycle priority-p${o.p}" data-priority-cycle data-priority="${o.p}" aria-label="Важность" title="Важность"><span class="i" aria-hidden="true">flag</span></button><button type="button" class="task-tool-button" data-toggle-extra="repeat" aria-label="Повторение задачи" title="Повторение задачи" aria-expanded="false" aria-controls="taskRepeatCreate"><span class="i" aria-hidden="true">repeat</span></button><button type="button" class="task-tool-button" data-toggle-extra="desc" aria-label="${SET.locale==="en"?"Description":"Описание"}" title="${SET.locale==="en"?"Description":"Описание"}" aria-expanded="false" aria-controls="taskExtraDesc"><span class="i" aria-hidden="true">notes</span></button></div>
 <div class="task-option-popover hide" id="taskOptionPopup" role="dialog" aria-modal="false" aria-label="Настройки задачи" hidden>
 <div class="task-option-head"><b id="taskOptionTitle">Настройки задачи</b><button type="button" class="task-option-close" data-close-task-popover aria-label="Закрыть"><span class="i" aria-hidden="true">close</span></button></div>
 <div id="taskOptionBody" class="task-option-body"></div>
