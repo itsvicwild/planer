@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-uUX5k2W6lrcm/A6mBnFCprkbZuOf4kfSuH7JLQUS56Q=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-HDOeS/AfUS9OzUZlFK7y9DGsvUQkWJxjmqLPiRvHyto=' 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-glMBagvd5G3cevs9nb12yww1oY2HtyE3eLkCgPn/78M=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-HDOeS/AfUS9OzUZlFK7y9DGsvUQkWJxjmqLPiRvHyto=' 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Wild Workspace</title>
 <meta name="description" content="Wild Workspace — личное пространство для задач, привычек, событий и маленьких побед.">
 <meta name="theme-color" content="#0e1411">
@@ -1600,7 +1600,99 @@ function taskHasDate(x){return !!(taskPlanDate(x)||taskDeadlineDate(x))}
 function taskSortDate(x){return taskDeadlineDate(x)||taskPlanDate(x)||"9999-12-31"}
 function taskInHomeWeek(x,ms,su){const p=taskPlanDate(x),d=taskDeadlineDate(x);if(!p&&!d)return false;if(d&&days(d)<0)return true;const start=p||d,end=d||p;return start<=su&&end>=ms&&(!d||days(d)>=0)}
 function taskDateBadge(x){const d=taskDeadlineDate(x),p=taskPlanDate(x);if(d)return chip(d);return p?'<span class="chip">План '+fmt(pd(p),{day:"numeric",month:"short"})+"</span>":""}
-function sanitizeTask(source){if(!source||typeof source!=="object"||!safeRecordId(source.id))return null;const x={...source,id:safeRecordId(source.id)};let planDate=validISODate(x.planDate)?x.planDate:(validISODate(x.s0)?x.s0:""),deadline=validISODate(x.d)?x.d:"";if(planDate&&deadline&&planDate>deadline)planDate=deadline;x.t=String(x.t??"").trim().slice(0,240)||"Без названия";x.b=BL&&Object.prototype.hasOwnProperty.call(BL,x.b)?String(x.b):(orderedBlockEntries()[0]?.[0]||"study");x.sub=String(x.sub??"").slice(0,180);x.desc=String(x.desc??"").slice(0,20000);x.planDate=planDate;x.d=deadline;x.s0=planDate;x.h=clampNumber(x.h,0,1000,0);x.p=Math.round(clampNumber(x.p,1,3,2));x.s=["todo","doing","wait","done"].includes(x.s)?x.s:"todo";x.subtasks=normalizeSubtasks(x.subtasks);x.links=Array.isArray(x.links)?x.links.map(v=>{const raw=typeof v==="string"?v:v?.url, url=safeWebUrl(raw);return url?(typeof v==="string"?url:{...v,url}):null}).filter(Boolean).slice(0,100):[];x.attachments=Array.isArray(x.attachments)?x.attachments.map(sanitizeAttachment).filter(Boolean).slice(0,12):[];x.time=validTime(x.time)?x.time:"";x.updatedAt=safeStamp(x.updatedAt||x.completedAt);return x}
+
+function normalizeTaskRepeatRule(source,fallbackAnchor=""){
+ if(!source||typeof source!=="object"||Array.isArray(source))return null;
+ const unit=String(source.unit||"").toLowerCase(),interval=Number(source.interval??1);
+ const anchorDate=validISODate(source.anchorDate)?source.anchorDate:(validISODate(fallbackAnchor)?fallbackAnchor:"");
+ if(!["day","week","month","year"].includes(unit)||!Number.isInteger(interval)||interval<1||interval>365||!validISODate(anchorDate))return null;
+ return {unit,interval,anchorDate};
+}
+function taskRepeatOccurrenceAt(rule,index){
+ const normalized=normalizeTaskRepeatRule(rule);
+ if(!normalized||!Number.isInteger(index)||index<0||index>100000)return "";
+ const anchor=pd(normalized.anchorDate),step=index*normalized.interval;
+ if(!Number.isSafeInteger(step))return "";
+ if(normalized.unit==="day")return ds(addD(anchor,step));
+ if(normalized.unit==="week")return ds(addD(anchor,step*7));
+ let year=anchor.getFullYear(),month=anchor.getMonth(),day=anchor.getDate();
+ if(normalized.unit==="month"){
+  const totalMonth=year*12+month+step;
+  if(!Number.isSafeInteger(totalMonth))return "";
+  year=Math.floor(totalMonth/12);month=totalMonth-year*12;
+ }else year+=step;
+ const lastDay=new Date(year,month+1,0).getDate(),result=new Date(year,month,Math.min(day,lastDay));
+ return validISODate(ds(result))?ds(result):"";
+}
+function taskRepeatDaySpan(startDate,endDate){
+ const a=pd(startDate),b=pd(endDate);
+ return Math.round((Date.UTC(b.getFullYear(),b.getMonth(),b.getDate())-Date.UTC(a.getFullYear(),a.getMonth(),a.getDate()))/86400000);
+}
+function prepareNextRepeatedTask(source,completedAt=new Date().toISOString()){
+ const rule=normalizeTaskRepeatRule(source?.repeatRule,taskPlanDate(source)||taskDeadlineDate(source));
+ if(!rule)return {created:false,consumeRule:false,task:null};
+ const seriesId=safeRecordId(source.repeatSeriesId)||("series-"+String(source.id||"").slice(0,140));
+ const currentIndex=Number.isInteger(Number(source.repeatIndex))?Math.max(0,Math.min(100000,Number(source.repeatIndex))):0;
+ if(currentIndex>=100000)return {created:false,consumeRule:false,task:null,error:"Достигнут предел экземпляров повторяющейся задачи."};
+ const nextIndex=currentIndex+1,nextDate=taskRepeatOccurrenceAt(rule,nextIndex);
+ if(!validISODate(nextDate))return {created:false,consumeRule:false,task:null,error:"Не удалось рассчитать следующую дату повторения."};
+ const id="rpt-"+seriesId.slice(0,135)+"-"+nextDate.replace(/-/g,"");
+ const existing=T.find(item=>sameId(item.id,id));
+ if(existing){
+  if(safeRecordId(existing.repeatSeriesId)===seriesId&&Number(existing.repeatIndex)===nextIndex)return {created:false,consumeRule:true,task:existing};
+  return {created:false,consumeRule:false,task:null,error:"ID следующего экземпляра уже занят другой задачей."};
+ }
+ const plan=taskPlanDate(source),deadline=taskDeadlineDate(source);
+ let nextPlanDate="",nextDeadlineDate="";
+ if(plan&&deadline){nextPlanDate=nextDate;nextDeadlineDate=ds(addD(pd(nextDate),taskRepeatDaySpan(plan,deadline)))}
+ else if(plan)nextPlanDate=nextDate;
+ else if(deadline)nextDeadlineDate=nextDate;
+ else nextPlanDate=nextDate;
+ const stamp=Number.isFinite(Date.parse(completedAt))?new Date(completedAt).toISOString():new Date().toISOString();
+ const nextSubtasks=normalizeSubtasks(deepCloneData(Array.isArray(source.subtasks)?source.subtasks:[])).map((step,index)=>({
+  id:"st-rpt-"+id.slice(-32)+"-"+(index+1),t:step.t,done:false
+ }));
+ const nextLinkAttachments=(Array.isArray(source.attachments)?source.attachments:[]).map((attachment,index)=>{
+  const url=safeWebUrl(attachment?.url);
+  if(!url)return null;
+  return {...attachment,id:"att-rpt-"+id.slice(-32)+"-"+(index+1),url,kind:"link",mime:"text/uri-list",size:0,storagePath:undefined,localOnly:undefined};
+ }).filter(Boolean);
+ const task=sanitizeTask({
+  id,t:source.t,b:source.b,sub:source.sub||"",planDate:nextPlanDate,s0:nextPlanDate,d:nextDeadlineDate,
+  h:source.h,p:source.p,s:"todo",ev:null,desc:source.desc||"",links:deepCloneData(Array.isArray(source.links)?source.links:[]),
+  attachments:nextLinkAttachments,subtasks:nextSubtasks,time:source.time||"",
+  repeatRule:rule,repeatSeriesId:seriesId,repeatIndex:nextIndex,updatedAt:stamp
+ });
+ if(!task)return {created:false,consumeRule:false,task:null,error:"Не удалось подготовить следующую задачу."};
+ return {created:true,consumeRule:true,task};
+}
+
+function sanitizeTask(source){
+ if(!source||typeof source!=="object"||!safeRecordId(source.id))return null;
+ const x={...source,id:safeRecordId(source.id)};
+ let planDate=validISODate(x.planDate)?x.planDate:(validISODate(x.s0)?x.s0:""),deadline=validISODate(x.d)?x.d:"";
+ if(planDate&&deadline&&planDate>deadline)planDate=deadline;
+ x.t=String(x.t??"").trim().slice(0,240)||"Без названия";
+ x.b=BL&&Object.prototype.hasOwnProperty.call(BL,x.b)?String(x.b):(orderedBlockEntries()[0]?.[0]||"study");
+ x.sub=String(x.sub??"").slice(0,180);x.desc=String(x.desc??"").slice(0,20000);
+ x.planDate=planDate;x.d=deadline;x.s0=planDate;x.h=clampNumber(x.h,0,1000,0);
+ x.p=Math.round(clampNumber(x.p,1,3,2));x.s=["todo","doing","wait","done"].includes(x.s)?x.s:"todo";
+ x.subtasks=normalizeSubtasks(x.subtasks);
+ x.links=Array.isArray(x.links)?x.links.map(v=>{const raw=typeof v==="string"?v:v?.url,url=safeWebUrl(raw);return url?(typeof v==="string"?url:{...v,url}):null}).filter(Boolean).slice(0,100):[];
+ x.attachments=Array.isArray(x.attachments)?x.attachments.map(sanitizeAttachment).filter(Boolean).slice(0,12):[];
+ x.time=validTime(x.time)?x.time:"";
+ const repeatRule=normalizeTaskRepeatRule(x.repeatRule,planDate||deadline),seriesId=safeRecordId(x.repeatSeriesId);
+ if(repeatRule){
+  x.repeatRule=repeatRule;x.repeatSeriesId=seriesId||("series-"+x.id.slice(0,140));
+  const repeatIndex=Number(x.repeatIndex);x.repeatIndex=Number.isInteger(repeatIndex)?Math.max(0,Math.min(100000,repeatIndex)):0;
+ }else{
+  delete x.repeatRule;
+  if(seriesId){x.repeatSeriesId=seriesId;const repeatIndex=Number(x.repeatIndex);x.repeatIndex=Number.isInteger(repeatIndex)?Math.max(0,Math.min(100000,repeatIndex)):0}
+  else{delete x.repeatSeriesId;delete x.repeatIndex}
+ }
+ x.updatedAt=safeStamp(x.updatedAt||x.completedAt);
+ return x;
+}
 function sanitizeEvent(source){if(!source||typeof source!=="object"||!safeRecordId(source.id))return null;let x={...source,id:safeRecordId(source.id)};normalizeEventType(x);x.t=String(x.t??"").trim().slice(0,240)||"Без названия";x.date=validISODate(x.date)?x.date:ds(today);x.endDate=validISODate(x.endDate)&&x.endDate>=x.date&&(pd(x.endDate)-pd(x.date))/864e5<=366?x.endDate:x.date;x.k=["work","holiday"].includes(x.k)?x.k:"work";x.c=cssColor(x.c,ET[x.k]?.c||ET.work.c);x.allDay=!!x.allDay||x.k==="holiday";x.a=validTime(x.a)?x.a:"10:00";x.z=validTime(x.z)?x.z:"11:00";if(x.allDay){x.a="00:00";x.z="23:59"}else if(hm(x.z)<=hm(x.a)){const start=Math.min(1438,Math.round(hm(x.a)*60)),end=Math.min(1439,start+60);if(start>=1439){x.a="22:59";x.z="23:59"}else{x.a=String(Math.floor(start/60)).padStart(2,"0")+":"+String(start%60).padStart(2,"0");x.z=String(Math.floor(end/60)).padStart(2,"0")+":"+String(end%60).padStart(2,"0")}}x.rec=["none","day","week","biweek","month","year"].includes(x.rec)?x.rec:"none";x.wd=Array.isArray(x.wd)?[...new Set(x.wd.map(Number).filter(n=>Number.isInteger(n)&&n>=1&&n<=7))]:[];x.until=validISODate(x.until)&&x.until>=x.date?x.until:"";x.ex=Array.isArray(x.ex)?x.ex.filter(validISODate):[];x.p=String(x.p??"").slice(0,240);x.desc=String(x.desc??"").slice(0,20000);x.links=Array.isArray(x.links)?x.links.map(v=>{const raw=typeof v==="string"?v:v?.url,url=safeWebUrl(raw);return url?(typeof v==="string"?url:{...v,url}):null}).filter(Boolean).slice(0,100):[];x.updatedAt=safeStamp(x.updatedAt);return normalizeEventType(x)}
 function sanitizeHabit(source){if(!source||typeof source!=="object"||!safeRecordId(source.id))return null;const h=normalizeHabitRecord({...source,id:safeRecordId(source.id)});h.t=String(h.t??"").trim().slice(0,120)||"Без названия";h.goal=Math.round(clampNumber(h.goal,1,7,1));h.updatedAt=safeStamp(h.updatedAt);return h}
 function sanitizeBlock(id,source){const raw=source&&typeof source==="object"?source:{},base=normalizedBlockForSync(String(id),raw),fallback=DEFAULT_BLOCKS[id]?.c||BLOCK_PALETTE[0];base.n=String(base.n??"").trim().slice(0,36)||DEFAULT_BLOCKS[id]?.n||"Блок";base.c=typeof base.c==="string"&&/^#[0-9a-f]{6}$/i.test(base.c)?base.c:fallback;const order=Number(base.sortOrder);base.sortOrder=base.sortOrder!=null&&Number.isFinite(order)?Math.max(0,Math.min(1000000,Math.trunc(order))):null;base.orderUpdatedAt=base.sortOrder==null?"":(base.orderUpdatedAt?safeStamp(base.orderUpdatedAt):"");base.updatedAt=base.systemDefault?DEFAULT_BLOCK_STAMP:safeStamp(base.updatedAt);return base}
@@ -1997,7 +2089,35 @@ function launchWEasterEgg(anchor){const r=anchor.getBoundingClientRect();if(matc
 const CAT_QUOTES=["Мяу. Ещё одна маленькая победа! 🐾","Я убрал её в архив. Ты молодец.","Киберкот одобряет: шаг за шагом! ✨","Пауза тоже часть пути. Не забывай отдыхать.","W-режим активирован. Продолжаем без спешки."];let CAT_QUOTE_INDEX=0;
 function catTalk(){const seasonal=SET.festival==="halloween"?(SET.locale==="en"?["Boo! Even tiny steps count. 🎃","The cybercat says: no task is scarier than it looks. 🦇","A little magic, one checkbox at a time. ✨"]:["Бу! Даже маленькие шаги считаются. 🎃","Киберкот напоминает: ни одна задача не страшнее, чем кажется. 🦇","Немного магии и по одной галочке за раз. ✨"]):SET.festival==="christmas"?(SET.locale==="en"?["Purr-y Christmas! You deserve a cozy break. 🎄","One little step, one little star. ✨","The cybercat left a tiny gift: you are doing well. 🎁"]:["Мур-рождество! Ты заслужил уютную паузу. 🎄","Один маленький шаг — одна маленькая звёздочка. ✨","Киберкот оставил подарок: у тебя получается. 🎁"]):null;const list=seasonal||CAT_QUOTES,q=list[CAT_QUOTE_INDEX%list.length];CAT_QUOTE_INDEX++;toast(q)}
 function launchCatSweep(anchor,done){if(!anchor||window.matchMedia("(prefers-reduced-motion: reduce)").matches){done();return}const row=anchor.closest(".row,.tk,.overdue-item,.overdue-card,.md")||anchor;const r=row.getBoundingClientRect();const targetX=Math.max(18,Math.min(window.innerWidth-118,r.left+Math.min(34,Math.max(12,r.width*.12))));const targetY=Math.max(8,Math.min(window.innerHeight-70,r.top+r.height/2-33));const cat=document.createElement("div");cat.className="cyber-cat-sweep";cat.style.setProperty("--reach-left",targetX+"px");cat.style.top=targetY+"px";cat.innerHTML='<span class="cat-arm" aria-hidden="true"></span><span class="cat-paw" role="img" aria-label="Лапка киберкота тянется к задаче"><i></i><i></i><i></i><i></i><b></b></span><span class="cat-body" aria-hidden="true">🐈‍⬛</span><span class="cat-spark" aria-hidden="true">✦</span>';document.body.appendChild(cat);if(!row.classList.contains("md"))row.classList.add("task-sweeping");setTimeout(()=>{cat.remove();done()},980)}
-function completeTaskWithCat(x,anchor,opts={}){if(!x||x.s==="done")return;const id=String(x.id);if(COMPLETING_TASK_IDS.has(id))return;COMPLETING_TASK_IDS.add(id);const before=completionSnapshot(),needsRest=x.p===1||(+x.h||0)>=3;spawnMiniConfetti(anchor);launchCatSweep(anchor,()=>{try{const current=T.find(y=>sameId(y.id,id));if(!current){toast("Задача изменилась на другом устройстве. Обнови список и попробуй снова.");return}if(current.s==="done")return;const previous=deepCloneData(current);current.s="done";current.completedAt=new Date().toISOString();current.updatedAt=current.completedAt;if(!save()){Object.assign(current,previous);toast("Не удалось сохранить завершение задачи на устройстве");return}if(opts.closeModal)closeM();all();if(current.p===1||(+current.h||0)>=3)recordActivity("pause","Котик предложил паузу после сложной задачи");if(opts.celebration){showCelebration("Ты справился! 🎉",needsRest?"Это была непростая задача. Котик напоминает: пять минут отдыха — тоже часть работы ☕":"Эта задача больше не висит над тобой. Спасибо, что вернулся к ней — это тоже победа.")}else{toast(needsRest?"Непростая задача позади. Котик предлагает немного отдохнуть ☕":"Киберкот убрал задачу в архив 🐾");maybeCelebrate(before)}}finally{COMPLETING_TASK_IDS.delete(id)}})}
+function completeTaskWithCat(x,anchor,opts={}){
+ if(!x||x.s==="done")return;
+ const id=String(x.id);if(COMPLETING_TASK_IDS.has(id))return;
+ COMPLETING_TASK_IDS.add(id);
+ const before=completionSnapshot(),needsRest=x.p===1||(+x.h||0)>=3;
+ spawnMiniConfetti(anchor);
+ launchCatSweep(anchor,()=>{
+  try{
+   const current=T.find(y=>sameId(y.id,id));
+   if(!current){toast("Задача изменилась на другом устройстве. Обнови список и попробуй снова.");return}
+   if(current.s==="done")return;
+   const previous=deepCloneData(current),completedAt=new Date().toISOString();
+   const repeat=prepareNextRepeatedTask(current,completedAt);
+   current.s="done";current.completedAt=completedAt;current.updatedAt=completedAt;
+   if(repeat.consumeRule)delete current.repeatRule;
+   if(repeat.created)T.push(repeat.task);
+   if(!save()){
+    if(repeat.created)T=T.filter(y=>!sameId(y.id,repeat.task.id));
+    const rollbackTarget=T.find(y=>sameId(y.id,id));if(rollbackTarget)Object.assign(rollbackTarget,previous);
+    toast("Не удалось сохранить завершение задачи на устройстве");return;
+   }
+   if(repeat.error)toast("Задача завершена, но повторение не создано: "+repeat.error);
+   if(opts.closeModal)closeM();all();
+   if(current.p===1||(+current.h||0)>=3)recordActivity("pause","Котик предложил паузу после сложной задачи");
+   if(opts.celebration){showCelebration("Ты справился! 🎉",needsRest?"Это была непростая задача. Котик напоминает: пять минут отдыха — тоже часть работы ☕":"Эта задача больше не висит над тобой. Спасибо, что вернулся к ней — это тоже победа.")}
+   else{toast(needsRest?"Непростая задача позади. Котик предлагает немного отдохнуть ☕":repeat.created||repeat.consumeRule?"Киберкот убрал задачу в архив. Следующий шаг уже в плане 🐾":"Киберкот убрал задачу в архив 🐾");maybeCelebrate(before)}
+  }finally{COMPLETING_TASK_IDS.delete(id)}
+ });
+}
 
 function spawnMiniConfetti(anchor){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;let r;if(anchor&&anchor.getBoundingClientRect)r=anchor.getBoundingClientRect();else return;const burst=document.createElement("span");burst.className="mini-confetti-burst";burst.style.left=(r.left+r.width/2)+"px";burst.style.top=(r.top+r.height/2)+"px";burst.innerHTML=Array.from({length:7},(_,i)=>`<i style="--h:${[25,48,145,178,205,285,340][i]} ;--dx:${Math.round(Math.cos(i*Math.PI*2/7)*28)}px;--dy:${Math.round(Math.sin(i*Math.PI*2/7)*25)}px;--r:${i*51}deg"></i>`).join("");document.body.appendChild(burst);setTimeout(()=>burst.remove(),850)}
 function addCozyCatWidget(){const target=$("focus");if(!target||target.querySelector("[data-cat-piano]"))return;target.insertAdjacentHTML("beforeend",`<button type="button" class="cozy-cat-piano" data-cat-piano aria-label="Поговорить с котиком за пианино" title="Нажми, чтобы услышать доброе слово"><span class="cozy-cat-pianist" aria-hidden="true">🐈‍⬛<span class="cozy-cat-paw">🐾</span></span><span class="cozy-piano" aria-hidden="true"><span class="cozy-piano-top"></span><span class="cozy-piano-keys"><i></i><i></i><i></i><i></i><i></i><i></i><b></b></span></span><span class="cozy-cat-copy"><b>Мяу-пауза</b><small>Котик играет, ты выдыхаешь</small></span><span class="i">music_note</span></button>`)}
@@ -2419,7 +2539,7 @@ if(p==="home")head();else $("hello").textContent=NAMES[p];
 const top=$("appTop");top?.classList.toggle("library-page-head",p==="library");top?.classList.toggle("quiet-page-head",["cal","tasks","stats"].includes(p));top?.classList.toggle("compact-add-controls",["cal","tasks"].includes(p));top?.classList.toggle("stats-page-head",p==="stats");document.body.classList.toggle("calendar-view-fixed",p==="cal");const ed=p==="home"||p==="cal"||p==="tasks";["addT","addE"].forEach(i=>$(i).classList.toggle("hide",!ed));if($("mobileFab"))$("mobileFab").classList.toggle("hide",!ed);$("srch").classList.toggle("hide",!(p==="tasks"||p==="archive"));renderPage()}
 function all(){renderToday();renderDL();renderFocus();renderBoard();renderRings();renderBars();renderPage()}
 // ---------- действия ----------
-async function saveT(id){if(TASK_SAVE_BUSY)return;TASK_SAVE_BUSY=true;const saveButton=$("md")?.querySelector("[data-savet]"),originalButtonMarkup=saveButton?.innerHTML;if(saveButton){saveButton.disabled=true;saveButton.setAttribute("aria-busy","true");saveButton.textContent=$("ov")?.classList.contains("task-create-compact")?"…":"Сохраняем…"}const updateTaskSaveProgress=label=>{if(saveButton?.isConnected)saveButton.textContent=label};let committed=false;try{const t=$("f_t").value.trim();if(!t){toast("Введите название");return}const planValue=$("f_planDate")?.value||"",deadlineValue=$("f_d")?.value||"",hoursRaw=$("f_h")?.value??"";if(planValue&&!validISODate(planValue))throw new Error("Укажите корректную плановую дату.");if(deadlineValue&&!validISODate(deadlineValue))throw new Error("Укажите корректный дедлайн.");if(planValue&&deadlineValue&&planValue>deadlineValue)throw new Error("Плановая дата не может быть позже дедлайна.");if(hoursRaw.trim()===""||!Number.isFinite(Number(hoursRaw))||Number(hoursRaw)<0||Number(hoursRaw)>1000)throw new Error("Оценка времени должна быть числом от 0 до 1000 часов.");const rows=[...document.querySelectorAll("#f_subtasks .check-edit-row")],subtasks=rows.map(r=>({id:r.dataset.formsubrow,t:r.querySelector("[data-st-text]").value.trim(),done:r.querySelector("[data-st-done]").checked})).filter(st=>st.t);const attachments=FORM_ATTACHMENTS.map(a=>({...a}));const existing=id?T.find(y=>sameId(y.id,id)):null;if(id&&!existing)throw new Error("Задача уже изменилась на другом устройстве. Открой её заново и повтори сохранение.");const originalTask=existing?deepCloneData(existing):null;const originalUpdatedAt=String(existing?.updatedAt||"");let autoCompleted=false;const o={t,b:$("f_b").value,sub:$("f_sub").value.trim(),planDate:planValue,s0:planValue,d:deadlineValue,h:Number(hoursRaw),p:+$("f_p").value||2,s:existing?.s||"todo",ev:existing?.ev||null,completedAt:existing?.completedAt||null,desc:$("f_desc").value,links:existing?.links||[],attachments,subtasks,time:$("f_time").value||"",updatedAt:new Date().toISOString()};if(subtasks.length&&subtasks.every(st=>st.done)&&o.s!=="done"){o.s="done";o.completedAt=o.updatedAt;autoCompleted=true}o.s0=o.planDate;const taskId=existing?existing.id:(id?String(id):nid());o.id=taskId;Object.assign(o,sanitizeTask(o));let localFileIndex=0;const localFileTotal=FORM_PENDING_FILES.size;for(const [fileId,file] of FORM_PENDING_FILES.entries()){localFileIndex++;updateTaskSaveProgress(`Сохраняем вложения ${localFileIndex}/${localFileTotal}…`);await putLocalAttachment(fileId,file)}if(AUTH?.user&&CLOUD.enabled){const cloudFiles=attachments.filter(a=>FORM_PENDING_FILES.has(a.id));let cloudFileIndex=0;for(const a of attachments){const f=FORM_PENDING_FILES.get(a.id);if(f){cloudFileIndex++;updateTaskSaveProgress(`Загружаем в облако ${cloudFileIndex}/${cloudFiles.length}…`);try{a.storagePath=await uploadCloudAttachment(taskId,a,f);a.localOnly=!a.storagePath}catch(err){a.localOnly=true;console.warn("Upload attachment:",err);toast(`Файл «${a.name}» сохранён локально; облако не приняло его`)}}}}updateTaskSaveProgress("Записываем задачу…");const removed=FORM_ORIGINAL_ATTACHMENTS.filter(a=>!new Set(attachments.map(x=>String(x.id))).has(String(a.id)));let target=null;if(id){target=T.find(y=>sameId(y.id,id));if(!target)throw new Error("Задача была удалена или обновлена во время сохранения. Ничего не перезаписано; открой её заново.");if(String(target.updatedAt||"")!==originalUpdatedAt)throw new Error("Задача изменилась на другом устройстве во время сохранения. Открой её заново, чтобы не потерять изменения.");Object.assign(target,o)}else{if(T.some(y=>sameId(y.id,taskId)))throw new Error("Задача с таким идентификатором уже существует. Повтори сохранение.");T.push(o)}if(!save()){if(target&&originalTask)Object.assign(target,originalTask);else T=T.filter(y=>!sameId(y.id,taskId));throw new Error("Не удалось сохранить задачу на устройстве. Проверь свободное место браузера и попробуй снова.")}committed=true;FORM_PENDING_FILES.clear();closeM();all();let cloudRemovedSynced=false;if(removed.length&&AUTH?.user&&CLOUD.enabled){try{await cloudSave();cloudRemovedSynced=true}catch(err){console.warn("Removed attachments await sync:",err)}}for(const a of removed){try{await cleanupAttachment(a,{cloud:cloudRemovedSynced||!a.storagePath||!AUTH?.user||!CLOUD.enabled})}catch(err){console.warn("Removed attachment cleanup:",err)}}toast(autoCompleted?"Все шаги выполнены — задача в архиве 🐾":id?"Задача сохранена":"Задача добавлена ✨");scheduleAttachmentGarbageCollection(!!AUTH?.user&&CLOUD.syncState==="synced")}catch(err){console.warn("Wild Workspace task save:",err);toast(err?.message||"Не удалось сохранить задачу")}finally{TASK_SAVE_BUSY=false;if(saveButton?.isConnected){saveButton.disabled=false;saveButton.removeAttribute("aria-busy");if(originalButtonMarkup!==undefined)saveButton.innerHTML=originalButtonMarkup}scheduleAttachmentGarbageCollection(!!AUTH?.user&&CLOUD.syncState==="synced");flushClockRefresh()}}
+async function saveT(id){if(TASK_SAVE_BUSY)return;TASK_SAVE_BUSY=true;const saveButton=$("md")?.querySelector("[data-savet]"),originalButtonMarkup=saveButton?.innerHTML;if(saveButton){saveButton.disabled=true;saveButton.setAttribute("aria-busy","true");saveButton.textContent=$("ov")?.classList.contains("task-create-compact")?"…":"Сохраняем…"}const updateTaskSaveProgress=label=>{if(saveButton?.isConnected)saveButton.textContent=label};let committed=false;try{const t=$("f_t").value.trim();if(!t){toast("Введите название");return}const planValue=$("f_planDate")?.value||"",deadlineValue=$("f_d")?.value||"",hoursRaw=$("f_h")?.value??"";if(planValue&&!validISODate(planValue))throw new Error("Укажите корректную плановую дату.");if(deadlineValue&&!validISODate(deadlineValue))throw new Error("Укажите корректный дедлайн.");if(planValue&&deadlineValue&&planValue>deadlineValue)throw new Error("Плановая дата не может быть позже дедлайна.");if(hoursRaw.trim()===""||!Number.isFinite(Number(hoursRaw))||Number(hoursRaw)<0||Number(hoursRaw)>1000)throw new Error("Оценка времени должна быть числом от 0 до 1000 часов.");const rows=[...document.querySelectorAll("#f_subtasks .check-edit-row")],subtasks=rows.map(r=>({id:r.dataset.formsubrow,t:r.querySelector("[data-st-text]").value.trim(),done:r.querySelector("[data-st-done]").checked})).filter(st=>st.t);const attachments=FORM_ATTACHMENTS.map(a=>({...a}));const existing=id?T.find(y=>sameId(y.id,id)):null;if(id&&!existing)throw new Error("Задача уже изменилась на другом устройстве. Открой её заново и повтори сохранение.");const originalTask=existing?deepCloneData(existing):null;const originalUpdatedAt=String(existing?.updatedAt||"");let autoCompleted=false;const o={t,b:$("f_b").value,sub:$("f_sub").value.trim(),planDate:planValue,s0:planValue,d:deadlineValue,h:Number(hoursRaw),p:+$("f_p").value||2,s:existing?.s||"todo",ev:existing?.ev||null,completedAt:existing?.completedAt||null,desc:$("f_desc").value,links:existing?.links||[],attachments,subtasks,repeatRule:existing?.repeatRule||null,repeatSeriesId:existing?.repeatSeriesId||null,repeatIndex:existing?.repeatIndex??0,time:$("f_time").value||"",updatedAt:new Date().toISOString()};if(subtasks.length&&subtasks.every(st=>st.done)&&o.s!=="done"){o.s="done";o.completedAt=o.updatedAt;autoCompleted=true}o.s0=o.planDate;const taskId=existing?existing.id:(id?String(id):nid());o.id=taskId;Object.assign(o,sanitizeTask(o));const autoRepeat=autoCompleted?prepareNextRepeatedTask(o,o.completedAt):null;if(autoRepeat?.consumeRule)delete o.repeatRule;let localFileIndex=0;const localFileTotal=FORM_PENDING_FILES.size;for(const [fileId,file] of FORM_PENDING_FILES.entries()){localFileIndex++;updateTaskSaveProgress(`Сохраняем вложения ${localFileIndex}/${localFileTotal}…`);await putLocalAttachment(fileId,file)}if(AUTH?.user&&CLOUD.enabled){const cloudFiles=attachments.filter(a=>FORM_PENDING_FILES.has(a.id));let cloudFileIndex=0;for(const a of attachments){const f=FORM_PENDING_FILES.get(a.id);if(f){cloudFileIndex++;updateTaskSaveProgress(`Загружаем в облако ${cloudFileIndex}/${cloudFiles.length}…`);try{a.storagePath=await uploadCloudAttachment(taskId,a,f);a.localOnly=!a.storagePath}catch(err){a.localOnly=true;console.warn("Upload attachment:",err);toast(`Файл «${a.name}» сохранён локально; облако не приняло его`)}}}}updateTaskSaveProgress("Записываем задачу…");const removed=FORM_ORIGINAL_ATTACHMENTS.filter(a=>!new Set(attachments.map(x=>String(x.id))).has(String(a.id)));let target=null;if(id){target=T.find(y=>sameId(y.id,id));if(!target)throw new Error("Задача была удалена или обновлена во время сохранения. Ничего не перезаписано; открой её заново.");if(String(target.updatedAt||"")!==originalUpdatedAt)throw new Error("Задача изменилась на другом устройстве во время сохранения. Открой её заново, чтобы не потерять изменения.");Object.assign(target,o);if(autoRepeat?.consumeRule)delete target.repeatRule}else{if(T.some(y=>sameId(y.id,taskId)))throw new Error("Задача с таким идентификатором уже существует. Повтори сохранение.");T.push(o)}if(autoRepeat?.created)T.push(autoRepeat.task);if(!save()){if(autoRepeat?.created)T=T.filter(y=>!sameId(y.id,autoRepeat.task.id));if(target&&originalTask)Object.assign(target,originalTask);else T=T.filter(y=>!sameId(y.id,taskId));throw new Error("Не удалось сохранить задачу на устройстве. Проверь свободное место браузера и попробуй снова.")}committed=true;FORM_PENDING_FILES.clear();closeM();all();let cloudRemovedSynced=false;if(removed.length&&AUTH?.user&&CLOUD.enabled){try{await cloudSave();cloudRemovedSynced=true}catch(err){console.warn("Removed attachments await sync:",err)}}for(const a of removed){try{await cleanupAttachment(a,{cloud:cloudRemovedSynced||!a.storagePath||!AUTH?.user||!CLOUD.enabled})}catch(err){console.warn("Removed attachment cleanup:",err)}}toast(autoCompleted?"Все шаги выполнены — задача в архиве 🐾":id?"Задача сохранена":"Задача добавлена ✨");scheduleAttachmentGarbageCollection(!!AUTH?.user&&CLOUD.syncState==="synced")}catch(err){console.warn("Wild Workspace task save:",err);toast(err?.message||"Не удалось сохранить задачу")}finally{TASK_SAVE_BUSY=false;if(saveButton?.isConnected){saveButton.disabled=false;saveButton.removeAttribute("aria-busy");if(originalButtonMarkup!==undefined)saveButton.innerHTML=originalButtonMarkup}scheduleAttachmentGarbageCollection(!!AUTH?.user&&CLOUD.syncState==="synced");flushClockRefresh()}}
 function saveE(id,editScope,occurrenceDate){
  const singleOccurrence=editScope==="single",t=$("f_t").value.trim();if(!t)return toast("Введите название");
  const target=id?E.find(y=>sameId(y.id,id)):null;if(id&&!target)return toast("Мероприятие уже удалено");
