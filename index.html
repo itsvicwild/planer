@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Y7iB0UJ1mve53GFyXMDhNF79/DwXkDCEmIOKVclnvpI=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-HDOeS/AfUS9OzUZlFK7y9DGsvUQkWJxjmqLPiRvHyto=' 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-eBdVnQcHv+vvc4PWpmVAV5ydnvlavrvmLu7/gwbmRUE=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-HDOeS/AfUS9OzUZlFK7y9DGsvUQkWJxjmqLPiRvHyto=' 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Wild Workspace</title>
 <meta name="description" content="Wild Workspace — личное пространство для задач, привычек, событий и маленьких побед.">
 <meta name="theme-color" content="#0e1411">
@@ -1978,7 +1978,7 @@ const ACTIVITY_KEY="wild-workspace-activity-v1",LAST_SUCCESSFUL_SYNC_KEY="wild-w
 let undoState=null,undoTimer=null;
 function getActivity(){try{const x=JSON.parse(localStorage.getItem(ACTIVITY_KEY)||"[]");return Array.isArray(x)?x:[]}catch(e){return []}}
 function activityWhen(v){const d=new Date(v);return Number.isNaN(d.getTime())?"":d.toLocaleString("ru-RU",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
-function activityListMarkup(){const rows=getActivity().slice(0,8);return rows.length?rows.map(x=>`<div class="activity-row"><span class="activity-icon ${esc(x.type||"note")}">${({sync:"☁", "sync-error":"!", backup:"↓",export:"↗",block:"▦",import:"↥",merge:"⇄","cloud-download":"↓","cloud-upload":"↑",undo:"↶",delete:"×",focus:"◷",pause:"☕"}[x.type]||"·")}</span><span class="activity-message"><b>${esc(x.message||"Действие")}</b><small>${activityWhen(x.at)}</small></span></div>`).join(""):`<div class="activity-empty"><span>🐈‍⬛</span><span>Пока тихо. Здесь появятся синхронизации, резервные копии и восстановленные действия.</span></div>`}
+function activityListMarkup(){const rows=getActivity().slice(0,8);return rows.length?rows.map(x=>`<div class="activity-row"><span class="activity-icon ${esc(x.type||"note")}">${({sync:"☁", "sync-error":"!", backup:"↓",export:"↗",block:"▦",import:"↥",merge:"⇄","cloud-download":"↓","cloud-upload":"↑",undo:"↶",delete:"×",skip:"↷",focus:"◷",pause:"☕"}[x.type]||"·")}</span><span class="activity-message"><b>${esc(x.message||"Действие")}</b><small>${activityWhen(x.at)}</small></span></div>`).join(""):`<div class="activity-empty"><span>🐈‍⬛</span><span>Пока тихо. Здесь появятся синхронизации, резервные копии и восстановленные действия.</span></div>`}
 function lastActivityFor(types){return getActivity().find(x=>types.includes(x.type))||null}
 function historySummaryText(types,emptyText){const x=lastActivityFor(types);return x?`${activityWhen(x.at)} · ${x.message}`:emptyText}
 function lastCloudSyncSummary(){let stamp="";try{stamp=localStorage.getItem(LAST_SUCCESSFUL_SYNC_KEY)||""}catch(e){}const error=lastActivityFor(["sync-error"]);if(error&&(!stamp||parseSyncTimestamp(error.at)>parseSyncTimestamp(stamp)))return `${activityWhen(error.at)} · ${error.message}`;return stamp?`${activityWhen(stamp)} · Синхронизировано`:"Пока не синхронизировали"}
@@ -2066,7 +2066,7 @@ function showT(id){const x=T.find(y=>String(y.id)===String(id));if(!x)return;
 openM(`<span class="chip" style="background:${BL[x.b].c};color:#101514">${esc(BL[x.b].n)}</span><h3 style="margin-top:10px">${esc(x.t)}</h3>`
 +kv("Статус",SC(x.s)[1])+kv("Запланировано на",taskPlanDate(x)?dlong(pd(taskPlanDate(x))):"—")+kv("Дедлайн",taskDeadlineDate(x)?dlong(pd(taskDeadlineDate(x)))+" "+(x.s==="done"?"":chip(taskDeadlineDate(x))):"—")+kv("Плановый период",taskHasDate(x)?fmt(pd(taskPlanDate(x)||taskDeadlineDate(x)),{day:"numeric",month:"long"})+" — "+fmt(pd(taskDeadlineDate(x)||taskPlanDate(x)),{day:"numeric",month:"long"}):"—")+kv("Время",esc(x.time))+kv("Оценка",x.h+" ч")+kv("Важность",`<span class="chip pr${priority(x)}">${PN[x.p]}</span>`)+kv("Проект / направление",esc(x.sub))
 +kv("Описание",esc(x.desc).replace(/\n/g,"<br>"))+subtaskMarkup(x,999)+kv("Вложения",attachmentRows(x.attachments||[],false))
-+`<div class="act">${x.s!=="done"?`<button class="btn n" data-complete-task="${x.id}"><span class="i">check_circle</span> Выполнено!</button>`:""}${x.s==="done"?`<button class="btn n t" data-restore-task="${x.id}"><span class="i">undo</span> Вернуть в задачи</button>`:""}<button class="btn n d" data-delt="${x.id}">Удалить</button><button class="btn n o" data-edt="${x.id}">Редактировать</button><button class="btn n" data-close>Готово</button></div>`)}
++`<div class="act">${x.s!=="done"?`<button class="btn n" data-complete-task="${x.id}"><span class="i">check_circle</span> Выполнено!</button>`:""}${x.s==="done"?`<button class="btn n t" data-restore-task="${x.id}"><span class="i">undo</span> Вернуть в задачи</button>`:""}${x.s!=="done"&&normalizeTaskRepeatRule(x.repeatRule,taskPlanDate(x)||taskDeadlineDate(x))?`<button class="btn n t" data-skip-repeat="${esc(x.id)}"><span class="i">skip_next</span> Пропустить</button>`:""}<button class="btn n d" data-delt="${x.id}">Удалить</button><button class="btn n o" data-edt="${x.id}">Редактировать</button><button class="btn n" data-close>Готово</button></div>`)}
 function showE(id,od){const e=E.find(y=>sameId(y.id,id));if(!e)return;const d=pd(od||e.date),lt=T.filter(x=>sameId(x.ev,id));
 const span=eventSpanDays(e),eventEnd=addD(d,span);openM(`<span class="chip" style="background:${eventColor(e)};color:${eventTextColor(e)}">${ET[e.k].n}</span><h3 style="margin-top:10px">${esc(e.t)}</h3>`
 +kv("Когда",dlong(d)+(span?" — "+dlong(eventEnd):"")+", "+(e.allDay?"весь день":e.a+"–"+e.z))+kv("Повтор",recTxt(e))+kv("Место",esc(e.p))+kv("Длительность",e.allDay?"Весь день":eventTotalDuration(e).toFixed(1).replace(".0","")+" ч")
@@ -2198,6 +2198,44 @@ function launchWEasterEgg(anchor){const r=anchor.getBoundingClientRect();if(matc
 const CAT_QUOTES=["Мяу. Ещё одна маленькая победа! 🐾","Я убрал её в архив. Ты молодец.","Киберкот одобряет: шаг за шагом! ✨","Пауза тоже часть пути. Не забывай отдыхать.","W-режим активирован. Продолжаем без спешки."];let CAT_QUOTE_INDEX=0;
 function catTalk(){const seasonal=SET.festival==="halloween"?(SET.locale==="en"?["Boo! Even tiny steps count. 🎃","The cybercat says: no task is scarier than it looks. 🦇","A little magic, one checkbox at a time. ✨"]:["Бу! Даже маленькие шаги считаются. 🎃","Киберкот напоминает: ни одна задача не страшнее, чем кажется. 🦇","Немного магии и по одной галочке за раз. ✨"]):SET.festival==="christmas"?(SET.locale==="en"?["Purr-y Christmas! You deserve a cozy break. 🎄","One little step, one little star. ✨","The cybercat left a tiny gift: you are doing well. 🎁"]:["Мур-рождество! Ты заслужил уютную паузу. 🎄","Один маленький шаг — одна маленькая звёздочка. ✨","Киберкот оставил подарок: у тебя получается. 🎁"]):null;const list=seasonal||CAT_QUOTES,q=list[CAT_QUOTE_INDEX%list.length];CAT_QUOTE_INDEX++;toast(q)}
 function launchCatSweep(anchor,done){if(!anchor||window.matchMedia("(prefers-reduced-motion: reduce)").matches){done();return}const row=anchor.closest(".row,.tk,.overdue-item,.overdue-card,.md")||anchor;const r=row.getBoundingClientRect();const targetX=Math.max(18,Math.min(window.innerWidth-118,r.left+Math.min(34,Math.max(12,r.width*.12))));const targetY=Math.max(8,Math.min(window.innerHeight-70,r.top+r.height/2-33));const cat=document.createElement("div");cat.className="cyber-cat-sweep";cat.style.setProperty("--reach-left",targetX+"px");cat.style.top=targetY+"px";cat.innerHTML='<span class="cat-arm" aria-hidden="true"></span><span class="cat-paw" role="img" aria-label="Лапка киберкота тянется к задаче"><i></i><i></i><i></i><i></i><b></b></span><span class="cat-body" aria-hidden="true">🐈‍⬛</span><span class="cat-spark" aria-hidden="true">✦</span>';document.body.appendChild(cat);if(!row.classList.contains("md"))row.classList.add("task-sweeping");setTimeout(()=>{cat.remove();done()},980)}
+async function skipRepeatedTask(id){
+ const taskId=String(id),current=T.find(item=>sameId(item.id,taskId));
+ if(!current||current.s==="done")return;
+ if(TASK_SAVE_BUSY||COMPLETING_TASK_IDS.has(taskId))return;
+ const rule=normalizeTaskRepeatRule(current.repeatRule,taskPlanDate(current)||taskDeadlineDate(current));
+ if(!rule)return toast("У этой задачи нет активного повторения.");
+ COMPLETING_TASK_IDS.add(taskId);
+ const before=deepCloneData(T),skipped=deepCloneData(current),skippedAt=new Date().toISOString();
+ try{
+  const next=prepareNextRepeatedTask(current,skippedAt);
+  if(next.error){toast("Не удалось пропустить повторение: "+next.error);return}
+  if(!next.consumeRule||!next.task){toast("Не удалось подготовить следующую задачу. Текущая задача сохранена.");return}
+  T=T.filter(item=>!sameId(item.id,taskId));
+  if(next.created)T.push(next.task);
+  if(!save()){
+   T=before;
+   toast("Не удалось сохранить пропуск. Текущая задача не удалена.");
+   return;
+  }
+  closeM();all();
+  recordActivity("skip",`Пропущено повторение задачи «${skipped.t}»`);
+  toast("Повторение пропущено. Следующая задача уже в плане 🐾");
+  const physicalAttachments=(skipped.attachments||[]).filter(attachment=>attachmentKind(attachment)!=="link");
+  if(physicalAttachments.length){
+   let cloudSaved=false;
+   if(AUTH?.user&&CLOUD.enabled){try{await cloudSave();cloudSaved=true}catch(err){console.warn("Skip repeat cloud sync:",err)}}
+   for(const attachment of physicalAttachments){
+    try{await cleanupAttachment(attachment,{cloud:cloudSaved||!attachment.storagePath||!AUTH?.user||!CLOUD.enabled})}
+    catch(err){console.warn("Skipped task attachment cleanup:",err)}
+   }
+   scheduleAttachmentGarbageCollection(!!AUTH?.user&&CLOUD.syncState==="synced");
+  }
+ }catch(err){
+  T=before;
+  console.warn("Wild Workspace skip repeated task:",err);
+  toast(err?.message||"Не удалось пропустить повторение");
+ }finally{COMPLETING_TASK_IDS.delete(taskId)}
+}
 function completeTaskWithCat(x,anchor,opts={}){
  if(!x||x.s==="done")return;
  const id=String(x.id);if(COMPLETING_TASK_IDS.has(id))return;
@@ -2870,6 +2908,8 @@ if(a=g("[data-edit-one]")){const [id,occurrence]=a.dataset.editOne.split("|"),x=
 if(a=g("[data-edit-all]")){const [id,occurrence]=a.dataset.editAll.split("|"),x=E.find(y=>sameId(y.id,id));if(!x){closeM();return}formE(x,null,{scope:"all",occurrence});return}
 if(a=g("[data-savet]")){saveT(a.dataset.savet);return}
 if(a=g("[data-savee]")){saveE(a.dataset.savee,a.dataset.eventEditScope,a.dataset.eventOccurrence);return}
+if(a=g("[data-skip-repeat]")){const x=T.find(y=>sameId(y.id,a.dataset.skipRepeat));if(!x||x.s==="done"||!normalizeTaskRepeatRule(x.repeatRule,taskPlanDate(x)||taskDeadlineDate(x))){closeM();return}openM(`<div class="modal-eyebrow"><span class="i">skip_next</span> ПОВТОРЯЮЩАЯСЯ ЗАДАЧА</div><h3>Пропустить это повторение?</h3><p class="modal-hint">${esc(x.t)}</p><p class="modal-hint">Текущий экземпляр исчезнет без отметки «Выполнено». Следующая задача появится по исходному расписанию. Уже выполненные задачи останутся в архиве.</p><div class="act"><button type="button" class="btn n o" data-close>Оставить задачу</button><button type="button" class="btn n t" data-confirm-skip-repeat="${esc(x.id)}">Пропустить</button></div>`);return}
+if(a=g("[data-confirm-skip-repeat]")){skipRepeatedTask(a.dataset.confirmSkipRepeat);return}
 if(a=g("[data-delt]")){const x=T.find(y=>sameId(y.id,a.dataset.delt));if(!x){closeM();return}openM(`<h3>Удалить задачу?</h3><p style="color:var(--tx2)">${esc(x.t)}</p><div class="act"><button class="btn n o" data-close>Отмена</button><button class="btn n d" data-delc="${x.id}">Удалить</button></div>`);return}
 if(a=g("[data-delc]")){const old=T.find(y=>sameId(y.id,a.dataset.delc));armUndoDelete("Задача удалена",old?(old.attachments||[]):[]);T=T.filter(y=>!sameId(y.id,a.dataset.delc));save();sealUndoDelete();closeM();all();return}
 if(a=g("[data-dele]")){const [id,rawDate]=a.dataset.dele.split("|"),x=E.find(y=>sameId(y.id,id)),od=validISODate(rawDate)?rawDate:x?.date;if(!x)return closeM();const isRecurring=x.rec!=="none";openM(`<h3>Удалить мероприятие?</h3><p class="modal-hint">${esc(x.t)} · ${fmt(pd(od),{day:"numeric",month:"long",year:"numeric"})}</p><div class="act"><button type="button" class="btn n o" data-close>Отмена</button>${isRecurring?`<button type="button" class="btn n d" data-del1="${id}|${od}">Только это</button><button type="button" class="btn n d" data-delfuture="${id}|${od}">Это и следующие</button><button type="button" class="btn n d" data-delall="${id}">Всю серию</button>`:`<button type="button" class="btn n d" data-delall="${id}">Удалить</button>`}</div>`);return}
