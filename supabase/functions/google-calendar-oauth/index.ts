@@ -172,7 +172,7 @@ async function getOAuthStatus(req: Request) {
 
   const { data, error } = await admin
     .from("google_calendar_connections")
-    .select("google_email, connected_at, last_synced_at, refresh_token_ciphertext, refresh_token_iv")
+    .select("google_email, connected_at, last_synced_at, last_sync_error, time_zone, refresh_token_ciphertext, refresh_token_iv")
     .eq("user_id", userData.user.id)
     .maybeSingle();
 
@@ -187,6 +187,8 @@ async function getOAuthStatus(req: Request) {
     google_email: connected ? data.google_email : null,
     connected_at: connected ? data.connected_at : null,
     last_synced_at: connected ? data.last_synced_at : null,
+    last_sync_error: connected ? data.last_sync_error : null,
+    time_zone: connected ? data.time_zone : null,
   });
 }
 
