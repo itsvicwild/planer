@@ -24,11 +24,27 @@ function json(data: unknown, status = 200, extraHeaders: Record<string, string> 
   });
 }
 
+function encodeHtmlText(value: string) {
+  return Array.from(escapeHtml(value), (character) => {
+    const codePoint = character.codePointAt(0) ?? 0;
+    return codePoint > 127 ? `&#${codePoint};` : character;
+  }).join("");
+}
+
 function page(title: string, message: string, status = 200) {
-  const html = `<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><style>body{font:16px system-ui,sans-serif;background:#101713;color:#e2ebe5;min-height:100vh;display:grid;place-items:center;margin:0;padding:24px;box-sizing:border-box}.card{max-width:480px;background:#1b2620;border:1px solid #35463c;border-radius:24px;padding:28px}a{color:#9ce8c9}</style><main class="card"><h1>${title}</h1><p>${message}</p><p><a href="${APP_RETURN_URL}">Вернуться в Planer</a></p></main></html>`;
+  // Emit only ASCII bytes in the document. Numeric entities preserve Russian
+  // text even if an intermediary mishandles the UTF-8 response encoding.
+  const safeTitle = encodeHtmlText(title);
+  const safeMessage = encodeHtmlText(message);
+  const returnLabel = encodeHtmlText("Вернуться в Planer");
+  const html = `<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${safeTitle}</title><style>body{font:16px system-ui,sans-serif;background:#101713;color:#e2ebe5;min-height:100vh;display:grid;place-items:center;margin:0;padding:24px;box-sizing:border-box}.card{max-width:480px;background:#1b2620;border:1px solid #35463c;border-radius:24px;padding:28px}a{color:#9ce8c9}</style></head><body><main class="card"><h1>${safeTitle}</h1><p>${safeMessage}</p><p><a href="${APP_RETURN_URL}">${returnLabel}</a></p></main></body></html>`;
   return new Response(html, {
     status,
-    headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" },
+    headers: {
+      "Content-Type": "text/html; charset=utf-8",
+      "Cache-Control": "no-store",
+      "X-Content-Type-Options": "nosniff",
+    },
   });
 }
 
@@ -328,7 +344,27 @@ async function finishOAuth(url: URL) {
         },
         body: JSON.stringify({ summary: "Planer" }),
       });
-      if (!calendarResponse.ok) throw new Error("Could not create the Planer calendar in Google");
+      if (!calendarResponse.ok) {
+        const responseText = await calendarResponse.text();
+        let responseBody: { error?: { status?: string; message?: string; errors?: Array<{ reason?: string }> } } = {};
+        try { responseBody = JSON.parse(responseText); } catch { /* keep the HTTP status as the diagnostic */ }
+        const googleError = responseBody.error;
+        const googleReason = String(googleError?.status ?? googleError?.errors?.[0]?.reason ?? "UNKNOWN").slice(0, 100);
+        const googleMessage = String(googleError?.message ?? "Google Calendar API did not provide an error description").slice(0, 500);
+        console.error("Google Calendar calendar creation failed:", JSON.stringify({
+          http_status: calendarResponse.status,
+          error_reason: googleReason,
+          error_message: googleMessage,
+        }));
+        const hint = calendarResponse.status === 403
+          ? "Проверь, что Google Calendar API включён именно в том Google Cloud проекте, которому принадлежит этот OAuth Client."
+          : "Проверь настройки Google Calendar API и повтори подключение.";
+        return page(
+          "Не удалось создать календарь Planer",
+          `Google Calendar API вернул HTTP ${calendarResponse.status} (${googleReason}). ${googleMessage}. ${hint}`,
+          200,
+        );
+      }
       const calendar = await calendarResponse.json();
       calendarId = calendar.id;
       if (!calendarId) throw new Error("Google did not return a calendar ID");
