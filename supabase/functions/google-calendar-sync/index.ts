@@ -1,6 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const APP_ORIGIN = "https://itsvicwild.github.io";
+const SYNC_BATCH_SIZE = 25;
 const corsHeaders = {
   "Access-Control-Allow-Origin": APP_ORIGIN,
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -403,7 +404,19 @@ async function syncCalendar(req: Request) {
 
     // Avoid refreshing the Google token for task/settings saves that did not change events.
     if (!pendingEvents.length && !staleMappings.length) {
-      const syncedAt = new Date().toISOString();
+      const hasMore = hasMorePending || staleMappings.length > staleBatch.length;
+    if (hasMore) {
+      const partialAt = new Date().toISOString();
+      const { error: partialError } = await admin
+        .from("google_calendar_connections")
+        .update({ last_sync_error: null, time_zone: timeZone, updated_at: partialAt })
+        .eq("user_id", userId)
+        .eq("sync_lock_token", lockToken);
+      if (partialError) throw new Error("Could not save partial Google Calendar sync state");
+      return json({ ok: true, has_more: true, created, updated, unchanged, deleted });
+    }
+
+    const syncedAt = new Date().toISOString();
       const { error: noopFinishError } = await admin
         .from("google_calendar_connections")
         .update({
@@ -424,7 +437,8 @@ async function syncCalendar(req: Request) {
     );
     const accessToken = await refreshGoogleAccessToken(refreshToken);
 
-    for (const pending of pendingEvents) {
+    const pendingBatch = pendingEvents.slice(0, SYNC_BATCH_SIZE);
+    for (const pending of pendingBatch) {
       const { event, resource, fingerprint, googleId, existing } = pending;
       try {
         if (existing) {
@@ -468,7 +482,9 @@ async function syncCalendar(req: Request) {
 
     // Only mapped events absent from the authoritative Planer E array are removed.
     // Tasks, deadlines, holidays outside E, and Google-created events are untouched.
-    for (const [plannerId, mapped] of staleMappings) {
+    const hasMorePending = pendingEvents.length > pendingBatch.length;
+    const staleBatch = hasMorePending ? [] : staleMappings.slice(0, Math.max(0, SYNC_BATCH_SIZE - pendingBatch.length));
+    for (const [plannerId, mapped] of staleBatch) {
       try {
         await googleRequest(accessToken, connection.calendar_id, "DELETE", mapped.googleEventId);
       } catch (error) {
