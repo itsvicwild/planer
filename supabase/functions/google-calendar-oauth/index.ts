@@ -147,7 +147,7 @@ async function getOAuthStatus(req: Request) {
   if (origin !== APP_ORIGIN) return json({ error: "Origin not allowed" }, 403);
 
   const authorization = req.headers.get("authorization") ?? "";
-  const match = authorization.match(/^Bearer\\s+(.+)$/i);
+  const match = authorization.match(/^Bearer\s+(.+)$/i);
   if (!match) return json({ error: "Authentication required" }, 401);
 
   const admin = getAdminClient();
