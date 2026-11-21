@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "wild-workspace-pwa-";
-const CACHE_NAME = CACHE_PREFIX + "v5.2.18";
+const CACHE_NAME = CACHE_PREFIX + "v5.2.19";
 const scopeUrl = self.registration.scope;
 const asset = (path) => new URL(path, scopeUrl).href;
 const CORE_ASSETS = [
