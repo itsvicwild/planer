@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-UhFdZpdEorqGq6BRxPWhw3kdIGqqKZsCBGxordVGhOU=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-HDOeS/AfUS9OzUZlFK7y9DGsvUQkWJxjmqLPiRvHyto=' 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-M4RQkMIOOU2HDq/r3nwX2OeEwQiAtGf75SGqg6t+4a4=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-HDOeS/AfUS9OzUZlFK7y9DGsvUQkWJxjmqLPiRvHyto=' 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Wild Workspace</title>
 <meta name="description" content="Wild Workspace — личное пространство для задач, привычек, событий и маленьких побед.">
 <meta name="theme-color" content="#0e1411">
@@ -2468,6 +2468,8 @@ function ics(){
 
 function dl(name,text,type){try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.appendChild(a);a.click();a.remove();return true}catch(e){toast("Скачивание здесь недоступно");return false}}
 
+const GOOGLE_CALENDAR_ALLOWED_EMAIL = "itsvicwild@gmail.com";
+function canUseGoogleCalendar(){return !CLOUD.authRequired&&String(AUTH?.user?.email||"").trim().toLowerCase()===GOOGLE_CALENDAR_ALLOWED_EMAIL}
 let GOOGLE_CALENDAR_UI={userId:null,loading:false,loaded:false,connected:false,email:"",error:false,syncing:false,lastSyncedAt:null,syncError:"",timeZone:"",syncProgress:""};
 function googleCalendarBodyMarkup(){
  const en=SET.locale==="en";
@@ -2485,7 +2487,7 @@ function googleCalendarBodyMarkup(){
 function renderGoogleCalendarBody(){const node=$("googleCalendarBody");if(node)node.innerHTML=googleCalendarBodyMarkup()}
 async function loadGoogleCalendarStatus(force=false){
  const userId=AUTH?.user?.id;
- if(!userId||CLOUD.authRequired){GOOGLE_CALENDAR_UI={userId:null,loading:false,loaded:false,connected:false,email:"",error:false,syncing:false,lastSyncedAt:null,syncError:"",timeZone:"",syncProgress:""};renderGoogleCalendarBody();return}
+ if(!canUseGoogleCalendar()||!userId){GOOGLE_CALENDAR_UI={userId:null,loading:false,loaded:false,connected:false,email:"",error:false,syncing:false,lastSyncedAt:null,syncError:"",timeZone:"",syncProgress:""};renderGoogleCalendarBody();return}
  if(GOOGLE_CALENDAR_UI.userId!==userId)GOOGLE_CALENDAR_UI={userId,loading:false,loaded:false,connected:false,email:"",error:false,syncing:false,lastSyncedAt:null,syncError:"",timeZone:"",syncProgress:""};
  if(GOOGLE_CALENDAR_UI.loading||(!force&&GOOGLE_CALENDAR_UI.loaded))return;
  GOOGLE_CALENDAR_UI.loading=true;GOOGLE_CALENDAR_UI.error=false;renderGoogleCalendarBody();
@@ -2504,7 +2506,7 @@ async function loadGoogleCalendarStatus(force=false){
 let GOOGLE_CALENDAR_SYNC_PROMISE=null;
 async function requestGoogleCalendarSync(options={}){
  const userId=AUTH?.user?.id;
- if(!userId||CLOUD.authRequired||!navigator.onLine)return null;
+ if(!canUseGoogleCalendar()||!userId||!navigator.onLine)return null;
  if(GOOGLE_CALENDAR_SYNC_PROMISE)return GOOGLE_CALENDAR_SYNC_PROMISE;
  if(!GOOGLE_CALENDAR_UI.loaded||GOOGLE_CALENDAR_UI.userId!==userId)await loadGoogleCalendarStatus(true);
  if(AUTH?.user?.id!==userId||!GOOGLE_CALENDAR_UI.connected)return null;
@@ -2539,6 +2541,7 @@ async function requestGoogleCalendarSync(options={}){
 }
 
 async function startGoogleCalendarConnection(button){
+ if(!canUseGoogleCalendar())return;
  if(!AUTH?.user||CLOUD.authRequired){handleCloud("auth");return}
  if(button?.disabled)return;
  const old=button?.innerHTML;
@@ -2555,6 +2558,7 @@ async function startGoogleCalendarConnection(button){
  }
 }
 async function disconnectGoogleCalendar(button){
+ if(!canUseGoogleCalendar())return;
  if(!AUTH?.user||CLOUD.authRequired){handleCloud("auth");return}
  const en=SET.locale==="en";
  const question=en?"Disconnect Google Calendar from Planer? Existing events in Google will remain, and automatic syncing will stop.":"Отключить Google Calendar от Planer? Уже созданные события останутся в Google, автоматическая синхронизация остановится.";
@@ -2576,10 +2580,10 @@ async function disconnectGoogleCalendar(button){
 
 function renderSet(){const sw=Object.entries(ACC).map(([k,a])=>`<button type="button" data-acc="${k}" class="${k===SET.acc?"on":""}" style="--c:${a[0]}" title="${a[4]}" aria-label="${a[4]}" aria-pressed="${k===SET.acc}"></button>`).join("");
 const blocks=orderedBlockEntries().map(([k,b],index)=>{const upLabel=SET.locale==="en"?"Move block up":"Переместить блок выше",downLabel=SET.locale==="en"?"Move block down":"Переместить блок ниже";return `<div class="block-admin-row"><div class="block-order-controls"><button type="button" class="bt2 block-order-btn" data-moveblock="${k}" data-direction="-1" title="${upLabel}" aria-label="${upLabel}: ${esc(b.n)}" ${index===0?"disabled":""}><span class="i">keyboard_arrow_up</span></button><button type="button" class="bt2 block-order-btn" data-moveblock="${k}" data-direction="1" title="${downLabel}" aria-label="${downLabel}: ${esc(b.n)}" ${index===Object.keys(BL).length-1?"disabled":""}><span class="i">keyboard_arrow_down</span></button></div><span class="block-swatch" style="--c:${b.c}"></span><div class="nm"><b>${esc(b.n)}</b><small>${T.filter(x=>x.b===k).length} задач</small></div><button type="button" class="bt2" data-editblock="${k}"><span class="i">edit</span> Изменить</button><button type="button" class="bt2 danger-text" data-delblock="${k}" title="Удалить блок" aria-label="Удалить блок ${esc(b.n)}"><span class="i">delete</span></button></div>`}).join("");
-const needsLogin=!!CLOUD.authRequired,signed=!!(AUTH&&AUTH.user&&!needsLogin);const dot=CLOUD.syncState==="synced"?"is-on":CLOUD.syncState==="error"||needsLogin?"is-error":CLOUD.syncState==="pending"||CLOUD.syncState==="offline"||CLOUD.syncState==="choice"?"is-pending":"";const cloudStatus=needsLogin?`<span class="status-dot is-error"></span> Требуется повторный вход · локальные данные сохранены`:signed?`<span class="status-dot ${dot}"></span> Аккаунт: ${esc(AUTH.user.email||"подключён")} · ${esc(cloudSyncStateLabel())}`:`<span class="status-dot"></span> Аккаунт не подключён`;
+const needsLogin=!!CLOUD.authRequired,signed=!!(AUTH&&AUTH.user&&!needsLogin);const canShowGoogleCalendar=signed&&canUseGoogleCalendar();const dot=CLOUD.syncState==="synced"?"is-on":CLOUD.syncState==="error"||needsLogin?"is-error":CLOUD.syncState==="pending"||CLOUD.syncState==="offline"||CLOUD.syncState==="choice"?"is-pending":"";const cloudStatus=needsLogin?`<span class="status-dot is-error"></span> Требуется повторный вход · локальные данные сохранены`:signed?`<span class="status-dot ${dot}"></span> Аккаунт: ${esc(AUTH.user.email||"подключён")} · ${esc(cloudSyncStateLabel())}`:`<span class="status-dot"></span> Аккаунт не подключён`;
 $("pg-set").innerHTML=`<div class="profile-layout">
 <section class="card set profile-identity"><h2><span class="i f">person</span>Профиль и аккаунт</h2><div class="profile-identity-grid"><div class="profile-name-area"><div class="profile-field-title">Как к вам обращаться</div><p class="settings-copy">Это имя появится в приветствии на главной.</p><input class="nu profile-name-input" type="text" maxlength="30" data-name placeholder="Имя" value="${esc(SET.name)}" autocomplete="given-name" aria-label="Как к вам обращаться"></div><div class="profile-account-area"><div class="cloud-status" role="status">${cloudStatus}</div>${needsLogin?`<p class="settings-copy profile-sync-copy">${esc(cloudSyncStateDescription())}</p><div class="act"><button type="button" class="btn n t" data-cloud="auth"><span class="i">login</span> Войти снова</button><button type="button" class="btn n d" data-cloud="logout">Отключить аккаунт</button></div>`:signed?`<p class="settings-copy profile-sync-copy">${esc(cloudSyncStateDescription())}</p><div class="act"><button type="button" class="btn n o" data-cloud="sync"><span class="i">sync</span> Синхронизировать сейчас</button><button type="button" class="btn n d" data-cloud="logout">Выйти</button></div>`:`<p class="settings-copy">Войди, чтобы пользоваться одним планером на нескольких устройствах.</p><div class="act profile-account-actions"><button type="button" class="btn n t" data-cloud="auth"><span class="i">account_circle</span> Создать аккаунт или войти</button></div><p class="settings-copy profile-email-note">При включённом подтверждении email мы пришлём письмо для активации.</p>`}</div></div></section>
-<section class="card set profile-google-calendar"><h2><span class="i f">calendar_month</span>Google Calendar</h2><p class="settings-copy">${SET.locale==="en"?"Connect Google to receive Planer event notifications in your calendar. Tasks and deadlines will not be exported.":"Подключи Google, чтобы получать уведомления о мероприятиях Planer в своём календаре. Задачи и дедлайны не экспортируются."}</p><div id="googleCalendarBody"></div></section>
+${canShowGoogleCalendar?`<section class="card set profile-google-calendar"><h2><span class="i f">calendar_month</span>Google Calendar</h2><p class="settings-copy">${SET.locale==="en"?"Connect Google to receive Planer event notifications in your calendar. Tasks and deadlines will not be exported.":"Подключи Google, чтобы получать уведомления о мероприятиях Planer в своём календаре. Задачи и дедлайны не экспортируются."}</p><div id="googleCalendarBody"></div></section>`:""}
 <section class="card set profile-habits"><div class="profile-habits-head"><div><h2><span class="i f">repeat</span>Привычки</h2><p class="settings-copy">Небольшие повторения без серий и штрафов. Отметки на главной останутся на месте.</p></div><button type="button" class="btn n" data-addhabit><span class="i">add</span> Добавить привычку</button></div><div class="profile-habits-list">${H.length?H.map(h=>`<div class="profile-habit-row"><div class="nm"><b>${esc(h.t)}</b><small>Цель: ${Math.max(1,Math.min(7,Math.floor(Number(h.goal)||1)))} раз в неделю</small></div><button type="button" class="bt2" data-edit-habit="${esc(h.id)}"><span class="i">tune</span> Настроить</button></div>`).join(""):`<div class="habit-empty"><span class="empty-cat-face">🐈‍⬛</span><span>Пока нет привычек. Начни с небольшого действия, которое приятно повторять.</span></div>`}</div></section>
 <section class="card set profile-blocks"><h2><span class="i f">widgets</span>Мои блоки</h2><p class="settings-copy">Настрой блоки под свою жизнь. Стрелки меняют порядок полок в Библиотеке и блоков в разделе Задачи. При удалении блока задачи можно перенести в другой, чтобы ничего не потерять.</p><div id="blockAdmin">${blocks}</div><div class="sr"><button type="button" class="btn n" data-addblock><span class="i">add</span> Добавить блок</button></div></section>
 <section class="card set profile-appearance"><h2><span class="i f">palette</span>Оформление</h2>
@@ -2600,7 +2604,7 @@ ${activitySectionMarkup()}
 <section class="card set profile-about"><h2><span class="i f">info</span>О приложении</h2><p class="app-about-copy"><strong>Wild Workspace</strong> — личное пространство для планов, задач и маленьких побед.</p><div class="sr"><div class="nm">Версия приложения<small>Текущая сборка интерфейса.</small></div><span class="app-version">v5.1</span></div></section>
 <footer class="settings-footer">by <strong>Victor Wild</strong> · <a href="mailto:itsvictorwild@gmail.com">itsvictorwild@gmail.com</a></footer></div>`;
 renderGoogleCalendarBody();
-if(signed&&!needsLogin)void loadGoogleCalendarStatus();else{GOOGLE_CALENDAR_UI={userId:null,loading:false,loaded:false,connected:false,email:"",error:false,syncing:false,lastSyncedAt:null,syncError:"",timeZone:"",syncProgress:""};renderGoogleCalendarBody()}}
+if(canShowGoogleCalendar)void loadGoogleCalendarStatus();else{GOOGLE_CALENDAR_UI={userId:null,loading:false,loaded:false,connected:false,email:"",error:false,syncing:false,lastSyncedAt:null,syncError:"",timeZone:"",syncProgress:""};renderGoogleCalendarBody()}}
 
 function closestBlockColor(hex){const rgb=v=>[1,3,5].map(i=>parseInt((v||"#86ecc9").slice(i,i+2),16)||0);const a=rgb(hex);return BLOCK_PALETTE.slice().sort((x,y)=>{const d=c=>rgb(c).reduce((n,v,i)=>n+(v-a[i])**2,0);return d(x)-d(y)})[0]}
 function formBlock(key){const b=key?BL[key]:null;SELECTED_BLOCK_COLOR=BLOCK_PALETTE.includes(b?.c)?b.c:closestBlockColor(b?.c);const palette=BLOCK_PALETTE.map(c=>`<button type="button" class="block-color-option ${c===SELECTED_BLOCK_COLOR?"on":""}" data-blockcolor="${c}" style="--c:${c}" title="${c}" aria-label="Выбрать цвет ${c}" aria-pressed="${c===SELECTED_BLOCK_COLOR}"></button>`).join("");openM(`<div class="modal-eyebrow"><span class="i">widgets</span> ПЕРСОНАЛИЗАЦИЯ</div><h3>${b?"Изменить блок":"Новый блок"}</h3><label class="fl">Название<input id="bf_name" maxlength="36" value="${esc(b?.n||"")}" placeholder="Например, Проекты"></label><div class="fl">Цвет блока · выбери один из 16 оттенков<div class="block-palette">${palette}</div></div><div class="act"><button type="button" class="btn n o" data-close>Отмена</button><button type="button" class="btn n" data-saveblock="${key||""}">Сохранить блок</button></div>`)}
