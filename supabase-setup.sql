@@ -51,3 +51,58 @@ create policy "ww attachments update own files" on storage.objects
 create policy "ww attachments delete own files" on storage.objects
   for delete to authenticated
   using (bucket_id = 'ww-attachments' and (storage.foldername(name))[1] = auth.uid()::text);
+
+
+-- Google Calendar integration: private server-side connection and event mappings.
+-- These tables are accessed only by the Supabase service role from Edge Functions.
+create table if not exists public.google_calendar_connections (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  google_sub text not null,
+  google_email text not null,
+  calendar_id text not null,
+  refresh_token_ciphertext text,
+  refresh_token_iv text,
+  connected_at timestamptz,
+  last_synced_at timestamptz,
+  last_sync_error text,
+  time_zone text,
+  sync_lock_token text,
+  sync_lock_until timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.google_calendar_connections
+  add column if not exists time_zone text,
+  add column if not exists sync_lock_token text,
+  add column if not exists sync_lock_until timestamptz;
+
+alter table public.google_calendar_connections enable row level security;
+revoke all on table public.google_calendar_connections from anon, authenticated;
+grant all on table public.google_calendar_connections to service_role;
+
+create table if not exists public.google_calendar_oauth_states (
+  state_hash text primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  expires_at timestamptz not null,
+  used_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+alter table public.google_calendar_oauth_states enable row level security;
+revoke all on table public.google_calendar_oauth_states from anon, authenticated;
+grant all on table public.google_calendar_oauth_states to service_role;
+
+create table if not exists public.google_calendar_event_map (
+  user_id uuid not null references auth.users(id) on delete cascade,
+  planner_event_id text not null,
+  google_event_id text not null,
+  fingerprint text not null,
+  updated_at timestamptz not null default now(),
+  primary key (user_id, planner_event_id),
+  unique (user_id, google_event_id)
+);
+
+alter table public.google_calendar_event_map enable row level security;
+revoke all on table public.google_calendar_event_map from anon, authenticated;
+grant all on table public.google_calendar_event_map to service_role;
