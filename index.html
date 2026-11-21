@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-af/LJEpgYRIDReyVf8C1miD+BBdkpd8SYsbzhn6WuRw=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-HDOeS/AfUS9OzUZlFK7y9DGsvUQkWJxjmqLPiRvHyto=' 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-yN4XtZP8IDhyCmemnVZafgUSBN+/6zmHMQI+XpfWfJQ=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-HDOeS/AfUS9OzUZlFK7y9DGsvUQkWJxjmqLPiRvHyto=' 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Wild Workspace</title>
 <meta name="description" content="Wild Workspace — личное пространство для задач, привычек, событий и маленьких побед.">
 <meta name="theme-color" content="#0e1411">
@@ -1534,6 +1534,38 @@ html{background:var(--bg)!important;color-scheme:light dark}
 #pg-library.page.on,#pg-library.page-enter{animation:none!important}
 @media(min-width:721px){.library-book-card-builtin[data-library-target="stats"],.library-book-card-builtin[data-library-target="profile"]{display:none!important}}
 @media(max-width:720px){.library-shelf{padding:16px 15px 13px}.library-shelf-heading h2{font-size:16px}.library-shelf-books{gap:10px}.library-book-card{flex:0 0 134px;width:134px;min-width:134px}.library-empty-card{flex:0 0 320px;width:320px;min-width:280px}}
+
+/* Continuous all-day event spans in month and week calendar views. */
+.ad{position:relative}
+.ad>div:not(.al):not(.ad-span-layer){padding-top:calc(2px + var(--span-lanes,0)*20px)}
+.ad>.ad-span-layer{position:absolute!important;left:var(--ad-label-width,52px);right:0;top:3px;display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr));grid-template-rows:repeat(var(--span-lanes),18px);gap:2px 0!important;padding:0 2px!important;margin:0!important;border:0!important;min-width:0!important;z-index:4;pointer-events:none;flex-direction:initial!important}
+.ad-span,.cm-span{appearance:none;display:flex;align-items:center;min-width:0;box-sizing:border-box;border:0;font:600 11px/1.2 "Roboto Flex",sans-serif;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:var(--c);cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.08);pointer-events:auto}
+.ad-span{height:18px;margin:0 1px;padding:1px 6px;border-radius:7px}
+.cm-span-layer{position:absolute;left:0;right:0;top:24px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-template-rows:repeat(var(--span-lanes),16px);gap:2px 6px;padding:0;z-index:4;pointer-events:none}
+.cm-span{height:16px;padding:0 5px;border-radius:7px;font-size:10.5px}
+.ad-span.continues-left,.cm-span.continues-left{border-top-left-radius:2px;border-bottom-left-radius:2px}
+.ad-span.continues-right,.cm-span.continues-right{border-top-right-radius:2px;border-bottom-right-radius:2px}
+.ad-span:focus-visible,.cm-span:focus-visible{outline:2px solid var(--tx);outline-offset:1px;z-index:5}
+.month-cal{grid-template-rows:24px repeat(var(--cal-weeks),minmax(0,1fr))}
+.month-cal .cm-week{position:relative;grid-column:1/-1;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;min-height:0;overflow:hidden}
+.month-cal .cm-week .cd{position:relative;min-height:118px;padding:26px 8px 8px!important}
+.month-cal .cm-week .cd>b{position:absolute;top:7px;left:8px}
+body.calendar-view-fixed .page#pg-cal .month-cal .cm-week .cd{padding-top:calc(26px + var(--span-lanes,0)*18px)!important}
+body.calendar-view-fixed .page#pg-cal .month-cal .cm-week .cd>b{top:7px;left:8px}
+@media(max-width:720px){
+ .ad{--ad-label-width:26px}
+ .ad>div:not(.al):not(.ad-span-layer){padding-top:calc(2px + var(--span-lanes,0)*20px)!important}
+ .ad>.ad-span-layer{left:26px;padding-inline:1px!important;grid-template-rows:repeat(var(--span-lanes),16px)}
+ .ad-span{height:16px;font-size:8.5px;line-height:1.1;padding:1px 3px;border-radius:5px}
+ .month-cal .cm-week{gap:2px}
+ .month-cal .cm-week .cd{min-height:64px;padding:22px 2px 4px!important}
+ .month-cal .cm-week .cd>b{top:4px;left:3px}
+ .cm-span-layer{top:20px;grid-template-rows:repeat(var(--span-lanes),13px);gap:2px}
+ .cm-span{height:13px;padding:0 2px;font-size:7.5px;border-radius:4px}
+ body.calendar-view-fixed .page#pg-cal .month-cal .cm-week .cd{padding-top:calc(22px + var(--span-lanes,0)*15px)!important}
+ body.calendar-view-fixed .page#pg-cal .month-cal .cm-week .cd>b{top:4px;left:3px}
+}
+
 </style>
 </head>
 <body>
@@ -2398,21 +2430,61 @@ let PG="home",BK="all",VW="list",HOME_VW=window.matchMedia("(max-width:720px)").
 let CV="week",CW=mon,DS0=7;const HH=48,pad2=n=>String(n).padStart(2,"0");
 function calTop(em,title){const wk=CV==="week";return `<div class="cn"><h3>${em} ${title}</h3><div class="seg" style="margin:0 8px 0 0"><button data-cv="month" class="${wk?"":"on"}">Месяц</button><button data-cv="week" class="${wk?"on":""}">Неделя</button></div><button class="ib" data-mv="-1" title="Раньше"><span class="i">chevron_left</span></button><button class="ib" data-mv="0" title="Сегодня"><span class="i">today</span></button><button class="ib" data-mv="1" title="Позже"><span class="i">chevron_right</span></button><button type="button" class="ib cal-add-plus" data-cal-add title="Добавить мероприятие" aria-label="Добавить мероприятие"><span class="i">add</span></button></div>`}
 const tkChip=(x,k)=>`<div class="ci tk2 ${x.s==="done"?"dn":""}" data-ot="${x.id}" style="--c:${BL[x.b]?.c||"var(--p)"}" title="${esc(x.t)} · ${taskDeadlineDate(x)?"дедлайн "+taskDeadlineDate(x):"план "+taskPlanDate(x)}">${taskDeadlineDate(x)===k&&taskPlanDate(x)!==k?"⌛":"⚑"} ${esc(x.t)}</div>`;
-function allDayColumn(d){const k=ds(d);const items=holOn(d).map(x=>`<div class="ci hl" data-oh="${x.id}">🎉 ${esc(x.t)}</div>`).concat(evOn(d).filter(e=>e.allDay).map(e=>`<div class="ci" data-oe="${e.id}" data-od="${e._occDate||k}" style="--c:${eventColor(e)}" title="${esc(e.t)}">${esc(e.t)}</div>`)).concat(T.filter(x=>(x.planDate||x.d)===k||x.d===k).map(x=>tkChip(x,k)));return items.slice(0,3).join("")+(items.length>3?`<button type="button" class="ci mr" data-day="${k}" aria-label="Показать ещё ${items.length-3} элементов">ещё ${items.length-3}</button>`:"")}
+function allDaySpanSegments(startDate,endDate){
+ const startKey=typeof startDate==="string"?startDate:ds(startDate),endKey=typeof endDate==="string"?endDate:ds(endDate),seen=new Map();
+ const rangeDays=Math.max(0,Math.round((pd(endKey)-pd(startKey))/864e5));
+ for(let offset=0;offset<=rangeDays;offset++){
+  const day=addD(pd(startKey),offset);
+  evOn(day).forEach(e=>{
+   if(!e.allDay||eventSpanDays(e)<1)return;
+   const occurrenceDate=validISODate(e._occDate)?e._occDate:e.date;
+   const occurrenceEnd=validISODate(e.endDate)?e.endDate:ds(addD(pd(occurrenceDate),eventSpanDays(e)));
+   if(occurrenceEnd<startKey||occurrenceDate>endKey)return;
+   const key=String(e.id)+"|"+occurrenceDate;
+   if(!seen.has(key))seen.set(key,{e,occurrenceDate,occurrenceEnd});
+  });
+ }
+ const candidates=Array.from(seen.values()).sort((a,b)=>a.occurrenceDate.localeCompare(b.occurrenceDate)||b.occurrenceEnd.localeCompare(a.occurrenceEnd)||String(a.e.t||"").localeCompare(String(b.e.t||"")));
+ const laneEnds=[];
+ return candidates.map(item=>{
+  const segmentStart=item.occurrenceDate<startKey?startKey:item.occurrenceDate;
+  const segmentEnd=item.occurrenceEnd>endKey?endKey:item.occurrenceEnd;
+  const firstCol=Math.max(0,Math.round((pd(segmentStart)-pd(startKey))/864e5));
+  const lastCol=Math.min(rangeDays,Math.round((pd(segmentEnd)-pd(startKey))/864e5));
+  let lane=laneEnds.findIndex(last=>last<firstCol);
+  if(lane<0){lane=laneEnds.length;laneEnds.push(lastCol)}else laneEnds[lane]=lastCol;
+  return {...item,firstCol,lastCol,lane,starts:item.occurrenceDate>=startKey,ends:item.occurrenceEnd<=endKey};
+ });
+}
+function allDaySpanMarkup(segments,kind){
+ const cls=kind==="month"?"cm-span":"ad-span";
+ return segments.map(segment=>{
+  const e=segment.e,prefix=e.k==="holiday"?"🎉 ":"",classes=[cls,!segment.starts?"continues-left":"",!segment.ends?"continues-right":""].filter(Boolean).join(" ");
+  return `<button type="button" class="${classes}" data-oe="${esc(e.id)}" data-od="${esc(segment.occurrenceDate)}" title="${esc(e.t)}" style="--c:${eventColor(e)};color:${eventTextColor(e)};grid-column:${segment.firstCol+1}/${segment.lastCol+2};grid-row:${segment.lane+1}">${prefix}${esc(e.t)}</button>`;
+ }).join("");
+}
+function allDayColumn(d){const k=ds(d);const items=holOn(d).map(x=>`<div class="ci hl" data-oh="${x.id}">🎉 ${esc(x.t)}</div>`).concat(evOn(d).filter(e=>e.allDay&&eventSpanDays(e)===0).map(e=>`<div class="ci" data-oe="${e.id}" data-od="${e._occDate||k}" style="--c:${eventColor(e)}" title="${esc(e.t)}">${esc(e.t)}</div>`)).concat(T.filter(x=>(x.planDate||x.d)===k||x.d===k).map(x=>tkChip(x,k)));return items.slice(0,3).join("")+(items.length>3?`<button type="button" class="ci mr" data-day="${k}" aria-label="Показать ещё ${items.length-3} элементов">ещё ${items.length-3}</button>`:"")}
 
 const calNote=`<div class="note"><span class="i" style="font-size:18px">info</span>Тёплым фоном отмечены дни без учёбы и работы. ⚑ — задачи со сроком, 🎉 — праздники.</div>`;
 function renderCal(){if(CV==="week")renderWeek();else renderMonth()}
-function renderMonth(){const y=CM.getFullYear(),m=CM.getMonth(),off=(new Date(y,m,1).getDay()+6)%7,cells=Math.ceil((off+new Date(y,m+1,0).getDate())/7)*7;
-let h=calTop(season(CM),fmt(CM,{month:"long",year:"numeric"}))+`<div class="cal" style="--cal-weeks:${cells/7}">`+DN.map(d=>`<div class="cw">${d}</div>`).join("");
-for(let i=0;i<cells;i++){const d=new Date(y,m,1-off+i),k=ds(d);
-const al=evOn(d).map(e=>`<div class="ci" data-oe="${e.id}" data-od="${e._occDate||k}" style="--c:${eventColor(e)}" title="${esc(e.t)}">${e.k==="holiday"?"🎉 ":e.allDay?"☀ ":e.a+" "}${esc(e.t)}</div>`).concat(T.filter(x=>(x.planDate||x.d)===k||x.d===k).map(x=>tkChip(x,k)));
-h+=`<div class="cd ${d.getMonth()!==m?"o":""} ${d.getTime()===today.getTime()?"t":""} ${isOff(d)?"off":""}" data-day="${k}"><b>${d.getDate()}</b>${holOn(d).map(x=>`<div class="ci hl" data-oh="${x.id}">🎉 ${esc(x.t)}</div>`).join("")}${al.slice(0,3).join("")}${al.length>3?`<div class="ci mr">ещё ${al.length-3}</div>`:""}</div>`}
+function renderMonth(){const y=CM.getFullYear(),m=CM.getMonth(),off=(new Date(y,m,1).getDay()+6)%7,cells=Math.ceil((off+new Date(y,m+1,0).getDate())/7)*7,weeks=cells/7;
+let h=calTop(season(CM),fmt(CM,{month:"long",year:"numeric"}))+`<div class="cal month-cal" style="--cal-weeks:${weeks}">`+DN.map(d=>`<div class="cw">${d}</div>`).join("");
+for(let week=0;week<weeks;week++){
+ const weekStart=new Date(y,m,1-off+week*7),weekEnd=addD(weekStart,6),spans=allDaySpanSegments(ds(weekStart),ds(weekEnd)),spanLanes=spans.reduce((max,x)=>Math.max(max,x.lane+1),0);
+ h+=`<div class="cm-week" style="--span-lanes:${spanLanes}">`;
+ for(let day=0;day<7;day++){
+  const d=addD(weekStart,day),k=ds(d),dayEvents=evOn(d).filter(e=>!(e.allDay&&eventSpanDays(e)>0)),al=dayEvents.map(e=>`<div class="ci" data-oe="${e.id}" data-od="${e._occDate||k}" style="--c:${eventColor(e)}" title="${esc(e.t)}">${e.k==="holiday"?"🎉 ":e.allDay?"☀ ":e.a+" "}${esc(e.t)}</div>`).concat(T.filter(x=>(x.planDate||x.d)===k||x.d===k).map(x=>tkChip(x,k)));
+  h+=`<div class="cd ${d.getMonth()!==m?"o":""} ${d.getTime()===today.getTime()?"t":""} ${isOff(d)?"off":""}" data-day="${k}"><b>${d.getDate()}</b>${holOn(d).map(x=>`<div class="ci hl" data-oh="${x.id}">🎉 ${esc(x.t)}</div>`).join("")}${al.slice(0,3).join("")}${al.length>3?`<div class="ci mr" data-day="${k}">ещё ${al.length-3}</div>`:""}</div>`;
+ }
+ if(spanLanes)h+=`<div class="cm-span-layer" style="--span-lanes:${spanLanes}">${allDaySpanMarkup(spans,"month")}</div>`;
+ h+=`</div>`;
+}
 $("pg-cal").innerHTML=h+`</div>`+calNote}
 function renderWeek(){const dd=Array.from({length:7},(_,i)=>addD(CW,i)),ev=dd.map(evOn);const a=0,z=24;DS0=a;
 const nw=new Date(),nh=nw.getHours()+nw.getMinutes()/60,tt=d=>d.getTime()===today.getTime(),off=i=>!ev[i].some(e=>e.k!=="holiday");
 let h=calTop(season(addD(CW,3)),fmt(CW,{day:"numeric",month:"short"})+" – "+fmt(addD(CW,6),{day:"numeric",month:"short",year:"numeric"}))+`<div class="wcard" id="wcard"><div class="sth"><div class="wk-h"><div></div>${dd.map((d,i)=>`<div class="wh ${tt(d)?"t":""}" data-day="${ds(d)}">${DN[i]}<b>${d.getDate()}</b></div>`).join("")}</div>`;
-h+=`<div class="ad"><div class="al">весь день</div>${dd.map((d,i)=>`<div class="">${allDayColumn(d)}</div>`).join("")}</div>`;
-h+=`</div><div class="wg"><div class="tcol">${Array.from({length:z-a},(_,i)=>`<div class="hr">${pad2(a+i)}:00</div>`).join("")}</div>${dd.map((d,i)=>{const timed=ev[i].filter(e=>!e.allDay).map((e,order)=>({e,order,start:hm(e.a),end:hm(e.z)})).sort((x,y)=>x.start-y.start||y.end-x.end),groups=[];let group=[],groupEnd=-Infinity;for(const item of timed){if(group.length&&item.start>=groupEnd){groups.push(group);group=[];groupEnd=-Infinity}group.push(item);groupEnd=Math.max(groupEnd,item.end)}if(group.length)groups.push(group);const pl=[];for(const cluster of groups){const lanes=[];const placed=cluster.map(item=>{let q=lanes.findIndex(end=>end<=item.start);if(q<0){q=lanes.length;lanes.push(item.end)}else lanes[q]=item.end;return{...item,q}}),L=Math.max(1,lanes.length);placed.forEach(item=>pl.push({...item,L}))}pl.sort((x,y)=>x.order-y.order);
+const spans=allDaySpanSegments(ds(CW),ds(addD(CW,6))),spanLanes=spans.reduce((max,x)=>Math.max(max,x.lane+1),0);
+h+=`<div class="ad" style="--span-lanes:${spanLanes}"><div class="al">весь день</div>${dd.map(d=>`<div>${allDayColumn(d)}</div>`).join("")}${spanLanes?`<div class="ad-span-layer" style="--span-lanes:${spanLanes}">${allDaySpanMarkup(spans,"week")}</div>`:""}</div>`;h+=`</div><div class="wg"><div class="tcol">${Array.from({length:z-a},(_,i)=>`<div class="hr">${pad2(a+i)}:00</div>`).join("")}</div>${dd.map((d,i)=>{const timed=ev[i].filter(e=>!e.allDay).map((e,order)=>({e,order,start:hm(e.a),end:hm(e.z)})).sort((x,y)=>x.start-y.start||y.end-x.end),groups=[];let group=[],groupEnd=-Infinity;for(const item of timed){if(group.length&&item.start>=groupEnd){groups.push(group);group=[];groupEnd=-Infinity}group.push(item);groupEnd=Math.max(groupEnd,item.end)}if(group.length)groups.push(group);const pl=[];for(const cluster of groups){const lanes=[];const placed=cluster.map(item=>{let q=lanes.findIndex(end=>end<=item.start);if(q<0){q=lanes.length;lanes.push(item.end)}else lanes[q]=item.end;return{...item,q}}),L=Math.max(1,lanes.length);placed.forEach(item=>pl.push({...item,L}))}pl.sort((x,y)=>x.order-y.order);
 return `<div class="wc" data-col="${ds(d)}" style="height:${(z-a)*HH}px">${pl.map(({e,q,L,start})=>`<div class="we" data-oe="${e.id}" data-od="${e._occDate||ds(d)}" style="--c:${eventColor(e)};color:${eventTextColor(e)};top:${(start-a)*HH}px;height:${Math.max(22,dur(e)*HH-2)}px;left:calc(${q*100/L}% + 1px);width:calc(${100/L}% - 3px)">${e.k==="holiday"?"🎉 ":""}${esc(e.t)}<small>${e.allDay?"Весь день":e.a+"–"+e.z}</small></div>`).join("")}${tt(d)&&nh>=a&&nh<z?`<i class="nl" style="top:${(nh-a)*HH}px"></i>`:""}</div>`}).join("")}</div></div>`;
 const oc=$("wcard"),st=oc?oc.scrollTop:null;$("pg-cal").innerHTML=h+calNote;const fresh=$("wcard");requestAnimationFrame(()=>{if(fresh)fresh.scrollTop=st!=null?st:Math.max(0,(window.innerHeight<520?5:7)*HH)})}
 function ganttH(){const ganttTasks=T.filter(x=>x.s!=="done"&&taskHasDate(x));if(!ganttTasks.length)return `<div class="sub2">Здесь появится диаграмма, когда добавишь первую задачу с датой.</div>`;const mn=new Date(Math.min(...ganttTasks.map(x=>+pd(taskPlanDate(x)||taskDeadlineDate(x))))),mx=new Date(Math.max(...ganttTasks.map(x=>+pd(taskDeadlineDate(x)||taskPlanDate(x)))));
