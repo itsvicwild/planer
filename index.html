@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-N6G3f/Mgw3kSG3zboVDdrRlnG5J4Dj3qwT8LzYR9P/4=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-HDOeS/AfUS9OzUZlFK7y9DGsvUQkWJxjmqLPiRvHyto=' 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-3ShgYx8DC51BfZ6ekrphAsXF9KSkUgn5yfSfL85TbUw=' 'sha256-r1GVX/lgC6C5TR82mrZW1E2pndI9+Ha6SQnMEevL3fM=' 'sha256-HDOeS/AfUS9OzUZlFK7y9DGsvUQkWJxjmqLPiRvHyto=' 'sha256-9DrzLadaKLUM6qsyL6+EmoSJdFLdZiBynGPPDxGkdgg=' 'sha256-KrBLApE/mSjPBZrvbUKIbNX0jFZcl9rF5CbrqwGaBBQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://adsfjbrjgimgovtcjqvl.supabase.co wss://adsfjbrjgimgovtcjqvl.supabase.co; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Wild Workspace</title>
 <meta name="description" content="Wild Workspace — личное пространство для задач, привычек, событий и маленьких побед.">
 <meta name="theme-color" content="#0e1411">
@@ -2512,16 +2512,23 @@ async function requestGoogleCalendarSync(options={}){
   GOOGLE_CALENDAR_UI.syncing=true;GOOGLE_CALENDAR_UI.syncError="";renderGoogleCalendarBody();
   try{
    const timeZone=(()=>{try{return Intl.DateTimeFormat().resolvedOptions().timeZone||"Europe/Amsterdam"}catch{return "Europe/Amsterdam"}})();
-   const result=await cloudApi("/functions/v1/google-calendar-sync",{method:"POST",body:JSON.stringify({timeZone})});
-   if(AUTH?.user?.id!==userId)return result;
-   if(result?.skipped&&result.reason==="sync_in_progress")return result;
+   const totals={created:0,updated:0,deleted:0,unchanged:0};
+   let result=null,page=0;
+   do{
+    result=await cloudApi("/functions/v1/google-calendar-sync",{method:"POST",body:JSON.stringify({timeZone})});
+    if(AUTH?.user?.id!==userId)return result;
+    if(result?.skipped&&result.reason==="sync_in_progress")return result;
+    for(const key of Object.keys(totals))totals[key]+=Number(result?.[key]||0);
+    page++;
+    if(result?.has_more&&page>=20)throw new Error("Синхронизация выполняется частями. Нажми «Синхронизировать сейчас», чтобы продолжить.");
+   }while(result?.has_more);
    GOOGLE_CALENDAR_UI.lastSyncedAt=result?.last_synced_at||new Date().toISOString();
    GOOGLE_CALENDAR_UI.syncError="";
    if(!options.silent){
-    const count=Number(result?.created||0)+Number(result?.updated||0)+Number(result?.deleted||0);
+    const count=totals.created+totals.updated+totals.deleted;
     toast(SET.locale==="en"?(count?"Google Calendar synced.":"Google Calendar is already up to date."):(count?"Google Calendar синхронизирован.":"Google Calendar уже актуален."));
    }
-   return result;
+   return {...totals,last_synced_at:result?.last_synced_at};
   }catch(error){
    if(AUTH?.user?.id===userId){
     GOOGLE_CALENDAR_UI.syncError=String(error?.message||"Не удалось синхронизировать мероприятия").slice(0,500);
