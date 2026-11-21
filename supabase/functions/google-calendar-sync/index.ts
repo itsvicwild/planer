@@ -321,6 +321,14 @@ async function syncCalendar(req: Request) {
 
   const body = await req.json().catch(() => ({}));
   const requestedZone = validTimeZone(body?.timeZone) ? body.timeZone : "";
+  const { data: connectionExists, error: existenceError } = await admin
+    .from("google_calendar_connections")
+    .select("user_id")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (existenceError) return json({ error: "Could not check Google Calendar connection" }, 500);
+  if (!connectionExists) return json({ ok: true, skipped: true, reason: "not_connected" });
+
   const now = new Date().toISOString();
   const lockToken = crypto.randomUUID();
   const lockUntil = new Date(Date.now() + 10 * 60 * 1000).toISOString();
@@ -351,11 +359,6 @@ async function syncCalendar(req: Request) {
     }
 
     const timeZone = requestedZone || (validTimeZone(connection.time_zone) ? connection.time_zone : "Europe/Amsterdam");
-    const refreshToken = await decryptRefreshToken(
-      connection.refresh_token_ciphertext,
-      connection.refresh_token_iv,
-    );
-    const accessToken = await refreshGoogleAccessToken(refreshToken);
 
     const { data: workspace, error: workspaceError } = await admin
       .from("workspace_data")
@@ -382,21 +385,47 @@ async function syncCalendar(req: Request) {
       { googleEventId: String(row.google_event_id), fingerprint: String(row.fingerprint) },
     ]));
 
-    let created = 0;
-    let updated = 0;
-    let unchanged = 0;
-    let deleted = 0;
-
+    const pendingEvents = [];
     for (const event of events) {
       const resource = googleEventBody(event, timeZone);
       const fingerprint = await sha256Hex(JSON.stringify(resource));
       const existing = mapping.get(event.id);
+      if (existing?.fingerprint === fingerprint) continue;
       const googleId = existing?.googleEventId || await deterministicGoogleEventId(userId, event.id);
-      if (existing?.fingerprint === fingerprint) {
-        unchanged++;
-        continue;
-      }
+      pendingEvents.push({ event, resource, fingerprint, googleId, existing });
+    }
+    const staleMappings = [...mapping.entries()].filter(([plannerId]) => !desiredIds.has(plannerId));
 
+    let created = 0;
+    let updated = 0;
+    let unchanged = events.length - pendingEvents.length;
+    let deleted = 0;
+
+    // Avoid refreshing the Google token for task/settings saves that did not change events.
+    if (!pendingEvents.length && !staleMappings.length) {
+      const syncedAt = new Date().toISOString();
+      const { error: noopFinishError } = await admin
+        .from("google_calendar_connections")
+        .update({
+          last_synced_at: syncedAt,
+          last_sync_error: null,
+          time_zone: timeZone,
+          updated_at: syncedAt,
+        })
+        .eq("user_id", userId)
+        .eq("sync_lock_token", lockToken);
+      if (noopFinishError) throw new Error("Could not save Google Calendar sync status");
+      return json({ ok: true, created, updated, unchanged, deleted, last_synced_at: syncedAt });
+    }
+
+    const refreshToken = await decryptRefreshToken(
+      connection.refresh_token_ciphertext,
+      connection.refresh_token_iv,
+    );
+    const accessToken = await refreshGoogleAccessToken(refreshToken);
+
+    for (const pending of pendingEvents) {
+      const { event, resource, fingerprint, googleId, existing } = pending;
       try {
         if (existing) {
           try {
@@ -439,17 +468,14 @@ async function syncCalendar(req: Request) {
 
     // Only mapped events absent from the authoritative Planer E array are removed.
     // Tasks, deadlines, holidays outside E, and Google-created events are untouched.
-    for (const [plannerId, mapped] of mapping.entries()) {
-      if (desiredIds.has(plannerId)) continue;
+    for (const [plannerId, mapped] of staleMappings) {
       try {
         await googleRequest(accessToken, connection.calendar_id, "DELETE", mapped.googleEventId);
       } catch (error) {
-        if (!(error instanceof GoogleApiError) || error.status !== 404 || error.reason !== "NOT_FOUND") {
-          if (!(error instanceof GoogleApiError) || error.status !== 404) {
-            throw error instanceof GoogleApiError
-              ? new Error("Google Calendar event deletion failed (" + error.status + ", " + error.reason + "): " + error.message)
-              : error;
-          }
+        if (!(error instanceof GoogleApiError) || error.status !== 404) {
+          throw error instanceof GoogleApiError
+            ? new Error("Google Calendar event deletion failed (" + error.status + ", " + error.reason + "): " + error.message)
+            : error;
         }
       }
       const { error: deleteMapError } = await admin
