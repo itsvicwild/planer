@@ -397,11 +397,6 @@ async function syncCalendar(req: Request) {
     }
     const staleMappings = [...mapping.entries()].filter(([plannerId]) => !desiredIds.has(plannerId));
 
-    let created = 0;
-    let updated = 0;
-    let unchanged = events.length - pendingEvents.length;
-    let deleted = 0;
-
     // Task/settings-only updates must not trigger Google Calendar API calls.
     if (!pendingEvents.length && !staleMappings.length) {
       const syncedAt = new Date().toISOString();
