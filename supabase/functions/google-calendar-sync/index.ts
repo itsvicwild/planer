@@ -204,6 +204,7 @@ function googleEventBody(event: PlannerEvent, timeZone: string) {
     summary: event.t,
     location: event.p || undefined,
     description: event.desc || undefined,
+    reminders: { useDefault: false, overrides: [{ method: "popup", minutes: 30 }] },
     extendedProperties: {
       private: { planerEventId: event.id, planerSyncVersion: "1" },
     },
