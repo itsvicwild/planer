@@ -141,6 +141,39 @@ async function beginOAuth(req: Request) {
   return json({ authorization_url: authorizationUrl.toString() });
 }
 
+
+async function getOAuthStatus(req: Request) {
+  const origin = req.headers.get("origin");
+  if (origin !== APP_ORIGIN) return json({ error: "Origin not allowed" }, 403);
+
+  const authorization = req.headers.get("authorization") ?? "";
+  const match = authorization.match(/^Bearer\\s+(.+)$/i);
+  if (!match) return json({ error: "Authentication required" }, 401);
+
+  const admin = getAdminClient();
+  const { data: userData, error: userError } = await admin.auth.getUser(match[1]);
+  if (userError || !userData.user) return json({ error: "Invalid Planer session" }, 401);
+
+  const { data, error } = await admin
+    .from("google_calendar_connections")
+    .select("google_email, connected_at, last_synced_at, refresh_token_ciphertext, refresh_token_iv")
+    .eq("user_id", userData.user.id)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Google Calendar status lookup failed");
+    return json({ error: "Could not load Google Calendar status" }, 500);
+  }
+
+  const connected = !!(data?.refresh_token_ciphertext && data?.refresh_token_iv);
+  return json({
+    connected,
+    google_email: connected ? data.google_email : null,
+    connected_at: connected ? data.connected_at : null,
+    last_synced_at: connected ? data.last_synced_at : null,
+  });
+}
+
 async function finishOAuth(url: URL) {
   const rawState = url.searchParams.get("state");
   if (!rawState) return page("Не удалось подключить Google Calendar", "В запросе отсутствует защитный параметр. Вернись в Planer и начни подключение заново.", 400);
@@ -259,8 +292,9 @@ Deno.serve(async (req: Request) => {
   if (req.method === "POST") {
     try {
       const body = await req.json().catch(() => ({}));
-      if (body?.action !== "start") return json({ error: "Unsupported action" }, 400);
-      return await beginOAuth(req);
+      if (body?.action === "start") return await beginOAuth(req);
+      if (body?.action === "status") return await getOAuthStatus(req);
+      return json({ error: "Unsupported action" }, 400);
     } catch (error) {
       console.error("Google Calendar OAuth start failed:", error instanceof Error ? error.message : "unknown error");
       return json({ error: "Could not start Google authorization" }, 500);
