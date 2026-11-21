@@ -174,6 +174,85 @@ async function getOAuthStatus(req: Request) {
   });
 }
 
+
+async function decryptRefreshToken(ciphertext: string, encodedIv: string) {
+  const encodedKey = Deno.env.get("GOOGLE_TOKEN_ENCRYPTION_KEY");
+  if (!encodedKey) throw new Error("Token encryption key is not configured");
+  const keyBytes = fromBase64(encodedKey);
+  if (keyBytes.length !== 32) throw new Error("Token encryption key must be 32 bytes (base64)");
+  const key = await crypto.subtle.importKey("raw", keyBytes, "AES-GCM", false, ["decrypt"]);
+  const clear = await crypto.subtle.decrypt(
+    { name: "AES-GCM", iv: fromBase64(encodedIv) },
+    key,
+    fromBase64(ciphertext),
+  );
+  return new TextDecoder().decode(clear);
+}
+
+async function disconnectGoogleCalendar(req: Request) {
+  const origin = req.headers.get("origin");
+  if (origin !== APP_ORIGIN) return json({ error: "Origin not allowed" }, 403);
+
+  const authorization = req.headers.get("authorization") ?? "";
+  const match = authorization.match(/^Bearer\s+(.+)$/i);
+  if (!match) return json({ error: "Authentication required" }, 401);
+
+  const admin = getAdminClient();
+  const { data: userData, error: userError } = await admin.auth.getUser(match[1]);
+  if (userError || !userData.user) return json({ error: "Invalid Planer session" }, 401);
+
+  const { data: connection, error: connectionError } = await admin
+    .from("google_calendar_connections")
+    .select("refresh_token_ciphertext, refresh_token_iv")
+    .eq("user_id", userData.user.id)
+    .maybeSingle();
+
+  if (connectionError) {
+    console.error("Google Calendar disconnect lookup failed");
+    return json({ error: "Could not load Google Calendar connection" }, 500);
+  }
+  if (!connection) return json({ disconnected: true, revoked: true });
+
+  let revoked = false;
+  if (connection.refresh_token_ciphertext && connection.refresh_token_iv) {
+    try {
+      const refreshToken = await decryptRefreshToken(
+        connection.refresh_token_ciphertext,
+        connection.refresh_token_iv,
+      );
+      const revokeResponse = await fetch("https://oauth2.googleapis.com/revoke", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ token: refreshToken }),
+      });
+      revoked = revokeResponse.ok || revokeResponse.status === 400;
+    } catch (error) {
+      console.error("Google token revocation failed:", error instanceof Error ? error.message : "unknown error");
+    }
+  } else {
+    revoked = true;
+  }
+
+  // Retain calendar_id and event mappings so reconnecting the same Google account
+  // reuses the existing Planer calendar instead of creating a duplicate one.
+  const { error: updateError } = await admin
+    .from("google_calendar_connections")
+    .update({
+      refresh_token_ciphertext: null,
+      refresh_token_iv: null,
+      last_sync_error: null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("user_id", userData.user.id);
+
+  if (updateError) {
+    console.error("Google Calendar disconnect update failed");
+    return json({ error: "Could not disconnect Google Calendar" }, 500);
+  }
+
+  return json({ disconnected: true, revoked });
+}
+
 async function finishOAuth(url: URL) {
   const rawState = url.searchParams.get("state");
   if (!rawState) return page("Не удалось подключить Google Calendar", "В запросе отсутствует защитный параметр. Вернись в Planer и начни подключение заново.", 400);
@@ -294,6 +373,7 @@ Deno.serve(async (req: Request) => {
       const body = await req.json().catch(() => ({}));
       if (body?.action === "start") return await beginOAuth(req);
       if (body?.action === "status") return await getOAuthStatus(req);
+      if (body?.action === "disconnect") return await disconnectGoogleCalendar(req);
       return json({ error: "Unsupported action" }, 400);
     } catch (error) {
       console.error("Google Calendar OAuth start failed:", error instanceof Error ? error.message : "unknown error");
