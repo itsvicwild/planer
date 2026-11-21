@@ -1,7 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const APP_ORIGIN = "https://itsvicwild.github.io";
-const SYNC_BATCH_SIZE = 25;
+const SYNC_BATCH_SIZE = 5;
 const corsHeaders = {
   "Access-Control-Allow-Origin": APP_ORIGIN,
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -332,7 +332,7 @@ async function syncCalendar(req: Request) {
 
   const now = new Date().toISOString();
   const lockToken = crypto.randomUUID();
-  const lockUntil = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+  const lockUntil = new Date(Date.now() + 2 * 60 * 1000).toISOString();
 
   const { data: locked, error: lockError } = await admin
     .from("google_calendar_connections")
@@ -402,21 +402,9 @@ async function syncCalendar(req: Request) {
     let unchanged = events.length - pendingEvents.length;
     let deleted = 0;
 
-    // Avoid refreshing the Google token for task/settings saves that did not change events.
+    // Task/settings-only updates must not trigger Google Calendar API calls.
     if (!pendingEvents.length && !staleMappings.length) {
-      const hasMore = hasMorePending || staleMappings.length > staleBatch.length;
-    if (hasMore) {
-      const partialAt = new Date().toISOString();
-      const { error: partialError } = await admin
-        .from("google_calendar_connections")
-        .update({ last_sync_error: null, time_zone: timeZone, updated_at: partialAt })
-        .eq("user_id", userId)
-        .eq("sync_lock_token", lockToken);
-      if (partialError) throw new Error("Could not save partial Google Calendar sync state");
-      return json({ ok: true, has_more: true, created, updated, unchanged, deleted });
-    }
-
-    const syncedAt = new Date().toISOString();
+      const syncedAt = new Date().toISOString();
       const { error: noopFinishError } = await admin
         .from("google_calendar_connections")
         .update({
@@ -428,9 +416,20 @@ async function syncCalendar(req: Request) {
         .eq("user_id", userId)
         .eq("sync_lock_token", lockToken);
       if (noopFinishError) throw new Error("Could not save Google Calendar sync status");
-      return json({ ok: true, created, updated, unchanged, deleted, last_synced_at: syncedAt });
+      return json({
+        ok: true,
+        created: 0,
+        updated: 0,
+        unchanged: events.length,
+        deleted: 0,
+        processed: 0,
+        total: 0,
+        has_more: false,
+        last_synced_at: syncedAt,
+      });
     }
 
+    const totalToProcess = pendingEvents.length + staleMappings.length;
     const refreshToken = await decryptRefreshToken(
       connection.refresh_token_ciphertext,
       connection.refresh_token_iv,
@@ -438,6 +437,10 @@ async function syncCalendar(req: Request) {
     const accessToken = await refreshGoogleAccessToken(refreshToken);
 
     const pendingBatch = pendingEvents.slice(0, SYNC_BATCH_SIZE);
+    let created = 0;
+    let updated = 0;
+    let deleted = 0;
+
     for (const pending of pendingBatch) {
       const { event, resource, fingerprint, googleId, existing } = pending;
       try {
@@ -480,10 +483,12 @@ async function syncCalendar(req: Request) {
       if (saveMapError) throw new Error("Google event was created but its mapping could not be saved");
     }
 
-    // Only mapped events absent from the authoritative Planer E array are removed.
-    // Tasks, deadlines, holidays outside E, and Google-created events are untouched.
+    // Deletions run only after all current Planer events have been mapped.
     const hasMorePending = pendingEvents.length > pendingBatch.length;
-    const staleBatch = hasMorePending ? [] : staleMappings.slice(0, Math.max(0, SYNC_BATCH_SIZE - pendingBatch.length));
+    const staleBatch = hasMorePending
+      ? []
+      : staleMappings.slice(0, Math.max(0, SYNC_BATCH_SIZE - pendingBatch.length));
+
     for (const [plannerId, mapped] of staleBatch) {
       try {
         await googleRequest(accessToken, connection.calendar_id, "DELETE", mapped.googleEventId);
@@ -503,6 +508,32 @@ async function syncCalendar(req: Request) {
       deleted++;
     }
 
+    const processed = pendingBatch.length + staleBatch.length;
+    const hasMore = processed < totalToProcess;
+    if (hasMore) {
+      const partialAt = new Date().toISOString();
+      const { error: partialError } = await admin
+        .from("google_calendar_connections")
+        .update({
+          last_sync_error: null,
+          time_zone: timeZone,
+          updated_at: partialAt,
+        })
+        .eq("user_id", userId)
+        .eq("sync_lock_token", lockToken);
+      if (partialError) throw new Error("Could not save partial Google Calendar sync state");
+      return json({
+        ok: true,
+        has_more: true,
+        created,
+        updated,
+        unchanged: 0,
+        deleted,
+        processed,
+        total: totalToProcess,
+      });
+    }
+
     const syncedAt = new Date().toISOString();
     const { error: finishError } = await admin
       .from("google_calendar_connections")
@@ -520,8 +551,11 @@ async function syncCalendar(req: Request) {
       ok: true,
       created,
       updated,
-      unchanged,
+      unchanged: events.length - created - updated,
       deleted,
+      processed,
+      total: totalToProcess,
+      has_more: false,
       last_synced_at: syncedAt,
     });
   } catch (error) {
